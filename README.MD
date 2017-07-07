@@ -14,7 +14,7 @@ Expressive é uma biblioteca ORM implementada seguindo os conceitos aplicados co
 Esse pacote foi estruturado para ser instalado por meio do composer como um repositório vcs
 
 ```
-composer require solis/expressive 0.0.1
+composer require solis/expressive
 ``` 
 
 ## Como utilizar?
