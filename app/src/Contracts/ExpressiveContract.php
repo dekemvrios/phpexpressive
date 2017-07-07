@@ -36,7 +36,7 @@ interface ExpressiveContract
      * @param array $arguments
      * @param array $options
      *
-     * @return object|array
+     * @return ExpressiveContract[]|ExpressiveContract|boolean
      *
      * @throws TException
      */
@@ -46,17 +46,23 @@ interface ExpressiveContract
     );
 
     /**
-     * @return array|mixed
+     * @return ExpressiveContract|boolean
+     *
+     * @throws TException
      */
     public function search();
 
     /**
      * @return boolean
+     *
+     * @throws TException
      */
     public function delete();
 
     /**
-     * @return ExpressiveContract|boolean
+     * @return ExpressiveContract
+     *
+     * @throws TException
      */
     public function create();
 
@@ -64,21 +70,29 @@ interface ExpressiveContract
      * @param array $arguments
      *
      * @return int
+     *
+     * @throws TException
      */
     public function count(array $arguments = []);
 
     /**
      * @return ExpressiveContract
+     *
+     * @throws TException
      */
     public function last();
 
     /**
      * @return boolean
+     *
+     * @throws TException
      */
     public function update();
 
     /**
-     * @return boolean
+     * @return ExpressiveContract
+     *
+     * @throws TException
      */
     public function patch();
 

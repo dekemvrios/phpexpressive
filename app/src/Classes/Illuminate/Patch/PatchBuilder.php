@@ -49,7 +49,7 @@ final class PatchBuilder
     /**
      * @param ExpressiveContract $model
      *
-     * @return ExpressiveContract|boolean
+     * @return ExpressiveContract
      *
      * @throws TException;
      */

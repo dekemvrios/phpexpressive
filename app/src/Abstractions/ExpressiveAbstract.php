@@ -165,7 +165,7 @@ abstract class ExpressiveAbstract implements ExpressiveContract
      * @param array $arguments
      * @param array $options
      *
-     * @return object|array
+     * @return ExpressiveContract[]|ExpressiveContract|boolean
      *
      * @throws TException
      */
@@ -181,7 +181,9 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     }
 
     /**
-     * @return array|mixed
+     * @return ExpressiveContract|boolean
+     *
+     * @throws TException
      */
     public function search()
     {
@@ -190,6 +192,8 @@ abstract class ExpressiveAbstract implements ExpressiveContract
 
     /**
      * @return boolean
+     *
+     * @throws TException
      */
     public function delete()
     {
@@ -198,6 +202,8 @@ abstract class ExpressiveAbstract implements ExpressiveContract
 
     /**
      * @return ExpressiveContract|boolean
+     *
+     * @throws TException
      */
     public function create()
     {
@@ -208,6 +214,8 @@ abstract class ExpressiveAbstract implements ExpressiveContract
      * @param array $arguments
      *
      * @return int
+     *
+     * @throws TException
      */
     public function count(array $arguments = [])
     {
@@ -229,6 +237,8 @@ abstract class ExpressiveAbstract implements ExpressiveContract
 
     /**
      * @return boolean
+     *
+     * @throws TException
      */
     public function update()
     {
@@ -236,7 +246,9 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     }
 
     /**
-     * @return boolean
+     * @return ExpressiveContract
+     *
+     * @throws TException
      */
     public function patch()
     {

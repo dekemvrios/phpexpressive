@@ -18,7 +18,7 @@ interface DatabaseContainerContract
      * @param array              $options
      * @param ExpressiveContract $model
      *
-     * @return object|array
+     * @return ExpressiveContract[]|ExpressiveContract|boolean
      *
      * @throws TException
      */
@@ -31,7 +31,7 @@ interface DatabaseContainerContract
     /**
      * @param ExpressiveContract $model
      *
-     * @return array|mixed
+     * @return ExpressiveContract|boolean
      *
      * @throws TException
      */
@@ -42,7 +42,7 @@ interface DatabaseContainerContract
      *
      * @return boolean
      *
-     * @throws TException;
+     * @throws TException
      */
     public function delete(ExpressiveContract $model);
 
@@ -51,7 +51,7 @@ interface DatabaseContainerContract
      *
      * @return ExpressiveContract|boolean
      *
-     * @throws TException;
+     * @throws TException
      */
     public function create(ExpressiveContract $model);
 
@@ -81,13 +81,17 @@ interface DatabaseContainerContract
      * @param ExpressiveContract $model
      *
      * @return boolean
+     *
+     * @throws TException
      */
     public function update(ExpressiveContract $model);
 
     /**
      * @param ExpressiveContract $model
      *
-     * @return boolean
+     * @return ExpressiveContract
+     *
+     * @throws TException
      */
     public function patch(ExpressiveContract $model);
 

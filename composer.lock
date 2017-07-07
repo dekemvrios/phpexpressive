@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "4d80139b4f59997eaa6707d7f621833f",
-    "content-hash": "bd09f21bd083be44e6b7a91c1baf8402",
+    "hash": "f1a6ac67bd6c01ac385278246b72d1f3",
+    "content-hash": "148f2389836ea747590514583c3b914c",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -452,12 +452,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/realfabecker/phpmagic.git",
-                "reference": "3b129330a937dcb8826b98e3cff834ebddb134fe"
+                "reference": "c424c63ceae5b2dc2c782b643d6404455aaadd6e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/realfabecker/phpmagic/zipball/3b129330a937dcb8826b98e3cff834ebddb134fe",
-                "reference": "3b129330a937dcb8826b98e3cff834ebddb134fe",
+                "url": "https://api.github.com/repos/realfabecker/phpmagic/zipball/c424c63ceae5b2dc2c782b643d6404455aaadd6e",
+                "reference": "c424c63ceae5b2dc2c782b643d6404455aaadd6e",
                 "shasum": ""
             },
             "require": {
@@ -468,8 +468,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Solis\\PhpMagic\\": "app/src",
-                    "Solis\\PhpMagic\\Sample\\": "sample"
+                    "Solis\\PhpMagic\\": "app/src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -477,7 +476,8 @@
                 "GPL-3.0+",
                 "LGPL-3.0+"
             ],
-            "time": "2017-06-21 18:42:07"
+            "description": "PhpMagic use magic methods to validate and set/get class properties",
+            "time": "2017-07-07 17:16:42"
         },
         {
             "name": "solis/phpschema",
@@ -485,12 +485,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/realfabecker/phpschema.git",
-                "reference": "605d2f926194a12002c66c0330242a92ea35d71e"
+                "reference": "5a4e94259c887c9bd97e553bec04b285879d4636"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/realfabecker/phpschema/zipball/605d2f926194a12002c66c0330242a92ea35d71e",
-                "reference": "605d2f926194a12002c66c0330242a92ea35d71e",
+                "url": "https://api.github.com/repos/realfabecker/phpschema/zipball/5a4e94259c887c9bd97e553bec04b285879d4636",
+                "reference": "5a4e94259c887c9bd97e553bec04b285879d4636",
                 "shasum": ""
             },
             "require": {
@@ -509,7 +509,8 @@
                 "GPL-3.0+",
                 "LGPL-3.0+"
             ],
-            "time": "2017-06-21 19:37:51"
+            "description": "PhpSchema is library used by Solis\\Expressive as default ORM Schema",
+            "time": "2017-07-07 11:26:15"
         },
         {
             "name": "symfony/polyfill-mbstring",
