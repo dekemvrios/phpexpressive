@@ -45,7 +45,7 @@ final class SelectBuilder
      * @param array              $options
      * @param ExpressiveContract $model
      *
-     * @return ExpressiveContract|array|boolean
+     * @return ExpressiveContract[]|ExpressiveContract|boolean
      *
      * @throws TException
      */
@@ -170,7 +170,7 @@ final class SelectBuilder
     /**
      * @param ExpressiveContract $model
      *
-     * @return array|mixed
+     * @return ExpressiveContract|boolean
      *
      * @throws TException
      */
