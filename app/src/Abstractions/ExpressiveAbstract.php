@@ -181,13 +181,15 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     }
 
     /**
+     * @param boolean $dependencies
+     *
      * @return ExpressiveContract|boolean
      *
      * @throws TException
      */
-    public function search()
+    public function search($dependencies = true)
     {
-        return $this->getDatabaseContainer()->search($this);
+        return $this->getDatabaseContainer()->search($this, $dependencies);
     }
 
     /**

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f1a6ac67bd6c01ac385278246b72d1f3",
+    "hash": "269e5efc50e481af4bac9dd9a68afe6e",
     "content-hash": "148f2389836ea747590514583c3b914c",
     "packages": [
         {
@@ -427,12 +427,12 @@
             "version": "0.0.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/realfabecker/phpbreaker.git",
+                "url": "https://github.com/rafaelbeecker/phpbreaker.git",
                 "reference": "f022908fa6d8906f0c8faa1031fdf49efb7f6f79"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/realfabecker/phpbreaker/zipball/f022908fa6d8906f0c8faa1031fdf49efb7f6f79",
+                "url": "https://api.github.com/repos/rafaelbeecker/phpbreaker/zipball/f022908fa6d8906f0c8faa1031fdf49efb7f6f79",
                 "reference": "f022908fa6d8906f0c8faa1031fdf49efb7f6f79",
                 "shasum": ""
             },
@@ -451,12 +451,12 @@
             "version": "3.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/realfabecker/phpmagic.git",
-                "reference": "c424c63ceae5b2dc2c782b643d6404455aaadd6e"
+                "url": "https://github.com/rafaelbeecker/phpmagic.git",
+                "reference": "28d9df72a14e865d2979bccf8a40190cfd238717"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/realfabecker/phpmagic/zipball/c424c63ceae5b2dc2c782b643d6404455aaadd6e",
+                "url": "https://api.github.com/repos/rafaelbeecker/phpmagic/zipball/28d9df72a14e865d2979bccf8a40190cfd238717",
                 "reference": "c424c63ceae5b2dc2c782b643d6404455aaadd6e",
                 "shasum": ""
             },
@@ -484,12 +484,12 @@
             "version": "0.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/realfabecker/phpschema.git",
-                "reference": "5a4e94259c887c9bd97e553bec04b285879d4636"
+                "url": "https://github.com/rafaelbeecker/phpschema.git",
+                "reference": "2f87fd3e477542a4ed86a84e890d560695a6bada"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/realfabecker/phpschema/zipball/5a4e94259c887c9bd97e553bec04b285879d4636",
+                "url": "https://api.github.com/repos/rafaelbeecker/phpschema/zipball/2f87fd3e477542a4ed86a84e890d560695a6bada",
                 "reference": "5a4e94259c887c9bd97e553bec04b285879d4636",
                 "shasum": ""
             },

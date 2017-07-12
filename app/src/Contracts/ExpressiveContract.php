@@ -46,11 +46,13 @@ interface ExpressiveContract
     );
 
     /**
+     * @param boolean $dependencies
+     *
      * @return ExpressiveContract|boolean
      *
      * @throws TException
      */
-    public function search();
+    public function search($dependencies = true);
 
     /**
      * @return boolean

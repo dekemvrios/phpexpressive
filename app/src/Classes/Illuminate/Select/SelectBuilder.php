@@ -170,11 +170,13 @@ final class SelectBuilder
     /**
      * @param ExpressiveContract $model
      *
+     * @param boolean            $dependencies
+     *
      * @return ExpressiveContract|boolean
      *
      * @throws TException
      */
-    public function search(ExpressiveContract $model)
+    public function search(ExpressiveContract $model, $dependencies = true)
     {
         if (empty($model->getSchema()->getDatabase())) {
             throw new TException(
@@ -234,7 +236,9 @@ final class SelectBuilder
             $model
         );
 
-        $instance = $this->searchForDependencies($instance);
+        if (!empty($dependencies)) {
+            $instance = $this->searchForDependencies($instance);
+        }
 
         return $instance;
     }
