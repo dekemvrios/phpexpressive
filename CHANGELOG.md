@@ -2,6 +2,11 @@
 
 Todas as modificações relevantes ao  `expressive` serão documentadas nesse arquivo seguindo o especificado em [KEEP CHANGELOG](http://keepachangelog.com/).
 
+## 0.2.0 - 2017-07-20
+
+## Added
+- Atualizado versão dependências phpmagic e phpbreaker para versões 3.2.0 e 0.0.2 respectivamente.
+
 ## 0.1.0 - 2017-07-12
 
 ## Added
