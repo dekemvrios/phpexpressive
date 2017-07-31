@@ -65,6 +65,9 @@ final class SelectBuilder
 
         $table = $model->getSchema()->getDatabase()->getTable();
 
+        // retorna todas as dependencias atribuidas ao respectivo model
+        $dependencies = ['*'];
+
         $stmt = Capsule::table($table);
         if (!empty($arguments)) {
             foreach ($arguments as $argument) {
@@ -128,6 +131,13 @@ final class SelectBuilder
                     );
                 }
             }
+
+            if (array_key_exists(
+                'withDependencies',
+                $options
+            )) {
+                $dependencies = !is_array($options['withDependencies']) ? [$options['withDependencies']] : $options['withDependencies'];
+            }
         }
 
         try {
@@ -145,21 +155,12 @@ final class SelectBuilder
             return false;
         }
 
-        $withDependencies = false;
-        if (array_key_exists(
-            'withDependencies',
-            $options
-        )) {
-            $withDependencies = $options['withDependencies'];
-        }
-
         $class = get_class($model);
-        $instances = array_map(function ($item) use ($class, $withDependencies) {
+        $instances = array_map(function ($item) use ($class, $dependencies) {
             $instance = Wrapper::fetchStdClassToExpressiveNewModel($item, $class);
-            if(!empty($instance)){
-                if (!empty($withDependencies)) {
-                    $instance = $this->searchForDependencies($instance);
-                }
+            if (!empty($instance)) {
+                $instance = $this->searchForDependencies($instance, $dependencies);
+
                 return $instance;
             }
         }, $result);
@@ -353,17 +354,28 @@ final class SelectBuilder
 
     /**
      * @param ExpressiveContract $model
+     * @param array              $dependencies
      *
      * @return ExpressiveContract
      *
      * @throws TException
      */
-    public function searchForDependencies($model)
+    public function searchForDependencies($model, $dependencies = ['*'])
     {
+        $selectForAll = boolval(in_array('*', $dependencies));
+
         $dependencies = array_values(array_filter(
-            $model->getSchema()->getDatabase()->getFields(), function (FieldEntryAbstract $field) {
-            return !empty($field->getObject()) ? true : false;
-        }
+            $model->getSchema()->getDatabase()->getFields(), function (FieldEntryAbstract $field) use ($dependencies, $selectForAll) {
+                $selectFor = false;
+                if (!empty($field->getObject())) {
+                    if (!empty($selectForAll)) {
+                        return true;
+                    }
+
+                    $selectFor = boolval(in_array($field->getProperty(), $dependencies));
+                }
+                return $selectFor;
+            }
         ));
 
         if (!empty($dependencies)) {
