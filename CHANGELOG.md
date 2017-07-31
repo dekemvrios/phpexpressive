@@ -2,7 +2,7 @@
 
 Todas as modificações relevantes ao  `expressive` serão documentadas nesse arquivo seguindo o especificado em [KEEP CHANGELOG](http://keepachangelog.com/).
 
-## 1.0.0 - 2017-07-31
+## 0.3.0 - 2017-07-31
 
 ## Changed
 - Modificado comportamento da entrada withDependencies utilizada em options do método select do active record, de modo que esse possa assumir, além 
