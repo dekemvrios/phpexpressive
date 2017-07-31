@@ -439,6 +439,7 @@ final class SelectBuilder
 
         foreach ($withProperties as $property) {
             $meta = $model->getSchema()->getPropertyEntry('property', $property);
+
             if (empty($meta)) {
                 new TException(
                     __CLASS__,
@@ -447,9 +448,15 @@ final class SelectBuilder
                     400
                 );
             }
-            if (empty($meta->getObject())) {
-                $searchFor[] = $property;
+
+            if (!empty($meta->getObject())) {
+                // relacionamento hasMany não é incluido nas colunas a serem consultadas
+                if ($meta->getObject()->getRelationship()->getType() == 'hasMany') {
+                    continue;
+                }
             }
+
+            $searchFor[] = $property;
         }
 
         return empty($searchFor) ? ['*'] : $searchFor;
