@@ -5,11 +5,11 @@ Todas as modificações relevantes ao  `expressive` serão documentadas nesse ar
 ## 1.0.0 - 2017-07-31
 
 ## Changed
-- Modificado comportamento da entrada withDependencies utilizada em options do méodo select do active record, de modo que essa possa assumir, além 
+- Modificado comportamento da entrada withDependencies utilizada em options do método select do active record, de modo que esse possa assumir, além 
   de valores lógicos, a forma de um array contendo a relação das propriedades esquematizadas como dependencias a serem consultadas.
 
 ## Added
-- Adicionado entrada withProperties na propriedade options utilizada como parâmetro na função select do active record. Com essa
+- Adicionado entrada withProperties na propriedade options utilizada como parâmetro na função select do active record. A partir desta
   é possível especificar a relação de propriedades que serão retornadas pela consulta a persistência do respectivo model.
 
 ## 0.2.0 - 2017-07-20
