@@ -2,6 +2,16 @@
 
 Todas as modificações relevantes ao  `expressive` serão documentadas nesse arquivo seguindo o especificado em [KEEP CHANGELOG](http://keepachangelog.com/).
 
+## 1.0.0 - 2017-07-31
+
+## Changed
+- Modificado comportamento da entrada withDependencies utilizada em options do méodo select do active record, de modo que essa possa assumir, além 
+  de valores lógicos, a forma de um array contendo a relação das propriedades esquematizadas como dependencias a serem consultadas.
+
+## Added
+- Adicionado entrada withProperties na propriedade options utilizada como parâmetro na função select do active record. Com essa
+  é possível especificar a relação de propriedades que serão retornadas pela consulta a persistência do respectivo model.
+
 ## 0.2.0 - 2017-07-20
 
 ## Added
