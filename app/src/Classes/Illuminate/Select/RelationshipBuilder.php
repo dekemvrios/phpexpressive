@@ -128,7 +128,7 @@ final class RelationshipBuilder
                 new $dependencyClass()
             );
             if (!empty($hasManyItem)) {
-                $hasManyItem = (new SelectBuilder())->searchForDependencies($hasManyItem);
+                $hasManyItem = (new SelectBuilder())->searchForDependencies($hasManyItem, true);
 
                 $hasMany[] = $hasManyItem;
             }
