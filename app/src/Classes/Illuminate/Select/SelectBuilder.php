@@ -68,6 +68,9 @@ final class SelectBuilder
         // retorna todas as dependencias atribuidas ao respectivo model
         $dependencies = ['*'];
 
+        // retorna todas as colunas atribuidas ao respectivo model
+        $columns = ['*'];
+
         $stmt = Capsule::table($table);
         if (!empty($arguments)) {
             foreach ($arguments as $argument) {
@@ -138,10 +141,19 @@ final class SelectBuilder
             )) {
                 $dependencies = !is_array($options['withDependencies']) ? [$options['withDependencies']] : $options['withDependencies'];
             }
+
+            if (array_key_exists(
+                'withProperties',
+                $options
+            )) {
+                $withProperties = !is_array($options['withProperties']) ? [$options['withProperties']] : $options['withProperties'];
+
+                $columns = $this->columns($model, $withProperties);
+            }
         }
 
         try {
-            $result = $stmt->get()->toArray();
+            $result = $stmt->get($columns)->toArray();
         } catch (\PDOException $exception) {
             throw new TException(
                 __CLASS__,
@@ -409,5 +421,37 @@ final class SelectBuilder
         }
 
         return $model;
+    }
+
+    /**
+     * @param ExpressiveContract $model
+     * @param array              $withProperties
+     *
+     * @return array
+     *
+     * @throws TException
+     */
+    private function columns(
+        $model,
+        $withProperties
+    ) {
+        $searchFor = [];
+
+        foreach ($withProperties as $property) {
+            $meta = $model->getSchema()->getPropertyEntry('property', $property);
+            if (empty($meta)) {
+                new TException(
+                    __CLASS__,
+                    __METHOD__,
+                    "property {$property} not found in schema",
+                    400
+                );
+            }
+            if (empty($meta->getObject())) {
+                $searchFor[] = $property;
+            }
+        }
+
+        return empty($searchFor) ? ['*'] : $searchFor;
     }
 }
