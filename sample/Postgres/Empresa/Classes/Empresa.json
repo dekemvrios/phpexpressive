@@ -1,0 +1,33 @@
+{
+  "database": {
+    "repository": "tbempresa",
+    "keys": "empcodigo"
+  },
+  "properties": [
+    {
+      "alias": "iEmpCodigo",
+      "property": "empcodigo",
+      "type": "int"
+    },
+    {
+      "alias": "sEmpNome",
+      "property": "empnome",
+      "type": "string"
+    },
+    {
+      "alias": "aProduto",
+      "property": "produtos",
+      "type": "undefined",
+      "composition": {
+        "class": "Sample\\Postgres\\Produto\\Classes\\Produto",
+        "relationship": {
+          "type": "hasMany",
+          "source": {
+            "field": "empcodigo",
+            "refers": "empcodigo"
+          }
+        }
+      }
+    }
+  ]
+}
