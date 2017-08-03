@@ -13,14 +13,14 @@
     }
   ],
   "require": {
-    "solis/phpbreaker": "0.0.2",
-    "solis/phpmagic": "3.2.0",
+    "solis/phpmagic": "~4.0",
     "illuminate/database": "^5.4",
     "illuminate/events": "^5.2"
   },
   "autoload": {
     "psr-4": {
-      "Solis\\Expressive\\": "app/src"
+      "Solis\\Expressive\\": "app/src",
+      "Sample\\": "sample/"
     }
   }
 }

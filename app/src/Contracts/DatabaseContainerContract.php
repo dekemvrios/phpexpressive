@@ -2,7 +2,7 @@
 
 namespace Solis\Expressive\Contracts;
 
-use Solis\PhpSchema\Contracts\SchemaContract;
+use Solis\Expressive\Schema\Contracts\SchemaContract;
 use Solis\Breaker\TException;
 
 /**

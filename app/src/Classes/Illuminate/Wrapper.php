@@ -8,8 +8,8 @@ use Solis\Expressive\Classes\Illuminate\Delete\DeleteBuilder;
 use Solis\Expressive\Classes\Illuminate\Update\UpdateBuilder;
 use Solis\Expressive\Classes\Illuminate\Patch\PatchBuilder;
 use Solis\Expressive\Contracts\DatabaseContainerContract;
+use Solis\Expressive\Schema\Contracts\SchemaContract;
 use Solis\Expressive\Contracts\ExpressiveContract;
-use Solis\PhpSchema\Contracts\SchemaContract;
 use Solis\Breaker\TException;
 
 /**

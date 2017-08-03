@@ -2,11 +2,11 @@
 
 namespace Solis\Expressive\Classes\Illuminate\Select;
 
+use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Classes\Illuminate\Wrapper;
 use Solis\Breaker\TException;
-use Solis\PhpSchema\Abstractions\Database\FieldEntryAbstract;
 
 final class SelectBuilder
 {
@@ -54,7 +54,7 @@ final class SelectBuilder
         array $options = [],
         ExpressiveContract $model
     ) {
-        if (empty($model->getSchema()->getDatabase())) {
+        if (empty($model->getSchema()->getRepository())) {
             throw new TException(
                 __CLASS__,
                 __METHOD__,
@@ -63,7 +63,7 @@ final class SelectBuilder
             );
         }
 
-        $table = $model->getSchema()->getDatabase()->getTable();
+        $table = $model->getSchema()->getRepository();
 
         // não retorna as dependencias atribuidas ao respectivo model
         $dependencies = false;
@@ -195,7 +195,7 @@ final class SelectBuilder
      */
     public function search(ExpressiveContract $model, $dependencies = true)
     {
-        if (empty($model->getSchema()->getDatabase())) {
+        if (empty($model->getSchema()->getRepository())) {
             throw new TException(
                 __CLASS__,
                 __METHOD__,
@@ -204,17 +204,16 @@ final class SelectBuilder
             );
         }
 
-        $table = $model->getSchema()->getDatabase()->getTable();
+        $table = $model->getSchema()->getRepository();
 
-        $primaryKeys = $model->getSchema()->getDatabase()->getPrimaryKeys();
+        $primaryKeys = $model->getSchema()->getKeys();
         $stmt = Capsule::table($table);
 
         foreach ($primaryKeys as $key) {
 
-            $value = $model->{$key};
+            $value = $model->{$key->getProperty()};
 
-            $meta = $model->getSchema()->getPropertyEntry('property', $key);
-            if (empty($value) && empty($meta->getBehavior()->isRequired())) {
+            if (empty($value) && empty($key->getBehavior()->isRequired())) {
                 return false;
             }
 
@@ -222,13 +221,13 @@ final class SelectBuilder
                 throw new TException(
                     __CLASS__,
                     __METHOD__,
-                    "property '{$key}' used as primary key cannot be empty at " . get_class($model) . " instance",
+                    "property '{$key->getProperty()}' used as primary key cannot be empty at " . get_class($model) . " instance",
                     400
                 );
             }
 
             $stmt->where(
-                $key,
+                $key->getProperty(),
                 '=',
                 $value
             );
@@ -380,26 +379,11 @@ final class SelectBuilder
     {
         $selectForAll = is_array($dependenciItems) ? false : boolval($dependenciItems);
 
-        $dependencies = array_values(array_filter(
-            $model->getSchema()->getDatabase()->getFields(), function (FieldEntryAbstract $field) use ($dependenciItems, $selectForAll) {
-
-            $selectFor = false;
-            if (!empty($field->getObject())) {
-                if (!empty($selectForAll)) {
-                    return true;
-                }
-
-                if (is_array($dependenciItems)) {
-                    $selectFor = boolval(in_array($field->getProperty(), $dependenciItems));
-                }
-            }
-
-            return $selectFor;
-        }));
+        $dependencies = $model->getSchema()->getDependencies();
 
         if (!empty($dependencies)) {
             foreach ($dependencies as $dependency) {
-                if (empty($dependency->getObject()->getRelationship())) {
+                if (empty($dependency->getComposition()->getRelationship())) {
                     throw new TException(
                         __CLASS__,
                         __METHOD__,
@@ -408,7 +392,7 @@ final class SelectBuilder
                     );
                 }
 
-                $relationship = $dependency->getObject()->getRelationship()->getType();
+                $relationship = $dependency->getComposition()->getRelationship()->getType();
 
                 if (!method_exists(
                     $this->getRelationshipBuilder(),

@@ -4,8 +4,8 @@ namespace Solis\Expressive\Abstractions;
 
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Solis\Expressive\Contracts\DatabaseContainerContract;
-use Solis\PhpSchema\Contracts\SchemaContract;
-use Solis\PhpSchema\Classes\Schema;
+use Solis\Expressive\Schema\Contracts\SchemaContract;
+use Solis\Expressive\Schema\Schema;
 use Solis\Breaker\TException;
 
 /**
@@ -24,7 +24,7 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     /**
      * @var SchemaContract;
      */
-    protected $schema;
+    protected $concretSchema;
 
     /**
      * @var string
@@ -39,20 +39,18 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     /**
      * ExpressiveAbstract constructor.
      *
-     * @param string $file
-     * @param string $table
+     * @param string         $file
+     * @param string         $table
+     * @param SchemaContract $schema
      */
     protected function __construct(
         $file,
-        $table
+        $table,
+        $schema
     ) {
         $this->table = $table;
         $this->setUniqid(uniqid(rand()));
-
-        if (file_exists($file)) {
-            $file = file_get_contents($file);
-        }
-        $this->schema = Schema::make($file);
+        $this->concretSchema = $schema;
     }
 
     /**
@@ -118,15 +116,15 @@ abstract class ExpressiveAbstract implements ExpressiveContract
      */
     public function getSchema()
     {
-        return $this->schema;
+        return $this->concretSchema;
     }
 
     /**
-     * @param SchemaContract $schema
+     * @param SchemaContract $concretSchema
      */
-    public function setSchema(SchemaContract $schema)
+    public function setSchema(SchemaContract $concretSchema)
     {
-        $this->schema = $schema;
+        $this->concretSchema = $concretSchema;
     }
 
     /**

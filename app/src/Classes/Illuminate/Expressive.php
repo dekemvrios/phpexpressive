@@ -3,6 +3,7 @@
 namespace Solis\Expressive\Classes\Illuminate;
 
 use Solis\Expressive\Abstractions\ExpressiveAbstract;
+use Solis\Expressive\Schema\Contracts\SchemaContract;
 
 /**
  * Class ExpressiveSlim
@@ -15,16 +16,19 @@ class Expressive extends ExpressiveAbstract
     /**
      * Expressive constructor.
      *
-     * @param string $file
-     * @param string $table
+     * @param string         $file
+     * @param string         $table
+     * @param SchemaContract $schema
      */
     protected function __construct(
         $file,
-        $table
+        $table,
+        $schema
     ) {
         parent::__construct(
             $file,
-            $table
+            $table,
+            $schema
         );
 
         $this->setDatabaseContainer(

@@ -3,7 +3,7 @@
 namespace Solis\Expressive\Classes\Illuminate\Select;
 
 use Solis\Expressive\Contracts\ExpressiveContract;
-use Solis\PhpSchema\Abstractions\Database\FieldEntryAbstract;
+use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Classes\Illuminate\Wrapper;
 use Solis\Breaker\TException;
@@ -18,7 +18,7 @@ final class RelationshipBuilder
 
     /**
      * @param ExpressiveContract    $model
-     * @param FieldEntryAbstract $dependency
+     * @param PropertyContract $dependency
      *
      * @return ExpressiveContract
      *
@@ -33,19 +33,19 @@ final class RelationshipBuilder
         }
 
         // get dependency class
-        $dependencyClass = $dependency->getObject()->getClass();
+        $dependencyClass = $dependency->getComposition()->getClass();
 
         // instantiate it
         $instance = new $dependencyClass();
 
         // static search for test
-        $refers = $dependency->getObject()->getRelationship()->getSource()->getRefers();
+        $refers = $dependency->getComposition()->getRelationship()->getSource()->getRefers();
 
         // defines the main pr property value
         $instance->{$refers} = $dependencyCode;
 
-        if (!empty($dependency->getObject()->getRelationship()->getSharedFields())) {
-            foreach ($dependency->getObject()->getRelationship()->getSharedFields() as $field) {
+        if (!empty($dependency->getComposition()->getRelationship()->getSharedFields())) {
+            foreach ($dependency->getComposition()->getRelationship()->getSharedFields() as $field) {
                 $instance->{$field} = $model->{$field};
             }
         }
@@ -66,8 +66,8 @@ final class RelationshipBuilder
     }
 
     /**
-     * @param ExpressiveContract    $model
-     * @param FieldEntryAbstract $dependency
+     * @param ExpressiveContract $model
+     * @param PropertyContract   $dependency
      *
      * @return ExpressiveContract
      *
@@ -76,17 +76,17 @@ final class RelationshipBuilder
     public function hasMany($model, $dependency)
     {
         // get dependency class
-        $dependencyClass = $dependency->getObject()->getClass();
+        $dependencyClass = $dependency->getComposition()->getClass();
 
         $instance = new $dependencyClass();
 
-        $field = $dependency->getObject()->getRelationship()->getSource()->getField();
+        $field = $dependency->getComposition()->getRelationship()->getSource()->getField();
 
         // static search for test
-        $refers = $dependency->getObject()->getRelationship()->getSource()->getRefers();
+        $refers = $dependency->getComposition()->getRelationship()->getSource()->getRefers();
 
         // get dependency schema table name
-        $table = $instance->getSchema()->getDatabase()->getTable();
+        $table = $instance->getSchema()->getRepository();
 
         $stmt = Capsule::table($table);
         $stmt->where(
@@ -95,7 +95,7 @@ final class RelationshipBuilder
             $model->{$field}
         );
 
-        $sharedFields = $dependency->getObject()->getRelationship()->getSharedFields();
+        $sharedFields = $dependency->getComposition()->getRelationship()->getSharedFields();
         if (!empty($sharedFields)) {
             foreach ($sharedFields as $sharedField) {
                 $stmt->where(
