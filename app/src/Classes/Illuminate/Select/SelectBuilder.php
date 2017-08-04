@@ -454,6 +454,14 @@ final class SelectBuilder
     ) {
         $searchFor = ['*'];
 
+        // caso fornecido o array withProperties, essa deverá conter a relação de propriedades
+        // do registro que serão retornados pela consulta. Caso vazio, todas as propriedades
+        // serão retornadas.
+        //
+        // Vale notar que, caso utilizado em conjunto com withDependencies, onde uma propriedade
+        // representar um relacionamento hasOne, se essa não estiver relacionada no conjunto de
+        // propriedades, essa não será exibida. E, em caso de relacionamento hasMany, essa também
+        // não será retornada caso os campos que compõe o relacionamento não forem também listados
         if (!empty($withProperties)) {
             $columns = $model::$schema->getSearchableFieldsString();
 
