@@ -86,7 +86,7 @@ final class RelationshipBuilder
         $refers = $dependency->getComposition()->getRelationship()->getSource()->getRefers();
 
         // get dependency schema table name
-        $table = $instance->getSchema()->getRepository();
+        $table = $instance::$schema->getRepository();
 
         $stmt = Capsule::table($table);
         $stmt->where(

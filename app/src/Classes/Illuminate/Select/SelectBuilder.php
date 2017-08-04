@@ -54,7 +54,7 @@ final class SelectBuilder
         array $options = [],
         ExpressiveContract $model
     ) {
-        if (empty($model->getSchema()->getRepository())) {
+        if (empty($model::$schema->getRepository())) {
             throw new TException(
                 __CLASS__,
                 __METHOD__,
@@ -63,7 +63,7 @@ final class SelectBuilder
             );
         }
 
-        $table = $model->getSchema()->getRepository();
+        $table = $model::$schema->getRepository();
 
         // não retorna as dependencias atribuidas ao respectivo model
         $dependencies = false;
@@ -195,7 +195,7 @@ final class SelectBuilder
      */
     public function search(ExpressiveContract $model, $dependencies = true)
     {
-        if (empty($model->getSchema()->getRepository())) {
+        if (empty($model::$schema->getRepository())) {
             throw new TException(
                 __CLASS__,
                 __METHOD__,
@@ -204,9 +204,9 @@ final class SelectBuilder
             );
         }
 
-        $table = $model->getSchema()->getRepository();
+        $table = $model::$schema->getRepository();
 
-        $primaryKeys = $model->getSchema()->getKeys();
+        $primaryKeys = $model::$schema->getKeys();
         $stmt = Capsule::table($table);
 
         foreach ($primaryKeys as $key) {
@@ -379,7 +379,7 @@ final class SelectBuilder
     {
         $selectForAll = is_array($dependenciItems) ? false : boolval($dependenciItems);
 
-        $dependencies = $model->getSchema()->getDependencies();
+        $dependencies = $model::$schema->getDependencies();
 
         if (!empty($dependencies)) {
             foreach ($dependencies as $dependency) {
