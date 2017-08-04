@@ -272,7 +272,7 @@ final class SelectBuilder
         ExpressiveContract $model
     ) {
 
-        if (empty($model->getSchema()->getDatabase())) {
+        if (empty($model::$schema->getRepository())) {
             throw new TException(
                 __CLASS__,
                 __METHOD__,
@@ -281,7 +281,7 @@ final class SelectBuilder
             );
         }
 
-        $table = $model->getSchema()->getDatabase()->getTable();
+        $table = $model::$schema->getRepository();
 
         $stmt = Capsule::table($table);
         if (!empty($arguments) && is_array($arguments)) {
