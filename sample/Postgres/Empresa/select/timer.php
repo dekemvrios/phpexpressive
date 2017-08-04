@@ -30,6 +30,11 @@ try {
         ],
         [
             "withDependencies" => true,
+            'withProperties'   => [
+                'empcodigo',
+                //'empnome',
+                //'produtos',
+            ],
         ]
     );
 

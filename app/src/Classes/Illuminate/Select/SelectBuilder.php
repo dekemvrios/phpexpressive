@@ -378,37 +378,27 @@ final class SelectBuilder
     public function searchForDependencies($model, $dependenciItems)
     {
         $selectForAll = is_array($dependenciItems) ? false : boolval($dependenciItems);
+        if (empty($selectForAll)) {
+            return $model;
+        }
 
         $dependencies = $model::$schema->getDependencies();
+        if (empty($dependencies)) {
+            return $model;
+        }
 
-        if (!empty($dependencies)) {
-            foreach ($dependencies as $dependency) {
-                if (empty($dependency->getComposition()->getRelationship())) {
-                    throw new TException(
-                        __CLASS__,
-                        __METHOD__,
-                        'a dependency must have a relationship assigned to it in the schema',
-                        500
-                    );
-                }
-
-                $relationship = $dependency->getComposition()->getRelationship()->getType();
-
-                if (!method_exists(
-                    $this->getRelationshipBuilder(),
-                    $relationship
-                )
-                ) {
-                    throw new TException(
-                        __CLASS__,
-                        __METHOD__,
-                        "{$relationship} is not a valid relationship type at " . get_class($model),
-                        400
-                    );
-                }
-
-                $model = $this->getRelationshipBuilder()->{$relationship}($model, $dependency);
+        foreach ($dependencies as $dependency) {
+            if (empty($dependency->getComposition()->getRelationship())) {
+                throw new TException(
+                    __CLASS__,
+                    __METHOD__,
+                    'a dependency must have a relationship assigned to it in the schema',
+                    500
+                );
             }
+            $relationship = $dependency->getComposition()->getRelationship()->getType();
+
+            $model = $this->getRelationshipBuilder()->{$relationship}($model, $dependency);
         }
 
         return $model;
@@ -426,30 +416,16 @@ final class SelectBuilder
         $model,
         $withProperties
     ) {
-        $searchFor = [];
+        $searchFor = ['*'];
 
-        foreach ($withProperties as $property) {
-            $meta = $model->getSchema()->getPropertyEntry('property', $property);
+        if (!empty($withProperties)) {
+            $columns = $model::$schema->getSearchableFieldsString();
 
-            if (empty($meta)) {
-                new TException(
-                    __CLASS__,
-                    __METHOD__,
-                    "property {$property} not found in schema",
-                    400
-                );
-            }
-
-            if (!empty($meta->getObject())) {
-                // relacionamento hasMany não é incluido nas colunas a serem consultadas
-                if ($meta->getObject()->getRelationship()->getType() == 'hasMany') {
-                    continue;
-                }
-            }
-
-            $searchFor[] = $property;
+            $searchFor = array_values(array_filter($columns, function ($field) use ($withProperties){
+                return in_array($field, $withProperties);
+            }));
         }
 
-        return empty($searchFor) ? ['*'] : $searchFor;
+        return !empty($searchFor) ? $searchFor : ['*'];
     }
 }
