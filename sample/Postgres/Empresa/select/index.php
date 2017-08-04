@@ -29,11 +29,11 @@ try {
             "withDependencies" => [
                 'produtos',
             ],
-//            'withProperties'   => [
+            'withProperties'   => [
 //                'empcodigo',
-//                //'empnome',
-//                //'produtos',
-//            ],
+//                'empnome',
+//                'produtos',
+            ],
         ]
     );
 
