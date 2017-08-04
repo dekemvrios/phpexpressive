@@ -398,7 +398,6 @@ final class SelectBuilder
         // que serão retornadas pela consulta. Se array vazio, nenhuma dependência será
         // retornada pela operação.
         if (empty($dependenciItems)) {
-            //$selectForAll = is_array($dependenciItems) ? false : boolval($dependenciItems);
             return $model;
         }
 
