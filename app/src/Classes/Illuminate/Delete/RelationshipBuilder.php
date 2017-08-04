@@ -2,7 +2,7 @@
 
 namespace Solis\Expressive\Classes\Illuminate\Delete;
 
-use Solis\PhpSchema\Abstractions\Database\FieldEntryAbstract;
+use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Solis\Breaker\TException;
 
@@ -16,7 +16,7 @@ final class RelationshipBuilder
 
     /**
      * @param ExpressiveContract $model
-     * @param FieldEntryAbstract $dependency
+     * @param PropertyContract   $dependency
      *
      * @return ExpressiveContract
      *
@@ -36,7 +36,7 @@ final class RelationshipBuilder
 
     /**
      * @param ExpressiveContract $model
-     * @param FieldEntryAbstract $dependency
+     * @param PropertyContract $dependency
      *
      * @return ExpressiveContract
      *

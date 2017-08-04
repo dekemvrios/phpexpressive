@@ -32,7 +32,7 @@ try {
                 "iGpcCodigo"    => 1,
                 "prodescricao"  => 'test [ ' . uniqid(rand()) . ' ]',
                 "iCstIpiCodigo" => [
-                    "cstcodigo"                 => 167,
+                    "cstcodigo"                 => 356,
                     "csttipo"                   => 2,
                     "cstcst"                    => "AA",
                     "cstdescricao"              => 'Eloquent Test [ ' . uniqid(rand()) . ' ]',

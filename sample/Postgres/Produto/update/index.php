@@ -21,7 +21,7 @@ try {
     $instance = Produto::make(
         [
             'empcodigo' => 264,
-            'procodigo' => 163
+            'procodigo' => 67
         ]
     )->search();
 

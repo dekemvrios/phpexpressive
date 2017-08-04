@@ -2,10 +2,8 @@
 
 namespace Solis\Expressive\Classes\Illuminate\Update;
 
+use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Expressive\Contracts\ExpressiveContract;
-use Solis\PhpSchema\Abstractions\Database\FieldEntryAbstract;
-use Illuminate\Database\Capsule\Manager as Capsule;
-use Solis\Expressive\Classes\Illuminate\Wrapper;
 use Solis\Breaker\TException;
 
 /**
@@ -18,7 +16,7 @@ final class RelationshipBuilder
 
     /**
      * @param ExpressiveContract $model
-     * @param FieldEntryAbstract $dependency
+     * @param PropertyContract   $dependency
      *
      * @return ExpressiveContract
      *

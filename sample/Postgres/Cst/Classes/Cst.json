@@ -83,7 +83,7 @@
     {
       "alias": "iCstSt",
       "property": "cstsubstituicaotributaria",
-      "type": "undefined"
+      "type": "int"
     }
   ]
 }

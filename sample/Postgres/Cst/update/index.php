@@ -21,6 +21,7 @@ try {
     $instance = Cst::make([])->last();
 
     if (!empty($instance)) {
+        $instance->csttipo = 2;
         $instance->cstcst = 'UPDATE TEST [' . uniqid(rand(), true) . ']';
 
         if(!empty($instance->update())){

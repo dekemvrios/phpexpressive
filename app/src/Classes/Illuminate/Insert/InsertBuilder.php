@@ -4,6 +4,7 @@ namespace Solis\Expressive\Classes\Illuminate\Insert;
 
 use Solis\Expressive\Classes\Illuminate\Util\Actions;
 use Solis\Expressive\Abstractions\ExpressiveAbstract;
+use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\PhpSchema\Abstractions\Database\FieldEntryAbstract;
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Illuminate\Database\Capsule\Manager as Capsule;
@@ -55,7 +56,7 @@ final class InsertBuilder
      */
     public function create(ExpressiveContract $model)
     {
-        if (empty($model->getSchema()->getDatabase())) {
+        if (empty($model::$schema->getRepository())) {
             throw new TException(
                 __CLASS__,
                 __METHOD__,
@@ -69,7 +70,7 @@ final class InsertBuilder
             return $record;
         }
 
-        $table = $model->getSchema()->getDatabase()->getTable();
+        $table = $model::$schema->getRepository();
 
         Database::beginTransaction($model);
         try {
@@ -106,7 +107,7 @@ final class InsertBuilder
             'after'
         );
 
-        Database::commitActiveTransaction($model);
+         Database::commitActiveTransaction($model);
 
         // return the last inserted entry
         return $model;
@@ -120,16 +121,18 @@ final class InsertBuilder
     private function setPrimaryKeysFromLast($model)
     {
         $last = $model->last();
-        foreach ($model->getSchema()->getDatabase()->getPrimaryKeys() as $primaryKey) {
-            $model->$primaryKey = $last->$primaryKey;
+        foreach ($model::$schema->getKeys() as $primaryKey) {
+            $model->{$primaryKey->getProperty()} = $last->{$primaryKey->getProperty()};
         }
 
-        $autoIncremented = array_filter($model->getSchema()->getProperties(), function ($property){
-            return !empty($property->getBehavior()->isAutoIncrement()) ? true : false;
-        });
-
-        foreach ($autoIncremented as $field) {
-            $model->{$field->getProperty()} = $last->{$field->getProperty()};
+        // retorna a relação de campos incrementais a partir do schema
+        // e atribui a instancia do model os valor atribuidos a instancia
+        // do ultimo registro persistido para a respectivo classe
+        $incrementalFields = $model::$schema->getIncrementalFieldsMeta();
+        if (!empty($incrementalFields)) {
+            foreach ($incrementalFields as $field) {
+                $model->{$field->getProperty()} = $last->{$field->getProperty()};
+            }
         }
 
         return $model;
@@ -142,8 +145,8 @@ final class InsertBuilder
      */
     private function beforeInsertVerifyDuplicity($model)
     {
-        foreach ($model->getSchema()->getDatabase()->getPrimaryKeys() as $primaryKey) {
-            if (is_null($model->$primaryKey)) {
+        foreach ($model::$schema->getKeys() as $primaryKey) {
+            if (is_null($model->{$primaryKey->getProperty()})) {
                 return false;
             }
         }
@@ -160,7 +163,7 @@ final class InsertBuilder
      */
     public function hasOneDependency($model)
     {
-        $dependencies = $model->getSchema()->getDatabase()->getByRelationshipType('hasOne');
+        $dependencies = $model::$schema->getDependencies('hasOne');
         if (empty($dependencies)) {
             return $model;
         }
@@ -195,7 +198,7 @@ final class InsertBuilder
      */
     public function hasManyDependencies($model)
     {
-        $dependencies = $model->getSchema()->getDatabase()->getByRelationshipType('hasMany');
+        $dependencies = $model::$schema->getDependencies('hasMany');
         if (!empty($dependencies)) {
             foreach (array_values($dependencies) as $dependency) {
                 $value = $model->{$dependency->getProperty()};
@@ -218,19 +221,19 @@ final class InsertBuilder
      */
     public function getInsertFields($model)
     {
-        $persistentFields = array_filter($model->getSchema()->getDatabase()->getFields(), function (FieldEntryAbstract $item) use ($model){
-            if (!empty($item->getBehavior()->isAutoIncrement()) && is_null($item->getProperty())) {
+        $persistentFields = array_filter($model::$schema->getPersistentFields(), function (PropertyContract $item) use ($model){
+            $value = $model->{$item->getProperty()};
+
+            // se o valor atruibo a propriede for null e seu comportamento
+            // estiver classificado como não obrigatório, ela será excluida
+            // da relação de campos para inserção
+            if (is_null($value) && empty($item->getBehavior()->isRequired())) {
                 return false;
             }
-            if(!empty($item->getObject())){
-                if($item->getObject()->getRelationship()->getType() === 'hasMany') {
-                    return false;
-                }
-            }
-            if (is_null($model->{$item->getProperty()}) && empty($item->getBehavior()->isRequired())) {
-                return false;
-            }
-            if(is_null($model->{$item->getProperty()}) && $item->getBehavior()->isRequired()){
+
+            // uma propriedade obrigatório não pose estar atribuida como valor
+            // nulo no registro a ser persistido
+            if(is_null($model->{$item->getProperty()}) && !empty($item->getBehavior()->isRequired())){
                 throw new TException(
                     __CLASS__,
                     __METHOD__,
@@ -241,6 +244,8 @@ final class InsertBuilder
             return true;
         });
 
+        // por alguma situação invalida no schema, pode ocorrer de o
+        // registro não possuir campos a serem persistidos
         if (empty($persistentFields)) {
             throw new TException(
                 __CLASS__,
@@ -252,7 +257,9 @@ final class InsertBuilder
 
         $fields = [];
         foreach ($persistentFields as $persistentField) {
-            $fields[$persistentField->getColumn()] = $model->{$persistentField->getProperty()};
+            // considerando que a entrada field corresponda ao campo na persistencia
+            // captura o valor atribuido a entrada propriedade
+            $fields[$persistentField->getField()] = $model->{$persistentField->getProperty()};
         }
 
         return $fields;
