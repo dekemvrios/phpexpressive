@@ -384,14 +384,37 @@ final class SelectBuilder
      *
      * @throws TException
      */
-    public function searchForDependencies($model, $dependenciItems)
-    {
-        $selectForAll = is_array($dependenciItems) ? false : boolval($dependenciItems);
-        if (empty($selectForAll)) {
+    public function searchForDependencies(
+        $model,
+        $dependenciItems
+    ) {
+        // O valor atribuido a propriedade $dependenciItems poderá assumir valor valor
+        // boolean ou array.
+        //
+        // Caso boolean e TRUE, todas as dependências serão retornadas, caso boolean e
+        // FALSE, nenhuma dependência será retornada pela consulta.
+        //
+        // Caso array, esse deverá conter o nome das dependencias vinculadas ao registro
+        // que serão retornadas pela consulta. Se array vazio, nenhuma dependência será
+        // retornada pela operação.
+        if (empty($dependenciItems)) {
+            //$selectForAll = is_array($dependenciItems) ? false : boolval($dependenciItems);
             return $model;
         }
 
         $dependencies = $model::$schema->getDependencies();
+        if (empty($dependencies)) {
+            return $model;
+        }
+
+        // se array, filtra as dependencias a serem retornadas somente se no conjunto de
+        // entradas desejadas para consulta.
+        if (is_array($dependenciItems)) {
+            $dependencies = array_filter($dependencies, function (PropertyContract $property) use ($dependenciItems){
+                return in_array($property->getProperty(), $dependenciItems);
+            });
+        }
+
         if (empty($dependencies)) {
             return $model;
         }
@@ -405,9 +428,13 @@ final class SelectBuilder
                     500
                 );
             }
+            // chama o método de consulta de acordo com os tipos de relacionamento
+            // válidos atribuidos a entrada no schema vinculado ao registro.
             $relationship = $dependency->getComposition()->getRelationship()->getType();
-
-            $model = $this->getRelationshipBuilder()->{$relationship}($model, $dependency);
+            $model = $this->getRelationshipBuilder()->{$relationship}(
+                $model,
+                $dependency
+            );
         }
 
         return $model;

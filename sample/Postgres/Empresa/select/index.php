@@ -26,7 +26,9 @@ try {
             ],
         ],
         [
-            "withDependencies" => true,
+            "withDependencies" => [
+                'produtos',
+            ],
 //            'withProperties'   => [
 //                'empcodigo',
 //                //'empnome',

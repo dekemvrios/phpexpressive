@@ -19,7 +19,7 @@ try {
     );
 
     var_dump(
-        (new Empresa())->last([])
+        (new Empresa())->count([])
     );
 
 } catch (TException $exception) {
