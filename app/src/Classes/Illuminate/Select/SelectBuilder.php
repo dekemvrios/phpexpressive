@@ -324,7 +324,7 @@ final class SelectBuilder
      */
     public function last(ExpressiveContract $model)
     {
-        if (empty($model->getSchema()->getDatabase())) {
+        if (empty($model::$schema->getRepository())) {
             throw new TException(
                 __CLASS__,
                 __METHOD__,
@@ -333,38 +333,47 @@ final class SelectBuilder
             );
         }
 
-        $primaryKeys = $model->getSchema()->getDatabase()->getPrimaryKeys();
-
         $arguments = [];
-
         $options = [
             'limit'            => [
-                'number' => 1
+                'number' => 1,
             ],
             'orderBy'          => [],
-            'withDependencies' => true
+            'withDependencies' => true,
         ];
 
-        foreach ($primaryKeys as $key) {
-            $value = $model->{$key};
-            $meta = $model->getSchema()->getPropertyEntry(
-                'property',
-                $key
-            );
-            if (!empty($meta->getBehavior()->isAutoIncrement())) {
+        foreach ($model::$schema->getKeys() as $key) {
+
+            // Se uma chave possuir comportamento auto incremental, então o consumidor não é
+            // responsável por sua atribuição, desse modo ela será utilizada como filtro de
+            // ordenação para a operação de consulta.
+            if (!empty($key->getBehavior()->isAutoIncrement())) {
                 $options['orderBy'][] = [
-                    'column'    => $key,
-                    'direction' => 'desc'
+                    'column'    => $key->getField(),
+                    'direction' => 'desc',
                 ];
-            } elseif (!empty($value)) {
+
+                continue;
+            }
+
+            $value = $model->{$key->getProperty()};
+
+            // Caso houver valor atribuido ao model em uma propriedade definida como chave
+            // essa será atribuida como filtro de consulta, permitindo situações em que o
+            // registro possui chave composta.
+            if (!empty($value)) {
                 $arguments[] = [
-                    'column' => $key,
-                    'value'  => $value
+                    'column' => $key->getField(),
+                    'value'  => $value,
                 ];
             }
         }
 
-        return $this->select($arguments, $options, $model);
+        return $this->select(
+            $arguments,
+            $options,
+            $model
+        );
     }
 
     /**

@@ -7,7 +7,12 @@
     {
       "alias": "iEmpCodigo",
       "property": "empcodigo",
-      "type": "int"
+      "type": "int",
+      "behavior": {
+        "required": "true",
+        "autoIncrement": "true",
+        "incrementalBehavior": "application"
+      }
     },
     {
       "alias": "sEmpNome",
