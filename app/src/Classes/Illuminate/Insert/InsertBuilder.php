@@ -107,7 +107,7 @@ final class InsertBuilder
             'after'
         );
 
-         Database::commitActiveTransaction($model);
+        Database::commitActiveTransaction($model);
 
         // return the last inserted entry
         return $model;
@@ -171,8 +171,8 @@ final class InsertBuilder
         foreach (array_values($dependencies) as $dependency) {
             $value = $model->{$dependency->getProperty()};
 
-            if(!empty($value)){
-                if (! $value instanceof ExpressiveAbstract) {
+            if (!empty($value)) {
+                if (!$value instanceof ExpressiveAbstract) {
                     throw new TException(
                         __CLASS__,
                         __METHOD__,
@@ -221,19 +221,20 @@ final class InsertBuilder
      */
     public function getInsertFields($model)
     {
-        $persistentFields = array_filter($model::$schema->getPersistentFields(), function (PropertyContract $item) use ($model){
+        $persistentFields = array_filter($model::$schema->getPersistentFields(), function (PropertyContract $item) use ($model) {
             $value = $model->{$item->getProperty()};
 
+            $required = $item->getBehavior()->isRequired();
             // se o valor atruibo a propriede for null e seu comportamento
             // estiver classificado como não obrigatório, ela será excluida
             // da relação de campos para inserção
-            if (is_null($value) && empty($item->getBehavior()->isRequired())) {
+            if (is_null($value) && empty($required)) {
                 return false;
             }
 
             // uma propriedade obrigatório não pose estar atribuida como valor
             // nulo no registro a ser persistido
-            if(is_null($model->{$item->getProperty()}) && !empty($item->getBehavior()->isRequired())){
+            if (is_null($model->{$item->getProperty()}) && !empty($required)) {
                 throw new TException(
                     __CLASS__,
                     __METHOD__,
@@ -260,6 +261,18 @@ final class InsertBuilder
             // considerando que a entrada field corresponda ao campo na persistencia
             // captura o valor atribuido a entrada propriedade
             $fields[$persistentField->getField()] = $model->{$persistentField->getProperty()};
+        }
+
+        // caso houverem campos incrementais pela aplicação, consulta o ultimo registro de acordo
+        // com os filtros do active record atribuido e atribui os valores  necessários.
+        $applicationIncrementalFieldsMeta = $model::$schema->getApplicationIncrementalFieldsMeta();
+        if (!empty($applicationIncrementalFieldsMeta)) {
+            $last = $model->last();
+            foreach ($applicationIncrementalFieldsMeta as $incrementalField) {
+                $value = $last->{$incrementalField->getProperty()} + 1;
+
+                $fields[$incrementalField->getField()] = !empty($value) ? $value : 1;
+            }
         }
 
         return $fields;

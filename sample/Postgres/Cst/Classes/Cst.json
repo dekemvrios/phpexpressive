@@ -62,7 +62,8 @@
       "type": "int",
       "behavior": {
         "required": "false",
-        "autoIncrement": "true"
+        "autoIncrement": "true",
+        "incrementalBehavior": "application"
       }
     },
     {
