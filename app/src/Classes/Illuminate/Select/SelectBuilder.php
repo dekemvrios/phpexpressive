@@ -135,14 +135,28 @@ final class SelectBuilder
                 }
             }
 
+            // Caso withDependencies for fornecida para a operação de consulta, essa somente pederá
+            // assumir valores boolean ou array
             if (array_key_exists(
                 'withDependencies',
                 $options
             )) {
-                if (is_bool($options['withDependencies'])) {
-                    $dependencies = boolval($options['withDependencies']);
-                } else {
-                    $dependencies = !is_array($options['withDependencies']) ? [$options['withDependencies']] : $options['withDependencies'];
+                switch ($options['withDependencies']) {
+                    case is_array($options['withDependencies']):
+                        $dependencies = $options['withDependencies'];
+                        break;
+                    case 'true':
+                        $dependencies = true;
+                        break;
+                    case 'false':
+                        $dependencies = false;
+                        break;
+                    case is_bool($options['withDependencies']):
+                        $dependencies = $options['withDependencies'];
+                        break;
+                    default:
+                        $dependencies = false;
+                        break;
                 }
             }
 

@@ -25,16 +25,16 @@ try {
                 "value"  => 264,
             ],
         ], [
-            'limit'   => [
-                'number' => 10,
-                'offset' => 10,
+            'limit'            => [
+                'number' => 1,
+                'offset' => 14,
             ],
-            'orderBy' => [
+            'orderBy'          => [
                 'column'    => 'nfesequencia',
-                'direction' => 'desc',
+                'direction' => 'asc',
             ],
-
-            'withProperties' => [
+            'withDependencies' => 'true',
+            'withProperties'   => [
                 'nfesequencia',
                 'empcodigo',
                 'nfenumero',
