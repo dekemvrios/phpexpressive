@@ -13,7 +13,7 @@
     }
   ],
   "require": {
-    "solis/phpmagic": "~4.0",
+    "solis/phpmagic": "~v1.0",
     "illuminate/database": "^5.4",
     "illuminate/events": "^5.2"
   },
