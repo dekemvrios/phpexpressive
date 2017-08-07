@@ -12,25 +12,6 @@ use Solis\Breaker\TException;
  */
 interface ExpressiveContract
 {
-    /**
-     * @return SchemaContract
-     */
-    public function getSchema();
-
-    /**
-     * @param SchemaContract $schema
-     */
-    public function setSchema(SchemaContract $schema);
-
-    /**
-     * @param $table
-     */
-    public function setTable($table);
-
-    /**
-     * @return string
-     */
-    public function getTable();
 
     /**
      * @param array $arguments
@@ -99,6 +80,11 @@ interface ExpressiveContract
      * @throws TException
      */
     public function patch();
+
+    /**
+     * @return ExpressiveContract|boolean
+     */
+    public function replicate();
 
     /**
      * @return string

@@ -77,38 +77,6 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     }
 
     /**
-     * @param $table
-     */
-    public function setTable($table)
-    {
-        $this->table = $table;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTable()
-    {
-        return $this->table;
-    }
-
-    /**
-     * @return SchemaContract
-     */
-    public function getSchema()
-    {
-        return $this->concretSchema;
-    }
-
-    /**
-     * @param SchemaContract $concretSchema
-     */
-    public function setSchema(SchemaContract $concretSchema)
-    {
-        $this->concretSchema = $concretSchema;
-    }
-
-    /**
      * @return string
      */
     public function getUniqid()
@@ -236,5 +204,13 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     public function patch()
     {
         return $this->getDatabaseContainer()->patch($this);
+    }
+
+    /**
+     * @return ExpressiveContract|boolean
+     */
+    public function replicate()
+    {
+        return $this->getDatabaseContainer()->replicate($this);
     }
 }

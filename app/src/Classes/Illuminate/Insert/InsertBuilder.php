@@ -117,7 +117,7 @@ final class InsertBuilder
      *
      * @return ExpressiveContract
      */
-    private function setPrimaryKeysFromLast($model)
+    public function setPrimaryKeysFromLast($model)
     {
         $last = $model->last(false);
         foreach ($model::$schema->getKeys() as $primaryKey) {

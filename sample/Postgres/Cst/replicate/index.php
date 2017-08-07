@@ -3,8 +3,8 @@
 require_once '../../../../vendor/autoload.php';
 
 use Solis\Expressive\Classes\Illuminate\Database;
+use Solis\Breaker\Abstractions\TExceptionAbstract;
 use Sample\Postgres\Cst\Classes\Cst;
-use Solis\Breaker\TException;
 
 try {
 
@@ -26,6 +26,6 @@ try {
         var_dump($instance->replicate());
     }
 
-} catch (TException $exception) {
+} catch (TExceptionAbstract $exception) {
     echo $exception->toJson();
 }
