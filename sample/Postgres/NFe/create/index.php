@@ -18,7 +18,11 @@ try {
         ]
     );
 
-    $iNFeSequencia = 300;
+    $last = NFe::make([
+        'iEmpCodigo' => 263
+    ])->last() or die('not found last record for NFe');
+
+    $iNFeSequencia = $last->nfesequencia + 1;
 
     $produtos = [];
     for ($i = 1; $i <= 10; $i++) {
