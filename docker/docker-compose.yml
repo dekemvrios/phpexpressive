@@ -23,6 +23,6 @@ services:
       - XDEBUG_CONFIG=remote_host=${IP}
       - DEBUG=${DEBUG:-0}
       - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT:-5432}
-      - DB_USER=${DB_USER:-postgres}
-      - DB_PASS=${DE_PASS:-4hvU1kbzGe}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
