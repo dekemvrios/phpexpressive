@@ -226,13 +226,15 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     }
 
     /**
+     * @param boolean $dependencies
+     *
      * @return ExpressiveContract
      *
      * @throws TException
      */
-    public function last()
+    public function last($dependencies = true)
     {
-        return $this->getDatabaseContainer()->last($this);
+        return $this->getDatabaseContainer()->last($this, $dependencies);
     }
 
     /**

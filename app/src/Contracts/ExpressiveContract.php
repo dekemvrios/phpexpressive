@@ -78,11 +78,13 @@ interface ExpressiveContract
     public function count(array $arguments = []);
 
     /**
+     * @param boolean $dependencies
+     * 
      * @return ExpressiveContract
      *
      * @throws TException
      */
-    public function last();
+    public function last($dependencies = true);
 
     /**
      * @return boolean

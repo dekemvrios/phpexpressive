@@ -331,12 +331,13 @@ final class SelectBuilder
 
     /**
      * @param ExpressiveContract $model
+     * @param boolean $dependencies
      *
      * @return ExpressiveContract
      *
      * @throws TException
      */
-    public function last(ExpressiveContract $model)
+    public function last(ExpressiveContract $model, $dependencies = true)
     {
         if (empty($model::$schema->getRepository())) {
             throw new TException(
@@ -353,7 +354,7 @@ final class SelectBuilder
                 'number' => 1,
             ],
             'orderBy'          => [],
-            'withDependencies' => true,
+            'withDependencies' => $dependencies,
         ];
 
         foreach ($model::$schema->getKeys() as $key) {

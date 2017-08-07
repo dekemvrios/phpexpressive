@@ -119,7 +119,7 @@ final class InsertBuilder
      */
     private function setPrimaryKeysFromLast($model)
     {
-        $last = $model->last();
+        $last = $model->last(false);
         foreach ($model::$schema->getKeys() as $primaryKey) {
             $model->{$primaryKey->getProperty()} = $last->{$primaryKey->getProperty()};
         }
@@ -266,7 +266,7 @@ final class InsertBuilder
         // com os filtros do active record atribuido e atribui os valores  necessários.
         $applicationIncrementalFieldsMeta = $model::$schema->getApplicationIncrementalFieldsMeta();
         if (!empty($applicationIncrementalFieldsMeta)) {
-            $last = $model->last();
+            $last = $model->last(false);
             foreach ($applicationIncrementalFieldsMeta as $incrementalField) {
                 $value = $last->{$incrementalField->getProperty()} + 1;
 

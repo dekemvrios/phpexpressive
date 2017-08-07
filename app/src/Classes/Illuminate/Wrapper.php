@@ -277,12 +277,13 @@ class Wrapper implements DatabaseContainerContract
 
     /**
      * @param ExpressiveContract $model
+     * @param boolean            $dependencies
      *
      * @return ExpressiveContract
      */
-    public function last(ExpressiveContract $model)
+    public function last(ExpressiveContract $model, $dependencies = true)
     {
-        return $this->getSelectBuilder()->last($model);
+        return $this->getSelectBuilder()->last($model, $dependencies);
     }
 
     /**

@@ -72,12 +72,13 @@ interface DatabaseContainerContract
 
     /**
      * @param ExpressiveContract $model
+     * @param boolean            $dependencies
      *
      * @return ExpressiveContract
      *
      * @throws TException
      */
-    public function last(ExpressiveContract $model);
+    public function last(ExpressiveContract $model, $dependencies = true);
 
     /**
      * @param ExpressiveContract $model
