@@ -5,6 +5,7 @@ namespace Solis\Expressive\Classes\Illuminate\Select;
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Solis\Expressive\Classes\Illuminate\Diglett;
 use Solis\Expressive\Classes\Illuminate\Wrapper;
 use Solis\Breaker\TException;
 
@@ -128,8 +129,12 @@ final class RelationshipBuilder
                 new $dependencyClass()
             );
             if (!empty($hasManyItem)) {
-                $hasManyItem = (new SelectBuilder())->searchForDependencies($hasManyItem, true);
-
+                if (!empty(Diglett::toDig())) {
+                    $hasManyItem = (new SelectBuilder())->searchForDependencies(
+                        $hasManyItem,
+                        true
+                    );
+                }
                 $hasMany[] = $hasManyItem;
             }
         }

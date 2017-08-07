@@ -6,8 +6,14 @@ use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Classes\Illuminate\Wrapper;
+use Solis\Expressive\Classes\Illuminate\Diglett;
 use Solis\Breaker\TException;
 
+/**
+ * Class SelectBuilder
+ *
+ * @package Solis\Expressive\Classes\Illuminate\Select
+ */
 final class SelectBuilder
 {
 
@@ -188,6 +194,11 @@ final class SelectBuilder
         $class = get_class($model);
         $instances = array_map(function ($item) use ($class, $dependencies) {
             $instance = Wrapper::fetchStdClassToExpressiveNewModel($item, $class);
+
+            if (!Diglett::toDig()) {
+                return $instance;
+            }
+
             if (!empty($instance)) {
                 $instance = $this->searchForDependencies($instance, $dependencies);
 
@@ -265,6 +276,10 @@ final class SelectBuilder
             $result[0],
             $model
         );
+
+        if (!Diglett::toDig()) {
+            return $instance;
+        }
 
         if (!empty($dependencies)) {
             $instance = $this->searchForDependencies($instance, true);

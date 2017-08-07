@@ -4,6 +4,7 @@ require_once '../../../../vendor/autoload.php';
 
 use Solis\Expressive\Classes\Illuminate\Database;
 use Sample\Postgres\Empresa\Classes\Empresa;
+use Solis\Expressive\Classes\Illuminate\Diglett;
 use Solis\Breaker\TException;
 
 try {
@@ -18,6 +19,8 @@ try {
         ]
     );
 
+    Diglett::enable(1);
+
     $result = (new Empresa())->select(
         [
             [
@@ -28,11 +31,6 @@ try {
         [
             "withDependencies" => [
                 'produtos',
-            ],
-            'withProperties'   => [
-//                'empcodigo',
-//                'empnome',
-//                'produtos',
             ],
         ]
     );
