@@ -45,7 +45,7 @@ try {
         ];
     }
 
-    $bStop = $iNFeSequencia + 10;
+    $bStop = $iNFeSequencia + 100;
 
     for ($i = $iNFeSequencia; $i <= $bStop; $i++) {
         $instance = NFe::make(
