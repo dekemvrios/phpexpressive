@@ -65,7 +65,7 @@ final class SelectBuilder
 
         $table = $model::$schema->getRepository();
 
-        // não retorna as dependencias atribuidas ao respectivo model
+        // nÃ£o retorna as dependencias atribuidas ao respectivo model
         $dependencies = false;
 
         // retorna todas as colunas atribuidas ao respectivo model
@@ -135,7 +135,7 @@ final class SelectBuilder
                 }
             }
 
-            // Caso withDependencies for fornecida para a operação de consulta, essa somente pederá
+            // Caso withDependencies for fornecida para a operaÃ§Ã£o de consulta, essa somente pederÃ¡
             // assumir valores boolean ou array
             if (array_key_exists(
                 'withDependencies',
@@ -359,9 +359,9 @@ final class SelectBuilder
 
         foreach ($model::$schema->getKeys() as $key) {
 
-            // Se uma chave possuir comportamento auto incremental, então o consumidor não é
-            // responsável por sua atribuição, desse modo ela será utilizada como filtro de
-            // ordenação para a operação de consulta.
+            // Se uma chave possuir comportamento auto incremental, entÃ£o o consumidor nÃ£o Ã©
+            // responsÃ¡vel por sua atribuiÃ§Ã£o, desse modo ela serÃ¡ utilizada como filtro de
+            // ordenaÃ§Ã£o para a operaÃ§Ã£o de consulta.
             if (!empty($key->getBehavior()->isAutoIncrement())) {
                 $options['orderBy'][] = [
                     'column'    => $key->getField(),
@@ -374,7 +374,7 @@ final class SelectBuilder
             $value = $model->{$key->getProperty()};
 
             // Caso houver valor atribuido ao model em uma propriedade definida como chave
-            // essa será atribuida como filtro de consulta, permitindo situações em que o
+            // essa serÃ¡ atribuida como filtro de consulta, permitindo situaÃ§pes em que o
             // registro possui chave composta.
             if (!empty($value)) {
                 $arguments[] = [
@@ -403,15 +403,15 @@ final class SelectBuilder
         $model,
         $dependenciItems
     ) {
-        // O valor atribuido a propriedade $dependenciItems poderá assumir valor valor
+        // O valor atribuido a propriedade $dependenciItems poderÃ¡ assumir valor valor
         // boolean ou array.
         //
-        // Caso boolean e TRUE, todas as dependências serão retornadas, caso boolean e
-        // FALSE, nenhuma dependência será retornada pela consulta.
+        // Caso boolean e TRUE, todas as dependÃªncias serÃ£o retornadas, caso boolean e
+        // FALSE, nenhuma dependÃ©ncia serÃ¡ retornada pela consulta.
         //
-        // Caso array, esse deverá conter o nome das dependencias vinculadas ao registro
-        // que serão retornadas pela consulta. Se array vazio, nenhuma dependência será
-        // retornada pela operação.
+        // Caso array, esse deverÃ¡ conter o nome das dependencias vinculadas ao registro
+        // que serÃ£o retornadas pela consulta. Se array vazio, nenhuma dependÃªncia serÃ¡
+        // retornada pela operaÃ§Ã£o.
         if (empty($dependenciItems)) {
             return $model;
         }
@@ -442,8 +442,8 @@ final class SelectBuilder
                     500
                 );
             }
-            // chama o método de consulta de acordo com os tipos de relacionamento
-            // válidos atribuidos a entrada no schema vinculado ao registro.
+            // chama o mÃ©todo de consulta de acordo com os tipos de relacionamento
+            // vÃ¡lidos atribuidos a entrada no schema vinculado ao registro.
             $relationship = $dependency->getComposition()->getRelationship()->getType();
             $model = $this->getRelationshipBuilder()->{$relationship}(
                 $model,
@@ -468,14 +468,14 @@ final class SelectBuilder
     ) {
         $searchFor = ['*'];
 
-        // caso fornecido o array withProperties, essa deverá conter a relação de propriedades
-        // do registro que serão retornados pela consulta. Em caso de relacionamento, considera
+        // caso fornecido o array withProperties, essa deverÃ¡ conter a relaÃ§Ã£o de propriedades
+        // do registro que serÃ£o retornados pela consulta. Em caso de relacionamento, considera
         // apenas relacionamento do tipo hasOne. Caso vazio, retorna todas as propriedades.
         //
         // Vale notar que, caso utilizado em conjunto com withDependencies, onde uma propriedade
-        // representar um relacionamento hasOne, se essa não estiver relacionada no conjunto de
-        // propriedades, essa não será exibida. E, em caso de relacionamento hasMany, essa também
-        // não será retornada caso os campos que compõe o relacionamento não forem também listados
+        // representar um relacionamento hasOne, se essa nÃ£o estiver relacionada no conjunto de
+        // propriedades, essa nÃ£o serÃ¡ exibida. E, em caso de relacionamento hasMany, essa tambÃ©m
+        // nÃ£o serÃ¡ retornada caso os campos que compoe o relacionamento nÃ£o forem tambÃ©m listados
         if (!empty($withProperties)) {
             $columns = $model::$schema->getSearchableFieldsString();
 
