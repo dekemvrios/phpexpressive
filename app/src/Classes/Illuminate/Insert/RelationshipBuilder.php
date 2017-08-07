@@ -38,7 +38,7 @@ final class RelationshipBuilder
                 $instance->{$sharedField} = $model->{$sharedField};
             }
         }
-        if (empty($instance->search())) {
+        if (empty($instance->search(false))) {
             $instance = $instance->create();
             if (empty($instance)) {
                 throw new TException(

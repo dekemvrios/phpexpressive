@@ -45,7 +45,9 @@ try {
         ];
     }
 
-    for ($i = $iNFeSequencia; $i <= $iNFeSequencia + 100; $i++) {
+    $bStop = $iNFeSequencia + 10;
+
+    for ($i = $iNFeSequencia; $i <= $bStop; $i++) {
         $instance = NFe::make(
             [
                 "iNFeSequencia"    => $i,
