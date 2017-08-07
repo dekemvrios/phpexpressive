@@ -39,6 +39,15 @@ class Diglett
             );
         }
 
+        if ($levels < 1) {
+            throw new TException(
+                __CLASS__,
+                __METHOD__,
+                'level value cannot be less than 1',
+                500
+            );
+        }
+
         self::$isActive = true;
 
         self::$levels = $levels;

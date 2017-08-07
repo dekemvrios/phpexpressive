@@ -1,15 +1,11 @@
 {
   "name": "solis/expressive",
   "description": "Expressive is a ORM library structured by schemas",
-  "license": [
-    "GPL-3.0+",
-    "LGPL-3.0+"
-  ],
+  "license": "MIT",
   "authors": [
     {
       "name": "Rafael Becker",
-      "email": "rafael@beecker.com.br",
-      "role": "Developer"
+      "email": "rafael@beecker.com.br"
     }
   ],
   "require": {
@@ -19,7 +15,11 @@
   },
   "autoload": {
     "psr-4": {
-      "Solis\\Expressive\\": "app/src",
+      "Solis\\Expressive\\": "app/src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
       "Sample\\": "sample/"
     }
   }

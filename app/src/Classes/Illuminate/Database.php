@@ -11,7 +11,7 @@ use Solis\Breaker\TException;
 /**
  * Class Database
  *
- * @package Sample\Postgres\Eloquent
+ * @package Solis\Expressive\Classes\Illuminate
  */
 final class Database
 {
