@@ -22,8 +22,10 @@ final class RelationshipBuilder
      *
      * @throws TException
      */
-    public function hasMany($model, $dependency)
-    {
+    public function hasMany(
+        $model,
+        $dependency
+    ) {
         $field = $dependency->getObject()->getRelationship()->getSource()->getField();
 
         $refers = $dependency->getObject()->getRelationship()->getSource()->getRefers();
@@ -40,7 +42,7 @@ final class RelationshipBuilder
                     $dependencyValue->$sharedField = $model->$sharedField;
                 }
             }
-            $dependencyInstance = $dependencyValue->search();
+            $dependencyInstance = $dependencyValue->search(false);
             if (empty($dependencyInstance)) {
                 $dependencyValue->create();
             } else {

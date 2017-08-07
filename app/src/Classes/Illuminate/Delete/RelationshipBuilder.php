@@ -22,26 +22,6 @@ final class RelationshipBuilder
      *
      * @throws TException
      */
-    public function hasOne(
-        $model,
-        $dependency
-    ) {
-        throw new TException(
-            __CLASS__,
-            __METHOD__,
-            "method hasOne has not been implemented yet at " . get_class($this),
-            500
-        );
-    }
-
-    /**
-     * @param ExpressiveContract $model
-     * @param PropertyContract $dependency
-     *
-     * @return ExpressiveContract
-     *
-     * @throws TException
-     */
     public function hasMany(
         $model,
         $dependency
@@ -50,7 +30,7 @@ final class RelationshipBuilder
 
         $dependencyValue = !is_array($dependencyValue) ? [$dependencyValue] : $dependencyValue;
 
-        $sharedFields = $dependency->getObject()->getRelationship()->getSharedFields();
+        $sharedFields = $dependency->getComposition()->getRelationship()->getSharedFields();
         foreach ($dependencyValue as $item) {
             if (!empty($sharedFields)) {
                 foreach ($sharedFields as $sharedField) {

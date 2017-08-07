@@ -21,14 +21,15 @@ try {
     $instance = Produto::make(
         [
             'empcodigo' => 264,
-            'procodigo' => 67
+            'procodigo' => 67,
         ]
     )->search();
 
     if (!empty($instance)) {
         $instance->prodescricao = 'EMP 264 UPDATE TEST [ ' . Date('Y-m-d H:m:s') . ']';
+        $instance->giccodigo = 2;
         $instance->iCstIpiCodigo = [
-            "iCstCodigo" => 167
+            "iCstCodigo" => 167,
         ];
 
         var_dump(

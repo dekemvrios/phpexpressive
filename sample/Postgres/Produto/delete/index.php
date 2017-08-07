@@ -18,15 +18,12 @@ try {
         ]
     );
 
-    //    $instance = Produto::make(
-    //        [
-    //            'empcodigo' => 264,
-    //            'procodigo' => 149
-    //        ]
-    //    );
-
     var_dump(
-        Produto::make(['empcodigo' => 264])->last()->delete()
+        Produto::make(
+            [
+                'empcodigo' => 264,
+            ]
+        )->last()->delete()
     );
 } catch (TException $exception) {
     echo $exception->toJson();

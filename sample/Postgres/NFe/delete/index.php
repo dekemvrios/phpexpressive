@@ -21,18 +21,10 @@ try {
     var_dump(
         NFe::make(
             [
-                "iEmpCodigo"    => 264
+                "iEmpCodigo" => 264,
             ]
         )->last()->delete()
     );
-//    var_dump(
-//        NFe::make(
-//            [
-//                "iNFeSequencia" => 168,
-//                "iEmpCodigo"    => 264
-//            ]
-//        )->search()->delete()
-//    );
 } catch (TException $exception) {
     echo $exception->toJson();
 }

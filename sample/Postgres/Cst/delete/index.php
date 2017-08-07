@@ -18,13 +18,6 @@ try {
         ]
     );
 
-//    $instance = Cst::make(
-//        [
-//            'cstcodigo' => 146
-//        ]
-//    );
-//    var_dump($instance->delete());
-
     var_dump(
         (new Cst())
             ->last()
