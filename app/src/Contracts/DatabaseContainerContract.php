@@ -97,32 +97,4 @@ interface DatabaseContainerContract
      * @throws TException
      */
     public function patch(ExpressiveContract $model);
-
-    /**
-     * @return SchemaContract
-     *
-     * @throws TException
-     */
-    public function getSchema();
-
-    /**
-     * @param SchemaContract $schema
-     *
-     * @throws TException
-     */
-    public function setSchema(SchemaContract $schema);
-
-    /**
-     * @param $table
-     *
-     * @throws TException
-     */
-    public function setTable($table);
-
-    /**
-     * @return string
-     *
-     * @throws TException
-     */
-    public function getTable();
 }

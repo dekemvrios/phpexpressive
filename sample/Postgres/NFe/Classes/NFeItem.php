@@ -26,17 +26,12 @@ class NFeItem extends Expressive
     protected $itnunmedidadescricao;
 
     /**
-     * Cst constructor.
-     *
+     * NFe constructor.
      */
     public function __construct()
     {
-        $this->boot(dirname(__FILE__) . '/NFeItem.json');
+        parent::__construct();
 
-        parent::__construct(
-            dirname(__FILE__) . '/NFeItem.json',
-            'tbempresa',
-            self::$schema
-        );
+        $this->start(dirname(__FILE__) . '/NFeItem.json');
     }
 }

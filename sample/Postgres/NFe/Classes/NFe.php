@@ -41,17 +41,12 @@ class NFe extends Expressive
     protected $nfemodalidadefrete;
 
     /**
-     * Cst constructor.
-     *
+     * NFe constructor.
      */
     public function __construct()
     {
-        $this->boot(dirname(__FILE__) . '/NFe.json');
+        parent::__construct();
 
-        parent::__construct(
-            dirname(__FILE__) . '/NFe.json',
-            'tbempresa',
-            self::$schema
-        );
+        $this->start(dirname(__FILE__) . '/NFe.json');
     }
 }

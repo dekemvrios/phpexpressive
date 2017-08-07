@@ -15,24 +15,12 @@ class Expressive extends ExpressiveAbstract
 
     /**
      * Expressive constructor.
-     *
-     * @param string         $file
-     * @param string         $table
-     * @param SchemaContract $schema
      */
-    protected function __construct(
-        $file,
-        $table,
-        $schema
-    ) {
-        parent::__construct(
-            $file,
-            $table,
-            $schema
-        );
+    protected function __construct() {
+        parent::__construct();
 
         $this->setDatabaseContainer(
-            Wrapper::make($this->getSchema())
+            Wrapper::make()
         );
     }
 }

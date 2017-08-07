@@ -21,11 +21,6 @@ class Wrapper implements DatabaseContainerContract
 {
 
     /**
-     * @var SchemaContract
-     */
-    protected $schema;
-
-    /**
      * @var SelectBuilder
      */
     protected $selectBuilder;
@@ -63,59 +58,11 @@ class Wrapper implements DatabaseContainerContract
     }
 
     /**
-     * make
-     *
-     * @param  SchemaContract $schema
-     *
      * @return static
      */
-    public static function make(
-        $schema
-    ) {
-        $instance = new static();
-        $instance->schema = $schema;
-
-        return $instance;
-    }
-
-    /**
-     * @return SchemaContract
-     *
-     * @throws TException
-     */
-    public function getSchema()
+    public static function make()
     {
-        return $this->schema;
-    }
-
-    /**
-     * @param SchemaContract $schema
-     *
-     * @throws TException
-     */
-    public function setSchema(SchemaContract $schema)
-    {
-        $this->schema = $schema;
-    }
-
-    /**
-     * @param $table
-     *
-     * @throws TException
-     */
-    public function setTable($table)
-    {
-        $this->getSchema()->getDatabase()->setTable($table);
-    }
-
-    /**
-     * @return string
-     *
-     * @throws TException
-     */
-    public function getTable()
-    {
-        return $this->getSchema()->getDatabase()->getTable();
+        return new static();
     }
 
     /**

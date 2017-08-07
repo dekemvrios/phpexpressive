@@ -23,16 +23,11 @@ class Produto extends Expressive
 
     /**
      * Produto constructor.
-     *
      */
     public function __construct()
     {
-        $this->boot(dirname(__FILE__) . '/Produto.json');
+        parent::__construct();
 
-        parent::__construct(
-            dirname(__FILE__) . '/Produto.json',
-            'tbproduto',
-            self::$schema
-        );
+        $this->start(dirname(__FILE__) . '/Produto.json');
     }
 }

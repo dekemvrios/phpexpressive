@@ -22,35 +22,16 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     protected $uniqid;
 
     /**
-     * @var SchemaContract;
-     */
-    protected $concretSchema;
-
-    /**
-     * @var string
-     */
-    protected $table;
-
-    /**
      * @var DatabaseContainerContract
      */
     protected $databaseContainer;
 
     /**
      * ExpressiveAbstract constructor.
-     *
-     * @param string         $file
-     * @param string         $table
-     * @param SchemaContract $schema
      */
     protected function __construct(
-        $file,
-        $table,
-        $schema
     ) {
-        $this->table = $table;
         $this->setUniqid(uniqid(rand()));
-        $this->concretSchema = $schema;
     }
 
     /**

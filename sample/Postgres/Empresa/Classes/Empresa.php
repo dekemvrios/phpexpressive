@@ -23,12 +23,8 @@ class Empresa extends Expressive
      */
     public function __construct()
     {
-        $this->boot(dirname(__FILE__) . '/Empresa.json');
+        parent::__construct();
 
-        parent::__construct(
-            dirname(__FILE__) . '/Empresa.json',
-            'tbempresa',
-            self::$schema
-        );
+        $this->start(dirname(__FILE__) . '/Empresa.json');
     }
 }

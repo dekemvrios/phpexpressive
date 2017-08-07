@@ -21,16 +21,12 @@ class Cst extends Expressive
     protected $cstsubstituicaotributaria;
 
     /**
-     * __construct
+     * NFe constructor.
      */
     public function __construct()
     {
-        $this->boot(dirname(__FILE__) . '/Cst.json');
+        parent::__construct();
 
-        parent::__construct(
-            dirname(__FILE__) . '/Cst.json',
-            'tbcst',
-            self::$schema
-        );
+        $this->start(dirname(__FILE__) . '/Cst.json');
     }
 }
