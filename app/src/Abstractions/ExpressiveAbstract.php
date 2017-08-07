@@ -4,8 +4,8 @@ namespace Solis\Expressive\Abstractions;
 
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Solis\Expressive\Contracts\DatabaseContainerContract;
-use Solis\PhpSchema\Contracts\SchemaContract;
-use Solis\PhpSchema\Classes\Schema;
+use Solis\Expressive\Schema\Contracts\SchemaContract;
+use Solis\Expressive\Schema\Schema;
 use Solis\Breaker\TException;
 
 /**
@@ -22,37 +22,16 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     protected $uniqid;
 
     /**
-     * @var SchemaContract;
-     */
-    protected $schema;
-
-    /**
-     * @var string
-     */
-    protected $table;
-
-    /**
      * @var DatabaseContainerContract
      */
     protected $databaseContainer;
 
     /**
      * ExpressiveAbstract constructor.
-     *
-     * @param string $file
-     * @param string $table
      */
     protected function __construct(
-        $file,
-        $table
     ) {
-        $this->table = $table;
         $this->setUniqid(uniqid(rand()));
-
-        if (file_exists($file)) {
-            $file = file_get_contents($file);
-        }
-        $this->schema = Schema::make($file);
     }
 
     /**
@@ -95,38 +74,6 @@ abstract class ExpressiveAbstract implements ExpressiveContract
             "invalid method call at " . get_class($this),
             '400'
         );
-    }
-
-    /**
-     * @param $table
-     */
-    public function setTable($table)
-    {
-        $this->table = $table;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTable()
-    {
-        return $this->table;
-    }
-
-    /**
-     * @return SchemaContract
-     */
-    public function getSchema()
-    {
-        return $this->schema;
-    }
-
-    /**
-     * @param SchemaContract $schema
-     */
-    public function setSchema(SchemaContract $schema)
-    {
-        $this->schema = $schema;
     }
 
     /**
@@ -228,13 +175,15 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     }
 
     /**
+     * @param boolean $dependencies
+     *
      * @return ExpressiveContract
      *
      * @throws TException
      */
-    public function last()
+    public function last($dependencies = true)
     {
-        return $this->getDatabaseContainer()->last($this);
+        return $this->getDatabaseContainer()->last($this, $dependencies);
     }
 
     /**
@@ -255,5 +204,13 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     public function patch()
     {
         return $this->getDatabaseContainer()->patch($this);
+    }
+
+    /**
+     * @return ExpressiveContract|boolean
+     */
+    public function replicate()
+    {
+        return $this->getDatabaseContainer()->replicate($this);
     }
 }

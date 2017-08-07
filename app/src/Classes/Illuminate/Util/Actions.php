@@ -22,7 +22,7 @@ class Actions
      */
     public static function doThingWhenDatabaseAction($model, $whenAction, $doThing)
     {
-        $actions = $model->getSchema()->getDatabase()->getActions();
+        $actions = $model::$schema->getActions();
         if(empty($actions)){
             return $model;
         }

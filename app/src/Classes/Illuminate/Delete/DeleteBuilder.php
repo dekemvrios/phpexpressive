@@ -55,7 +55,7 @@ class DeleteBuilder
     public function delete(ExpressiveContract $model)
     {
 
-        if (empty($model->getSchema()->getDatabase())) {
+        if (empty($model::$schema->getRepository())) {
             throw new TException(
                 __CLASS__,
                 __METHOD__,
@@ -64,15 +64,15 @@ class DeleteBuilder
             );
         }
 
-        $table = $model->getSchema()->getDatabase()->getTable();
+        $table = $model::$schema->getRepository();
 
-        $primaryKeys = $model->getSchema()->getDatabase()->getPrimaryKeys();
+        $primaryKeys = $model::$schema->getKeys();
 
         $stmt = Capsule::table($table);
 
         foreach ($primaryKeys as $key) {
 
-            $value = $model->{$key};
+            $value = $model->{$key->getProperty()};
             if (empty($value)) {
                 throw new TException(
                     __CLASS__,
@@ -82,7 +82,7 @@ class DeleteBuilder
                 );
             }
             $stmt->where(
-                $key,
+                $key->getField(),
                 '=',
                 $value
             );
@@ -129,7 +129,7 @@ class DeleteBuilder
      */
     public function hasManyDependencies($model)
     {
-        $dependencies = $model->getSchema()->getDatabase()->getByRelationshipType('hasMany');
+        $dependencies = $model::$schema->getDependencies('hasMany');
         if (!empty($dependencies)) {
             foreach (array_values($dependencies) as $dependency) {
                 $value = $model->{$dependency->getProperty()};

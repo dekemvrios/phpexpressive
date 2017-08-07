@@ -2,12 +2,18 @@
 
 namespace Solis\Expressive\Classes\Illuminate\Select;
 
+use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Classes\Illuminate\Wrapper;
+use Solis\Expressive\Classes\Illuminate\Diglett;
 use Solis\Breaker\TException;
-use Solis\PhpSchema\Abstractions\Database\FieldEntryAbstract;
 
+/**
+ * Class SelectBuilder
+ *
+ * @package Solis\Expressive\Classes\Illuminate\Select
+ */
 final class SelectBuilder
 {
 
@@ -54,7 +60,7 @@ final class SelectBuilder
         array $options = [],
         ExpressiveContract $model
     ) {
-        if (empty($model->getSchema()->getDatabase())) {
+        if (empty($model::$schema->getRepository())) {
             throw new TException(
                 __CLASS__,
                 __METHOD__,
@@ -63,9 +69,9 @@ final class SelectBuilder
             );
         }
 
-        $table = $model->getSchema()->getDatabase()->getTable();
+        $table = $model::$schema->getRepository();
 
-        // n�o retorna as dependencias atribuidas ao respectivo model
+        // não retorna as dependencias atribuidas ao respectivo model
         $dependencies = false;
 
         // retorna todas as colunas atribuidas ao respectivo model
@@ -135,14 +141,28 @@ final class SelectBuilder
                 }
             }
 
+            // Caso withDependencies for fornecida para a operação de consulta, essa somente pederá
+            // assumir valores boolean ou array
             if (array_key_exists(
                 'withDependencies',
                 $options
             )) {
-                if (is_bool($options['withDependencies'])) {
-                    $dependencies = boolval($options['withDependencies']);
-                } else {
-                    $dependencies = !is_array($options['withDependencies']) ? [$options['withDependencies']] : $options['withDependencies'];
+                switch ($options['withDependencies']) {
+                    case is_array($options['withDependencies']):
+                        $dependencies = $options['withDependencies'];
+                        break;
+                    case 'true':
+                        $dependencies = true;
+                        break;
+                    case 'false':
+                        $dependencies = false;
+                        break;
+                    case is_bool($options['withDependencies']):
+                        $dependencies = $options['withDependencies'];
+                        break;
+                    default:
+                        $dependencies = false;
+                        break;
                 }
             }
 
@@ -174,6 +194,11 @@ final class SelectBuilder
         $class = get_class($model);
         $instances = array_map(function ($item) use ($class, $dependencies) {
             $instance = Wrapper::fetchStdClassToExpressiveNewModel($item, $class);
+
+            if (!Diglett::toDig()) {
+                return $instance;
+            }
+
             if (!empty($instance)) {
                 $instance = $this->searchForDependencies($instance, $dependencies);
 
@@ -195,7 +220,7 @@ final class SelectBuilder
      */
     public function search(ExpressiveContract $model, $dependencies = true)
     {
-        if (empty($model->getSchema()->getDatabase())) {
+        if (empty($model::$schema->getRepository())) {
             throw new TException(
                 __CLASS__,
                 __METHOD__,
@@ -204,17 +229,16 @@ final class SelectBuilder
             );
         }
 
-        $table = $model->getSchema()->getDatabase()->getTable();
+        $table = $model::$schema->getRepository();
 
-        $primaryKeys = $model->getSchema()->getDatabase()->getPrimaryKeys();
+        $primaryKeys = $model::$schema->getKeys();
         $stmt = Capsule::table($table);
 
         foreach ($primaryKeys as $key) {
 
-            $value = $model->{$key};
+            $value = $model->{$key->getProperty()};
 
-            $meta = $model->getSchema()->getPropertyEntry('property', $key);
-            if (empty($value) && empty($meta->getBehavior()->isRequired())) {
+            if (empty($value) && empty($key->getBehavior()->isRequired())) {
                 return false;
             }
 
@@ -222,13 +246,13 @@ final class SelectBuilder
                 throw new TException(
                     __CLASS__,
                     __METHOD__,
-                    "property '{$key}' used as primary key cannot be empty at " . get_class($model) . " instance",
+                    "property '{$key->getProperty()}' used as primary key cannot be empty at " . get_class($model) . " instance",
                     400
                 );
             }
 
             $stmt->where(
-                $key,
+                $key->getProperty(),
                 '=',
                 $value
             );
@@ -253,6 +277,10 @@ final class SelectBuilder
             $model
         );
 
+        if (!Diglett::toDig()) {
+            return $instance;
+        }
+
         if (!empty($dependencies)) {
             $instance = $this->searchForDependencies($instance, true);
         }
@@ -273,7 +301,7 @@ final class SelectBuilder
         ExpressiveContract $model
     ) {
 
-        if (empty($model->getSchema()->getDatabase())) {
+        if (empty($model::$schema->getRepository())) {
             throw new TException(
                 __CLASS__,
                 __METHOD__,
@@ -282,7 +310,7 @@ final class SelectBuilder
             );
         }
 
-        $table = $model->getSchema()->getDatabase()->getTable();
+        $table = $model::$schema->getRepository();
 
         $stmt = Capsule::table($table);
         if (!empty($arguments) && is_array($arguments)) {
@@ -318,14 +346,15 @@ final class SelectBuilder
 
     /**
      * @param ExpressiveContract $model
+     * @param boolean $dependencies
      *
      * @return ExpressiveContract
      *
      * @throws TException
      */
-    public function last(ExpressiveContract $model)
+    public function last(ExpressiveContract $model, $dependencies = true)
     {
-        if (empty($model->getSchema()->getDatabase())) {
+        if (empty($model::$schema->getRepository())) {
             throw new TException(
                 __CLASS__,
                 __METHOD__,
@@ -334,38 +363,47 @@ final class SelectBuilder
             );
         }
 
-        $primaryKeys = $model->getSchema()->getDatabase()->getPrimaryKeys();
-
         $arguments = [];
-
         $options = [
             'limit'            => [
-                'number' => 1
+                'number' => 1,
             ],
             'orderBy'          => [],
-            'withDependencies' => true
+            'withDependencies' => $dependencies,
         ];
 
-        foreach ($primaryKeys as $key) {
-            $value = $model->{$key};
-            $meta = $model->getSchema()->getPropertyEntry(
-                'property',
-                $key
-            );
-            if (!empty($meta->getBehavior()->isAutoIncrement())) {
+        foreach ($model::$schema->getKeys() as $key) {
+
+            // Se uma chave possuir comportamento auto incremental, então o consumidor não é
+            // responsável por sua atribuição, desse modo ela será utilizada como filtro de
+            // ordenação para a operação de consulta.
+            if (!empty($key->getBehavior()->isAutoIncrement())) {
                 $options['orderBy'][] = [
-                    'column'    => $key,
-                    'direction' => 'desc'
+                    'column'    => $key->getField(),
+                    'direction' => 'desc',
                 ];
-            } elseif (!empty($value)) {
+
+                continue;
+            }
+
+            $value = $model->{$key->getProperty()};
+
+            // Caso houver valor atribuido ao model em uma propriedade definida como chave
+            // essa será atribuida como filtro de consulta, permitindo situaçpes em que o
+            // registro possui chave composta.
+            if (!empty($value)) {
                 $arguments[] = [
-                    'column' => $key,
-                    'value'  => $value
+                    'column' => $key->getField(),
+                    'value'  => $value,
                 ];
             }
         }
 
-        return $this->select($arguments, $options, $model);
+        return $this->select(
+            $arguments,
+            $options,
+            $model
+        );
     }
 
     /**
@@ -376,55 +414,56 @@ final class SelectBuilder
      *
      * @throws TException
      */
-    public function searchForDependencies($model, $dependenciItems)
-    {
-        $selectForAll = is_array($dependenciItems) ? false : boolval($dependenciItems);
+    public function searchForDependencies(
+        $model,
+        $dependenciItems
+    ) {
+        // O valor atribuido a propriedade $dependenciItems poderá assumir valor valor
+        // boolean ou array.
+        //
+        // Caso boolean e TRUE, todas as dependências serão retornadas, caso boolean e
+        // FALSE, nenhuma dependéncia será retornada pela consulta.
+        //
+        // Caso array, esse deverá conter o nome das dependencias vinculadas ao registro
+        // que serão retornadas pela consulta. Se array vazio, nenhuma dependência será
+        // retornada pela operação.
+        if (empty($dependenciItems)) {
+            return $model;
+        }
 
-        $dependencies = array_values(array_filter(
-            $model->getSchema()->getDatabase()->getFields(), function (FieldEntryAbstract $field) use ($dependenciItems, $selectForAll) {
+        $dependencies = $model::$schema->getDependencies();
+        if (empty($dependencies)) {
+            return $model;
+        }
 
-            $selectFor = false;
-            if (!empty($field->getObject())) {
-                if (!empty($selectForAll)) {
-                    return true;
-                }
+        // se array, filtra as dependencias a serem retornadas somente se no conjunto de
+        // entradas desejadas para consulta.
+        if (is_array($dependenciItems)) {
+            $dependencies = array_filter($dependencies, function (PropertyContract $property) use ($dependenciItems){
+                return in_array($property->getProperty(), $dependenciItems);
+            });
+        }
 
-                if (is_array($dependenciItems)) {
-                    $selectFor = boolval(in_array($field->getProperty(), $dependenciItems));
-                }
+        if (empty($dependencies)) {
+            return $model;
+        }
+
+        foreach ($dependencies as $dependency) {
+            if (empty($dependency->getComposition()->getRelationship())) {
+                throw new TException(
+                    __CLASS__,
+                    __METHOD__,
+                    'a dependency must have a relationship assigned to it in the schema',
+                    500
+                );
             }
-
-            return $selectFor;
-        }));
-
-        if (!empty($dependencies)) {
-            foreach ($dependencies as $dependency) {
-                if (empty($dependency->getObject()->getRelationship())) {
-                    throw new TException(
-                        __CLASS__,
-                        __METHOD__,
-                        'a dependency must have a relationship assigned to it in the schema',
-                        500
-                    );
-                }
-
-                $relationship = $dependency->getObject()->getRelationship()->getType();
-
-                if (!method_exists(
-                    $this->getRelationshipBuilder(),
-                    $relationship
-                )
-                ) {
-                    throw new TException(
-                        __CLASS__,
-                        __METHOD__,
-                        "{$relationship} is not a valid relationship type at " . get_class($model),
-                        400
-                    );
-                }
-
-                $model = $this->getRelationshipBuilder()->{$relationship}($model, $dependency);
-            }
+            // chama o método de consulta de acordo com os tipos de relacionamento
+            // válidos atribuidos a entrada no schema vinculado ao registro.
+            $relationship = $dependency->getComposition()->getRelationship()->getType();
+            $model = $this->getRelationshipBuilder()->{$relationship}(
+                $model,
+                $dependency
+            );
         }
 
         return $model;
@@ -442,30 +481,24 @@ final class SelectBuilder
         $model,
         $withProperties
     ) {
-        $searchFor = [];
+        $searchFor = ['*'];
 
-        foreach ($withProperties as $property) {
-            $meta = $model->getSchema()->getPropertyEntry('property', $property);
+        // caso fornecido o array withProperties, essa deverá conter a relação de propriedades
+        // do registro que serão retornados pela consulta. Em caso de relacionamento, considera
+        // apenas relacionamento do tipo hasOne. Caso vazio, retorna todas as propriedades.
+        //
+        // Vale notar que, caso utilizado em conjunto com withDependencies, onde uma propriedade
+        // representar um relacionamento hasOne, se essa não estiver relacionada no conjunto de
+        // propriedades, essa não será exibida. E, em caso de relacionamento hasMany, essa também
+        // não será retornada caso os campos que compoe o relacionamento não forem também listados
+        if (!empty($withProperties)) {
+            $columns = $model::$schema->getSearchableFieldsString();
 
-            if (empty($meta)) {
-                new TException(
-                    __CLASS__,
-                    __METHOD__,
-                    "property {$property} not found in schema",
-                    400
-                );
-            }
-
-            if (!empty($meta->getObject())) {
-                // relacionamento hasMany n�o � incluido nas colunas a serem consultadas
-                if ($meta->getObject()->getRelationship()->getType() == 'hasMany') {
-                    continue;
-                }
-            }
-
-            $searchFor[] = $property;
+            $searchFor = array_values(array_filter($columns, function ($field) use ($withProperties){
+                return in_array($field, $withProperties);
+            }));
         }
 
-        return empty($searchFor) ? ['*'] : $searchFor;
+        return !empty($searchFor) ? $searchFor : ['*'];
     }
 }

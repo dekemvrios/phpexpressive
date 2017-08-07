@@ -2,6 +2,7 @@
 
 namespace Solis\Expressive\Classes\Illuminate;
 
+use Solis\Expressive\Classes\Illuminate\Replicate\ReplicateBuilder;
 use Solis\Expressive\Classes\Illuminate\Select\SelectBuilder;
 use Solis\Expressive\Classes\Illuminate\Insert\InsertBuilder;
 use Solis\Expressive\Classes\Illuminate\Delete\DeleteBuilder;
@@ -9,7 +10,6 @@ use Solis\Expressive\Classes\Illuminate\Update\UpdateBuilder;
 use Solis\Expressive\Classes\Illuminate\Patch\PatchBuilder;
 use Solis\Expressive\Contracts\DatabaseContainerContract;
 use Solis\Expressive\Contracts\ExpressiveContract;
-use Solis\PhpSchema\Contracts\SchemaContract;
 use Solis\Breaker\TException;
 
 /**
@@ -19,11 +19,6 @@ use Solis\Breaker\TException;
  */
 class Wrapper implements DatabaseContainerContract
 {
-
-    /**
-     * @var SchemaContract
-     */
-    protected $schema;
 
     /**
      * @var SelectBuilder
@@ -51,10 +46,16 @@ class Wrapper implements DatabaseContainerContract
     protected $patchBuilder;
 
     /**
+     * @var ReplicateBuilder
+     */
+    protected $replicateBuilder;
+
+    /**
      * __construct
      */
     public function __construct()
     {
+        $this->setReplicateBuilder(new ReplicateBuilder());
         $this->setSelectBuilder(new SelectBuilder());
         $this->setInsertBuilder(new InsertBuilder());
         $this->setDeleteBuilder(new DeleteBuilder());
@@ -63,59 +64,11 @@ class Wrapper implements DatabaseContainerContract
     }
 
     /**
-     * make
-     *
-     * @param  SchemaContract $schema
-     *
      * @return static
      */
-    public static function make(
-        $schema
-    ) {
-        $instance = new static();
-        $instance->schema = $schema;
-
-        return $instance;
-    }
-
-    /**
-     * @return SchemaContract
-     *
-     * @throws TException
-     */
-    public function getSchema()
+    public static function make()
     {
-        return $this->schema;
-    }
-
-    /**
-     * @param SchemaContract $schema
-     *
-     * @throws TException
-     */
-    public function setSchema(SchemaContract $schema)
-    {
-        $this->schema = $schema;
-    }
-
-    /**
-     * @param $table
-     *
-     * @throws TException
-     */
-    public function setTable($table)
-    {
-        $this->getSchema()->getDatabase()->setTable($table);
-    }
-
-    /**
-     * @return string
-     *
-     * @throws TException
-     */
-    public function getTable()
-    {
-        return $this->getSchema()->getDatabase()->getTable();
+        return new static();
     }
 
     /**
@@ -199,6 +152,22 @@ class Wrapper implements DatabaseContainerContract
     }
 
     /**
+     * @return ReplicateBuilder
+     */
+    public function getReplicateBuilder()
+    {
+        return $this->replicateBuilder;
+    }
+
+    /**
+     * @param ReplicateBuilder $replicateBuilder
+     */
+    public function setReplicateBuilder($replicateBuilder)
+    {
+        $this->replicateBuilder = $replicateBuilder;
+    }
+
+    /**
      * @param array              $arguments
      * @param array              $options
      * @param ExpressiveContract $model
@@ -277,12 +246,13 @@ class Wrapper implements DatabaseContainerContract
 
     /**
      * @param ExpressiveContract $model
+     * @param boolean            $dependencies
      *
      * @return ExpressiveContract
      */
-    public function last(ExpressiveContract $model)
+    public function last(ExpressiveContract $model, $dependencies = true)
     {
-        return $this->getSelectBuilder()->last($model);
+        return $this->getSelectBuilder()->last($model, $dependencies);
     }
 
     /**
@@ -303,6 +273,16 @@ class Wrapper implements DatabaseContainerContract
     public function patch(ExpressiveContract $model)
     {
         return $this->getPatchBuilder()->patch($model);
+    }
+
+    /**
+     * @param ExpressiveContract $model
+     *
+     * @return ExpressiveContract|boolean
+     */
+    public function replicate(ExpressiveContract $model)
+    {
+        return $this->getReplicateBuilder()->replicate($model);
     }
 
     /**

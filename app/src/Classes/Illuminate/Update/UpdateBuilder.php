@@ -7,7 +7,7 @@ use Solis\Expressive\Abstractions\ExpressiveAbstract;
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Classes\Illuminate\Database;
-use Solis\PhpSchema\Abstractions\Properties\PropertyEntryAbstract;
+use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Breaker\TException;
 
 /**
@@ -56,7 +56,7 @@ final class UpdateBuilder
      */
     public function update(ExpressiveContract $model)
     {
-        if (empty($model->getSchema()->getDatabase())) {
+        if (empty($model::$schema->getRepository())) {
             throw new TException(
                 __CLASS__,
                 __METHOD__,
@@ -75,14 +75,14 @@ final class UpdateBuilder
             );
         }
 
-        $table = $model->getSchema()->getDatabase()->getTable();
+        $table = $model::$schema->getRepository();
 
-        $primaryKeys = $model->getSchema()->getDatabase()->getPrimaryKeys();
+        $primaryKeys = $model::$schema->getKeys();
         $stmt = Capsule::table($table);
 
         foreach ($primaryKeys as $key) {
 
-            $value = $model->{$key};
+            $value = $model->{$key->getProperty()};
             if (empty($value)) {
                 throw new TException(
                     __CLASS__,
@@ -93,7 +93,7 @@ final class UpdateBuilder
             }
 
             $stmt->where(
-                $key,
+                $key->getField(),
                 '=',
                 $value
             );
@@ -160,54 +160,63 @@ final class UpdateBuilder
         ExpressiveContract $updated
     ) {
 
-        $properties = $original->getSchema()->getProperties();
-
+        // contém a relação de campos a serem atualizados
         $fields = [];
-        foreach ($properties as $property) {
+
+        foreach ($original::$schema->getPersistentFields() as $property) {
+            // valor original de registro na persistencia
             $originalProperty = $original->{$property->getProperty()};
+            // valor do registro atualizado
             $updatedProperty = $updated->{$property->getProperty()};
 
-            if (!empty($property->getObject()) && $property->getObject()->getRelationship()->getType() === 'hasMany') {
+            // registro em array é inválido para a atualização de valores
+            // inicialmente, somente utilizada para relaciomaento hasMany.
+            if (is_array($updatedProperty)) {
                 continue;
             }
 
+            // a alteração é desconsiderada caso a propriedade não possuir valor
+            // e seu comportamento permitir valores em branco.
+            if (is_null($updatedProperty) && empty($property->getBehavior()->isRequired())) {
+                continue;
+            }
+
+            // se o valor atribuido ao registro original for também
+            // instância de active record, deve-se captura o seu valor
+            // chave para compar com o registro a ser atualizado
             if ($originalProperty instanceof ExpressiveAbstract) {
                 $result = $this->getUpdateFieldsExpressiveInstance(
                     $original,
                     $updated,
                     $property
                 );
+
                 if (!empty($result)) {
                     $fields = array_merge(
                         $fields,
                         $result
                     );
                 }
-            } elseif (!is_array($updatedProperty)) {
 
-                if (is_null($updatedProperty) && empty($property->getBehavior()->isRequired())) {
-                    continue;
-                }
-
-                if (is_null($updatedProperty) && !empty($property->getBehavior()->isRequired())) {
-                    $fields[$property->getProperty()] = $originalProperty;
-
-                    continue;
-                }
-
-                if ($originalProperty !== $updatedProperty) {
-                    $fields[$property->getProperty()] = $updatedProperty;
-                }
+                continue;
             }
+
+            // somente considera como campo alteração caso valor no model
+            // orginal for diferente do presente no model atualizado.
+            if($originalProperty == $updatedProperty){
+                continue;
+            }
+
+            $fields[$property->getProperty()] = $updatedProperty;
         }
 
         return $fields;
     }
 
     /**
-     * @param ExpressiveContract    $original
-     * @param ExpressiveContract    $updated
-     * @param PropertyEntryAbstract $property
+     * @param ExpressiveContract $original
+     * @param ExpressiveContract $updated
+     * @param PropertyContract   $property
      *
      * @return array
      * @throws TException
@@ -216,32 +225,18 @@ final class UpdateBuilder
     {
         $fields = [];
 
-        $databaseEntry = $original->getSchema()->getDatabase()->getEntry(
-            'property',
-            $property->getProperty()
-        );
-        if(empty($databaseEntry)){
-            throw new TException(
-                __CLASS__,
-                __METHOD__,
-                "not found database entry for property " . $property->getProperty() . " while updating record",
-                500
-            );
-        }
-
         $originalProperty = $original->{$property->getProperty()};
+
         $updatedProperty = $updated->{$property->getProperty()};
 
-        $databaseEntry = array_values($databaseEntry);
+        $field = $property->getComposition()->getRelationship()->getSource()->getField();
+        $refers = $property->getComposition()->getRelationship()->getSource()->getRefers();
 
-        if ($databaseEntry[0]->getObject()->getRelationship()->getType() === 'hasOne') {
-            $field = $databaseEntry[0]->getObject()->getRelationship()->getSource()->getField();
-            $refers = $databaseEntry[0]->getObject()->getRelationship()->getSource()->getRefers();
-
-            if ($originalProperty->{$refers} !== $updatedProperty->{$refers}) {
-                $fields[$field] = $updatedProperty->{$refers};
-            }
+        if ($originalProperty->{$refers} == $updatedProperty->{$refers}) {
+            return [];
         }
+
+        $fields[$field] = $updatedProperty->{$refers};
 
         return $fields;
     }
@@ -253,7 +248,7 @@ final class UpdateBuilder
      */
     public function hasManyDependencies($model)
     {
-        $dependencies = $model->getSchema()->getDatabase()->getByRelationshipType('hasMany');
+        $dependencies = $model::$schema->getDependencies('hasMany');
         if (!empty($dependencies)) {
             foreach (array_values($dependencies) as $dependency) {
                 $value = $model->{$dependency->getProperty()};
@@ -275,16 +270,18 @@ final class UpdateBuilder
      */
     private function setPrimaryKeysFromOriginal($original, $model)
     {
-        foreach ($original->getSchema()->getDatabase()->getPrimaryKeys() as $primaryKey) {
-            $model->$primaryKey = $original->$primaryKey;
+        foreach ($original::$schema->getKeys() as $primaryKey) {
+            $model->{$primaryKey->getProperty()} = $original->{$primaryKey->getProperty()};
         }
 
-        $autoIncremented = array_filter($original->getSchema()->getProperties(), function ($property){
-            return !empty($property->getBehavior()->isAutoIncrement()) ? true : false;
-        });
-
-        foreach ($autoIncremented as $field) {
-            $model->{$field->getProperty()} = $original->{$field->getProperty()};
+        // retorna a relação de campos incrementais a partir do schema
+        // e atribui a instancia do model os valor atribuidos a instancia
+        // do ultimo registro persistido para a respectivo classe
+        $incrementalFields = $model::$schema->getIncrementalFieldsMeta();
+        if (!empty($incrementalFields)) {
+            foreach ($incrementalFields as $field) {
+                $model->{$field->getProperty()} = $original->{$field->getProperty()};
+            }
         }
 
         return $model;
