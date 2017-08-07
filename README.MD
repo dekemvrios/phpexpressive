@@ -9,5 +9,5 @@ Expressive é uma bibliteca para mapeamento objeto relacionamento com definiçõ
 Esse pacote foi estruturado para ser instalado por meio do composer
 
 ```
-composer require solis/phpschema
+composer require solis/expressive
 ``` 
