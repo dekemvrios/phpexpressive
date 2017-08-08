@@ -14,7 +14,7 @@ composer require solis/expressive
  
 ## Usage
 
-Especifique a estrutura de um objeto de acordo com as especificações definidas por [phpschema](https://github.com/rafaelbeecker/phpschema).
+Defina a estrutura de um objeto de acordo com as especificações do [phpschema](https://github.com/rafaelbeecker/phpschema).
 
 ```
 {
@@ -59,7 +59,7 @@ Especifique a estrutura de um objeto de acordo com as especificações definidas
 }
 ```
 
-Uma Classe que utiliza a funcionalidade ORM fornecida pela biblioteca deve extender a class abstrata Expressive e ter em si declaradas todas as propriedades especificadas no schema json.
+Uma Classe que utiliza a funcionalidade ORM fornecida pela biblioteca deve extender a class abstrata Expressive e ter em si declaradas as propriedades especificadas no schema json.
 
 ```
 use Solis\Expressive\Classes\Illuminate\Expressive;
@@ -93,7 +93,9 @@ class Cst extends Expressive
 }     
 ```
 
-Uma classe extendo Expressive deve utilizar a trait HasMagic, qual dispõe de uma funcionalidade de atribuição dinâmica por meio do método make.
+O método start é responsável por construir um objeto Schema a partir do caminho fornecido e atribuir a respectiva classe.
+
+Uma classe extendo Expressive deve utilizar a trait HasMagic de modo ater acesso a funcionalidade de atribuição dinâmica por meio do método make.
 
 ```
 $Produto = Produto::make(
@@ -105,15 +107,13 @@ $Produto = Produto::make(
         "prodescricao"  => 'test [ ' . uniqid(rand()) . ' ]',        
     ]
 );
-```
+``` 
 
-O método start é responsável por construir um objeto Schema a partir do caminho fornecido e atribuir a respectiva classe. 
-
-O método make retorna uma instância com acesso as operações de persistência disponibilizadas pela biblioteca.
+O método make retorna uma instância de ExpressiveAbstract com acesso as operações de persistência disponibilizadas pela biblioteca.
 
 ### Operations
 
-Relação de operações de persistência que podem ser utilizadas por uma instância de ExpressiveContract
+Relação de operações de persistência que podem ser utilizadas por uma instância de ExpressiveAbstract
 
 #### Count
 
