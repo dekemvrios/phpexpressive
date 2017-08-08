@@ -113,7 +113,11 @@ O método make retorna uma instância com acesso as operações de persistência
 
 ### Operations
 
+Relação de operações de persistência que podem ser utilizadas por uma instância de ExpressiveContract
+
 #### Count
+
+Retorna um valor inteiro representando a contagem de registros na persistência. 
 
 ```
 (new Produto())->count(
@@ -124,6 +128,95 @@ O método make retorna uma instância com acesso as operações de persistência
         ]
     ]
 )
+```
+
+#### Create
+
+Cria um novo registro na persistência de acordo com os valores fornecidos para construção do objeto por meio do make.
+
+```
+$Produto = Produto::make(
+    [
+        "procodigo"     => 1,
+        "empcodigo"     => 264,
+        "iGicCodigo"    => 1,
+        "iGpcCodigo"    => 1,
+        "prodescricao"  => 'test [ ' . uniqid(rand()) . ' ]'
+    ]
+)->create();
+```
+
+#### Delete
+
+Deleta um registro na persistência de acordo com os valores fornecidos para construção do objeto por meio do make.
+
+```
+Produto::make(
+    [
+        'empcodigo' => 264,
+        'procodigo' => 1
+    ]
+)->search()->delete();
+```
+
+#### Last
+
+Retorna o último registro na persistencia de acordo com os valores chaves definidos no schema.
+
+```
+Produto::make([
+    'empcodigo' => 264
+])->last()
+```
+
+### Replicate
+
+Replica um registro existente na persistência de acordo com os valores fornecidos para o método make.
+
+```
+$instance = Produto::make([
+    'iEmpCodigo' => 263,
+])->last();
+
+$instance->replicate();    
+```
+
+### Search
+
+Retorna um registro existente na persistência de acordo com os valores fornecidos para o método make.
+
+```
+$instance = Produto::make([
+    'procodigo' => 1,
+    'empcodigo' => 264,
+])->search();
+```
+
+### Select
+
+Retorna uma relação de registros existentes na persistência de acordo a relação de argumentos e opções fornecidas.
+
+```
+$result = (new Produto())
+    ->select();
+```
+
+### Update
+
+Atualiza um registro existente na persistência de acordo com as informações atribuidas ao active record.
+
+```
+$instance = Produto::make(
+    [
+        'empcodigo' => 264,
+        'procodigo' => 67,
+    ]
+)->search();
+
+$instance->prodescricao = 'EMP 264 UPDATE TEST [ ' . Date('Y-m-d H:m:s') . ']';
+$instance->giccodigo = 2;
+
+$instance->update();
 ```
 
 ## Change log
