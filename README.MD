@@ -2,7 +2,7 @@
 
 ## Expressive
 
-Expressive é uma bibliteca para mapeamento objeto relacionamento com definições de objetos baseada em arquivos de schema.
+Expressive é uma biblioteca para mapeamento objeto relacional  construída sobre o illuminate/database [illuminate/database](https://github.com/illuminate/database), com definições de objetos baseada em arquivos de schema.
 
 ## Install
 
