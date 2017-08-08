@@ -1,0 +1,62 @@
+{
+  "database": {
+    "repository": "tbitemnfe",
+    "keys": [
+      "itnsequencia",
+      "nfesequencia",
+      "empcodigo"
+    ]
+  },
+  "properties": [
+    {
+      "alias": "iItnSequencia",
+      "property": "itnsequencia",
+      "type": "int"
+    },
+    {
+      "alias": "sItnDescricao",
+      "property": "itndescricao",
+      "type": "string"
+    },
+    {
+      "alias": "iNFeSequencia",
+      "property": "nfesequencia",
+      "type": "int"
+    },
+    {
+      "alias": "iEmpCodigo",
+      "property": "empcodigo",
+      "type": "int"
+    },
+    {
+      "alias": "iItnQuantidade",
+      "property": "itnquantidade",
+      "type": "int"
+    },
+    {
+      "alias": "iItnValorUnit",
+      "property": "itnvalorunitario",
+      "type": "float"
+    },
+    {
+      "alias": "iItnValorTotal",
+      "property": "itnvalortotal",
+      "type": "float"
+    },
+    {
+      "alias": "iItnNcmDesc",
+      "property": "itnncmdescricao",
+      "type": "string"
+    },
+    {
+      "alias": "iItnCstDesc",
+      "property": "itncstdescricao",
+      "type": "string"
+    },
+    {
+      "alias": "iItnUnDesc",
+      "property": "itnunmedidadescricao",
+      "type": "string"
+    }
+  ]
+}

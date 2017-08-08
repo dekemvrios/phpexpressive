@@ -2,6 +2,15 @@
 
 Todas as modificações relevantes ao  `expressive` serão documentadas nesse arquivo seguindo o especificado em [KEEP CHANGELOG](http://keepachangelog.com/).
 
+## 1.0.0  - 2017-08-08
+
+## Added
+- Incluido mecanismo de recursividade permitindo definir o número de filhos retornados pela operação de consulta.
+
+## Changed
+- Substituído instância concreta de schema por estática de modo a diminuir as operações de escrita/leitura no sistema de arquivos.
+- Atualizado implementação de schema de modo a adicionar cache de valores estáticos como chaves incrementais e campos persistêntes.
+
 ## 0.3.0 - 2017-07-31
 
 ## Changed

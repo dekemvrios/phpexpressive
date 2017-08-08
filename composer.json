@@ -1,26 +1,26 @@
 {
   "name": "solis/expressive",
   "description": "Expressive is a ORM library structured by schemas",
-  "license": [
-    "GPL-3.0+",
-    "LGPL-3.0+"
-  ],
+  "license": "MIT",
   "authors": [
     {
       "name": "Rafael Becker",
-      "email": "rafael@beecker.com.br",
-      "role": "Developer"
+      "email": "rafael@beecker.com.br"
     }
   ],
   "require": {
-    "solis/phpbreaker": "0.0.2",
-    "solis/phpmagic": "3.2.0",
+    "solis/phpmagic": "~v1.0",
     "illuminate/database": "^5.4",
     "illuminate/events": "^5.2"
   },
   "autoload": {
     "psr-4": {
       "Solis\\Expressive\\": "app/src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Sample\\": "sample/"
     }
   }
 }

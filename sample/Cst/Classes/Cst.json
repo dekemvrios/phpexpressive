@@ -1,0 +1,90 @@
+{
+  "database": {
+    "repository": "tbcst",
+    "keys": "cstcodigo",
+    "actions": {
+      "whenInsert": {
+        "before": [
+          {
+            "class": "Sample\\Cst\\Classes\\Helper",
+            "function": "testeDeFuncaoInsert1",
+            "params": [
+              "this",
+              "Param 1",
+              "Param 2"
+            ]
+          },
+          {
+            "class": "Sample\\Cst\\Classes\\Helper",
+            "function": "testeDeFuncaoInsert2",
+            "params": "Param 1"
+          }
+        ]
+      },
+      "whenUpdate": {
+        "before": [
+          {
+            "class": "Sample\\Cst\\Classes\\Helper",
+            "function": "testeDeFuncaoUpdate1",
+            "params": [
+              "this",
+              "Param 1",
+              "Param 2"
+            ]
+          }
+        ]
+      },
+      "whenDelete": {
+        "before": [
+          {
+            "class": "Sample\\Cst\\Classes\\Helper",
+            "function": "testeDeFuncaoDelete1",
+            "params": [
+              "this",
+              "Param 1",
+              "Param 2"
+            ]
+          }
+        ],
+        "after": [
+          {
+            "class": "Sample\\Cst\\Classes\\Helper",
+            "function": "testeDeFuncaoDelete1"
+          }
+        ]
+      }
+    }
+  },
+  "properties": [
+    {
+      "alias": "iCstCodigo",
+      "property": "cstcodigo",
+      "type": "int",
+      "behavior": {
+        "required": "false",
+        "autoIncrement": "true",
+        "incrementalBehavior": "application"
+      }
+    },
+    {
+      "alias": "iCsttipo",
+      "property": "csttipo",
+      "type": "int"
+    },
+    {
+      "alias": "sCstCst",
+      "property": "cstcst",
+      "type": "string"
+    },
+    {
+      "alias": "sCstDescricao",
+      "property": "cstdescricao",
+      "type": "string"
+    },
+    {
+      "alias": "iCstSt",
+      "property": "cstsubstituicaotributaria",
+      "type": "int"
+    }
+  ]
+}

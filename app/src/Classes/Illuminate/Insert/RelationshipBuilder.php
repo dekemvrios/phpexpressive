@@ -2,7 +2,7 @@
 
 namespace Solis\Expressive\Classes\Illuminate\Insert;
 
-use Solis\PhpSchema\Abstractions\Database\FieldEntryAbstract;
+use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Solis\Breaker\TException;
 
@@ -16,7 +16,7 @@ final class RelationshipBuilder
 
     /**
      * @param ExpressiveContract $model
-     * @param FieldEntryAbstract $dependency
+     * @param PropertyContract   $dependency
      *
      * @return ExpressiveContract
      *
@@ -28,17 +28,17 @@ final class RelationshipBuilder
     ) {
         $value = $model->{$dependency->getProperty()};
         $instance = is_array($dependency) ? call_user_func_array(
-            [$dependency->getObject()->getClass(), 'make'],
+            [$dependency->getComposition()->getClass(), 'make'],
             [$model->{$dependency->getProperty()}]
         ) : $value;
 
-        $sharedFields = $dependency->getObject()->getRelationship()->getSharedFields();
+        $sharedFields = $dependency->getComposition()->getRelationship()->getSharedFields();
         if (!empty($sharedFields)) {
             foreach ($sharedFields as $sharedField) {
                 $instance->{$sharedField} = $model->{$sharedField};
             }
         }
-        if (empty($instance->search())) {
+        if (empty($instance->search(false))) {
             $instance = $instance->create();
             if (empty($instance)) {
                 throw new TException(
@@ -50,9 +50,9 @@ final class RelationshipBuilder
             }
         }
 
-        $refers = $dependency->getObject()->getRelationship()->getSource()->getRefers();
+        $refers = $dependency->getComposition()->getRelationship()->getSource()->getRefers();
 
-        $field = $dependency->getObject()->getRelationship()->getSource()->getField();
+        $field = $dependency->getComposition()->getRelationship()->getSource()->getField();
 
         $model->{$field} = $instance->{$refers};
 
@@ -61,7 +61,7 @@ final class RelationshipBuilder
 
     /**
      * @param ExpressiveContract|ExpressiveContract[] $model
-     * @param FieldEntryAbstract                      $dependency
+     * @param PropertyContract                        $dependency
      *
      * @return ExpressiveContract
      *
@@ -75,11 +75,11 @@ final class RelationshipBuilder
 
         $dependencyValue = !is_array($dependencyValue) ? [$dependencyValue] : $dependencyValue;
 
-        $field = $dependency->getObject()->getRelationship()->getSource()->getField();
+        $field = $dependency->getComposition()->getRelationship()->getSource()->getField();
 
-        $refers = $dependency->getObject()->getRelationship()->getSource()->getRefers();
+        $refers = $dependency->getComposition()->getRelationship()->getSource()->getRefers();
 
-        $sharedFields = $dependency->getObject()->getRelationship()->getSharedFields();
+        $sharedFields = $dependency->getComposition()->getRelationship()->getSharedFields();
         foreach ($dependencyValue as $item) {
             $item->$refers = $model->$field;
 

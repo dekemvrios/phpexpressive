@@ -2,7 +2,7 @@
 
 namespace Solis\Expressive\Classes\Illuminate\Delete;
 
-use Solis\PhpSchema\Abstractions\Database\FieldEntryAbstract;
+use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Solis\Breaker\TException;
 
@@ -16,27 +16,7 @@ final class RelationshipBuilder
 
     /**
      * @param ExpressiveContract $model
-     * @param FieldEntryAbstract $dependency
-     *
-     * @return ExpressiveContract
-     *
-     * @throws TException
-     */
-    public function hasOne(
-        $model,
-        $dependency
-    ) {
-        throw new TException(
-            __CLASS__,
-            __METHOD__,
-            "method hasOne has not been implemented yet at " . get_class($this),
-            500
-        );
-    }
-
-    /**
-     * @param ExpressiveContract $model
-     * @param FieldEntryAbstract $dependency
+     * @param PropertyContract   $dependency
      *
      * @return ExpressiveContract
      *
@@ -50,7 +30,7 @@ final class RelationshipBuilder
 
         $dependencyValue = !is_array($dependencyValue) ? [$dependencyValue] : $dependencyValue;
 
-        $sharedFields = $dependency->getObject()->getRelationship()->getSharedFields();
+        $sharedFields = $dependency->getComposition()->getRelationship()->getSharedFields();
         foreach ($dependencyValue as $item) {
             if (!empty($sharedFields)) {
                 foreach ($sharedFields as $sharedField) {

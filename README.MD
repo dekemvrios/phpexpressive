@@ -1,47 +1,69 @@
 # README
 
-## Propósito
-Expressive é uma biblioteca ORM implementada seguindo os conceitos aplicados com o padrão active record.
+## Expressive
 
-## Dependências
-* "solis/phpbreaker": "0.0.1",
-* "solis/phpmagic": "3.0.0",
-* "illuminate/database": "^5.4",
-* "illuminate/events": "^5.2"
+Expressive é uma bibliteca para mapeamento objeto relacionamento com definições de objetos baseada em arquivos de schema.
 
-## Como instalar?
+## Install
 
-Esse pacote foi estruturado para ser instalado por meio do composer como um repositório vcs
+Esse pacote foi estruturado para ser instalado por meio do composer.
 
 ```
 composer require solis/expressive
-``` 
-
-## Como utilizar?
-
-Expressive utiliza o conceito de schema para determinar as propriedades utilizadas por um objeto. O schema deve ser uma string em formato json.
+```
  
-````
+## Usage
+
+Defina a estrutura de um objeto de acordo com as especificações do [phpschema](https://github.com/rafaelbeecker/phpschema).
+
+```
 {
   "database": {
-    "table": "tbcst",
-    "primaryKeys": "cstcodigo"
+    "repository": "tbproduto",
+    "keys": [
+      "empcodigo",
+      "procodigo"
+    ]
   },
   "properties": [
     {
-      "alias": "iCstCodigo",
-      "property": "cstcodigo",
+      "alias": "iEmpCodigo",
+      "property": "empcodigo",
+      "type": "int"
+    },
+    {
+      "alias": "iCodigo",
+      "property": "procodigo",
+      "type": "int",
+      "behavior": {
+        "autoIncrement": "true",
+        "incrementalBehavior": "application"
+      }
+    },
+    {
+      "alias": "sDescricao",
+      "property": "prodescricao",
+      "type": "string"
+    },
+    {
+      "alias": "iGicCodigo",
+      "property": "giccodigo",
+      "type": "int"
+    },
+    {
+      "alias": "iGpcCodigo",
+      "property": "gpccodigo",
       "type": "int"
     }
   ]
 }
-```` 
+```
 
-Uma Classe que utiliza a funcionalidade ORM fornecida pela biblioteca deve extender a class abstrata Expressive e ter em si declaradas todas as propriedades especificadas no schema json.
+Uma Classe que utiliza a funcionalidade ORM fornecida pela biblioteca deve extender a class abstrata Expressive e ter em si declaradas as propriedades especificadas no schema json.
 
 ```
 use Solis\Expressive\Classes\Illuminate\Expressive;
-use Solis\PhpMagic\Helpers\Magic;
+use Solis\Expressive\Magic\Concerns\HasMagic;
 
 /**
  * Class Cst
@@ -50,47 +72,165 @@ use Solis\PhpMagic\Helpers\Magic;
  */
 class Cst extends Expressive
 {    
-    use Magic;
-
-    protected $cstcodigo;    
+    use HasMagic;
+    
+    protected $empcodigo;
+    protected $procodigo;
+    protected $prodescricao;
+    protected $giccodigo;
+    protected $gpccodigo;
+    protected $cstipicodigo;    
 
     /**
-     * Cst constructor.
-     *
+     * Produto constructor.
      */
     public function __construct()
     {
-        parent::__construct(
-            '/path/to/schema/Cst.json',
-            'tbcst'
-        );
+        parent::__construct();
+
+        $this->start(dirname(__FILE__) . '/Produto.json');
     }
-    
-    /**
-     * make
-     *
-     * @param array $dados
-     *
-     * @return static
-     */
-    public static function make($dados = [])
-    {
-        $instance = new static();
-        if (!empty($dados)) {
-            $instance->attach($dados);
-        }
-
-        return $instance;
-    }
-}
+}     
 ```
 
-Uma classe extendo Expressive deve utilizar a trait Magic, qual dispõe de uma funcionalidade de atribuição dinâmica de propriedades por meio do método attach.
+O método start é responsável por construir um objeto Schema a partir do caminho fornecido e atribuir a respectiva classe.
 
-Dessa forma, é possível criar instâncias de uma determinada classe qual extende Expressive fornecendo um array associativo como argumento para um método factory.
+Uma classe extendo Expressive deve utilizar a trait HasMagic de modo ater acesso a funcionalidade de atribuição dinâmica por meio do método make.
 
 ```
-$Cst = Cst::make([
-    "iCsttipo"      => 2    
-]);
+$Produto = Produto::make(
+    [
+        "procodigo"     => 1,
+        "empcodigo"     => 264,
+        "iGicCodigo"    => 1,
+        "iGpcCodigo"    => 1,
+        "prodescricao"  => 'test [ ' . uniqid(rand()) . ' ]',        
+    ]
+);
+``` 
+
+O método make retorna uma instância de ExpressiveAbstract com acesso as operações de persistência disponibilizadas pela biblioteca.
+
+### Operations
+
+Relação de operações de persistência que podem ser utilizadas por uma instância de ExpressiveAbstract
+
+#### Count
+
+Retorna um valor inteiro representando a contagem de registros na persistência. 
+
 ```
+(new Produto())->count(
+    [
+        [
+            "column" => "empcodigo",
+            "value"  => 264
+        ]
+    ]
+)
+```
+
+#### Create
+
+Cria um novo registro na persistência de acordo com os valores fornecidos para construção do objeto por meio do make.
+
+```
+$Produto = Produto::make(
+    [
+        "procodigo"     => 1,
+        "empcodigo"     => 264,
+        "iGicCodigo"    => 1,
+        "iGpcCodigo"    => 1,
+        "prodescricao"  => 'test [ ' . uniqid(rand()) . ' ]'
+    ]
+)->create();
+```
+
+#### Delete
+
+Deleta um registro na persistência de acordo com as informações atribuidas ao active record.
+
+```
+Produto::make(
+    [
+        'empcodigo' => 264,
+        'procodigo' => 1
+    ]
+)->search()->delete();
+```
+
+#### Last
+
+Retorna o último registro na persistencia de acordo com as informações atribuidas ao active record.
+
+```
+Produto::make([
+    'empcodigo' => 264
+])->last()
+```
+
+### Replicate
+
+Replica um registro existente na persistência de acordo com as informações atribuidas ao active record.
+
+```
+$instance = Produto::make([
+    'iEmpCodigo' => 263,
+])->last();
+
+$instance->replicate();    
+```
+
+### Search
+
+Retorna um registro existente na persistência de acordo com as informações atribuidas ao active record.
+
+```
+$instance = Produto::make([
+    'procodigo' => 1,
+    'empcodigo' => 264,
+])->search();
+```
+
+### Select
+
+Retorna uma relação de registros existentes na persistência de acordo a relação de argumentos e opções fornecidas.
+
+```
+$result = (new Produto())
+    ->select();
+```
+
+### Update
+
+Atualiza um registro existente na persistência de acordo com as informações atribuidas ao active record.
+
+```
+$instance = Produto::make(
+    [
+        'empcodigo' => 264,
+        'procodigo' => 67,
+    ]
+)->search();
+
+$instance->prodescricao = 'EMP 264 UPDATE TEST [ ' . Date('Y-m-d H:m:s') . ']';
+$instance->giccodigo = 2;
+
+$instance->update();
+```
+
+## Change log
+
+Acompanhe o [CHANGELOG](CHANGELOG.md) para informações sobre atualizações recentes.
+
+## Testing
+
+(Em desenvolvimento)
+
+```
+$ composer test
+```
+
+## License
+
+The MIT License (MIT). Verifique [LICENSE](LICENSE.MD) para mais informações.

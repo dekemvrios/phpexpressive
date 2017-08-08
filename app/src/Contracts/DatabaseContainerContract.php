@@ -2,7 +2,7 @@
 
 namespace Solis\Expressive\Contracts;
 
-use Solis\PhpSchema\Contracts\SchemaContract;
+use Solis\Expressive\Schema\Contracts\SchemaContract;
 use Solis\Breaker\TException;
 
 /**
@@ -72,12 +72,13 @@ interface DatabaseContainerContract
 
     /**
      * @param ExpressiveContract $model
+     * @param boolean            $dependencies
      *
      * @return ExpressiveContract
      *
      * @throws TException
      */
-    public function last(ExpressiveContract $model);
+    public function last(ExpressiveContract $model, $dependencies = true);
 
     /**
      * @param ExpressiveContract $model
@@ -98,30 +99,9 @@ interface DatabaseContainerContract
     public function patch(ExpressiveContract $model);
 
     /**
-     * @return SchemaContract
+     * @param ExpressiveContract $model
      *
-     * @throws TException
+     * @return ExpressiveContract|boolean
      */
-    public function getSchema();
-
-    /**
-     * @param SchemaContract $schema
-     *
-     * @throws TException
-     */
-    public function setSchema(SchemaContract $schema);
-
-    /**
-     * @param $table
-     *
-     * @throws TException
-     */
-    public function setTable($table);
-
-    /**
-     * @return string
-     *
-     * @throws TException
-     */
-    public function getTable();
+    public function replicate(ExpressiveContract $model);
 }

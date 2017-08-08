@@ -1,0 +1,29 @@
+version: '3'
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html
+      - ./site.conf:/etc/nginx/conf.d/default.conf
+
+  php:
+    build:
+      context: .
+      args:
+        - INSTALL_XDEBUG=${INSTALL_XDEBUG}
+    ports:
+      - "9090:9000"
+    expose:
+      - "9000"
+    volumes:
+      - .:/var/www/html
+    environment:
+      - XDEBUG_CONFIG=remote_host=${IP}
+      - DEBUG=${DEBUG:-0}
+      - DB_HOST=${DB_HOST}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_DRIVER=${DB_DRIVER}

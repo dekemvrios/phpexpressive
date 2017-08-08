@@ -2,7 +2,7 @@
 
 namespace Solis\Expressive\Contracts;
 
-use Solis\PhpSchema\Contracts\SchemaContract;
+use Solis\Expressive\Schema\Contracts\SchemaContract;
 use Solis\Breaker\TException;
 
 /**
@@ -12,25 +12,6 @@ use Solis\Breaker\TException;
  */
 interface ExpressiveContract
 {
-    /**
-     * @return SchemaContract
-     */
-    public function getSchema();
-
-    /**
-     * @param SchemaContract $schema
-     */
-    public function setSchema(SchemaContract $schema);
-
-    /**
-     * @param $table
-     */
-    public function setTable($table);
-
-    /**
-     * @return string
-     */
-    public function getTable();
 
     /**
      * @param array $arguments
@@ -78,11 +59,13 @@ interface ExpressiveContract
     public function count(array $arguments = []);
 
     /**
+     * @param boolean $dependencies
+     * 
      * @return ExpressiveContract
      *
      * @throws TException
      */
-    public function last();
+    public function last($dependencies = true);
 
     /**
      * @return boolean
@@ -97,6 +80,11 @@ interface ExpressiveContract
      * @throws TException
      */
     public function patch();
+
+    /**
+     * @return ExpressiveContract|boolean
+     */
+    public function replicate();
 
     /**
      * @return string
