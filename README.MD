@@ -148,7 +148,7 @@ $Produto = Produto::make(
 
 #### Delete
 
-Deleta um registro na persistência de acordo com os valores fornecidos para construção do objeto por meio do make.
+Deleta um registro na persistência de acordo com as informações atribuidas ao active record.
 
 ```
 Produto::make(
@@ -161,7 +161,7 @@ Produto::make(
 
 #### Last
 
-Retorna o último registro na persistencia de acordo com os valores chaves definidos no schema.
+Retorna o último registro na persistencia de acordo com as informações atribuidas ao active record.
 
 ```
 Produto::make([
@@ -171,7 +171,7 @@ Produto::make([
 
 ### Replicate
 
-Replica um registro existente na persistência de acordo com os valores fornecidos para o método make.
+Replica um registro existente na persistência de acordo com as informações atribuidas ao active record.
 
 ```
 $instance = Produto::make([
@@ -183,7 +183,7 @@ $instance->replicate();
 
 ### Search
 
-Retorna um registro existente na persistência de acordo com os valores fornecidos para o método make.
+Retorna um registro existente na persistência de acordo com as informações atribuidas ao active record.
 
 ```
 $instance = Produto::make([
