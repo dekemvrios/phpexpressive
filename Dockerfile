@@ -19,11 +19,3 @@ RUN if [ "${INSTALL_XDEBUG}" == true ]; then \
         && echo "xdebug.remote_port=9000" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
         && apk del --purge g++ ;\
     fi
-
-# App Structure
-RUN mkdir -p /var/www/html/app/logs && chmod 777 -R /var/www/html/app/logs/
-
-ENV ENV="/etc/profile"
-RUN echo "alias test='php vendor/bin/phpunit tests/'" >> /etc/profile
-
-WORKDIR /var/www/html/app
