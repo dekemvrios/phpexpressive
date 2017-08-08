@@ -107,8 +107,24 @@ $Produto = Produto::make(
 );
 ```
 
-O método make retorna uma instância com acessos as operações de persistência disponibilizadas pela biblioteca.
+O método start é responsável por construir um objeto Schema a partir do caminho fornecido e atribuir a respectiva classe. 
 
+O método make retorna uma instância com acesso as operações de persistência disponibilizadas pela biblioteca.
+
+### Operations
+
+#### Count
+
+```
+(new Produto())->count(
+    [
+        [
+            "column" => "empcodigo",
+            "value"  => 264
+        ]
+    ]
+)
+```
 
 ## Change log
 
