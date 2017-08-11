@@ -2,6 +2,11 @@
 
 Todas as modificações relevantes ao  `expressive` serão documentadas nesse arquivo seguindo o especificado em [KEEP CHANGELOG](http://keepachangelog.com/).
 
+## 1.0.1  - 2017-08-11
+
+## Fixed
+- Adicionado método para realizar rollback de transação ativa caso retorno false ao atualizar active record.
+
 ## 1.0.0  - 2017-08-08
 
 ## Added

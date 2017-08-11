@@ -117,6 +117,8 @@ final class UpdateBuilder
             );
 
             if (empty($fields)) {
+                Database::rollbackActiveTransaction($model);
+
                 return false;
             }
 
