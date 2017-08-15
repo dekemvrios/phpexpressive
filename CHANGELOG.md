@@ -2,6 +2,11 @@
 
 Todas as modificações relevantes ao  `expressive` serão documentadas nesse arquivo seguindo o especificado em [KEEP CHANGELOG](http://keepachangelog.com/).
 
+## 1.0.3  - 2017-08-15
+
+## Changed
+- Atualizado método para tratamento de dependências no contexto Patch de modo a retornar resultado boleano para operação. 
+
 ## 1.0.2  - 2017-08-15
 
 ## Fixed

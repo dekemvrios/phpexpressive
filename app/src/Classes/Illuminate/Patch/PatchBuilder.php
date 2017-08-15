@@ -104,14 +104,17 @@ final class PatchBuilder
             }
             $record = $this->getUpdateBuilder()->update($model);
 
-            if (empty($record)) {
-                return $record;
-            }
-
-            $this->hasManyDependencies(
+            // valida se houveram alterações nas dependencias do registro
+            $updateHasMany = $this->hasManyDependencies(
                 $model,
                 $original
             );
+
+            if (empty($record) && empty($updateHasMany)) {
+                Database::rollbackActiveTransaction($model);
+
+                return $record;
+            }
         } catch (\PDOException $exception) {
 
             Database::rollbackActiveTransaction($model);
@@ -136,6 +139,8 @@ final class PatchBuilder
      * @param ExpressiveContract $original
      *
      * @throws TException
+     *
+     * @return boolean
      */
     public function hasManyDependencies(
         $model,
@@ -143,9 +148,10 @@ final class PatchBuilder
     ) {
         $dependencies = $model::$schema->getDependencies('hasMany');
         if (empty($dependencies)) {
-            return;
+            return false;
         }
 
+        $hasChanges = false;
         foreach (array_values($dependencies) as $dependency) {
 
             $originalValue = $original->{$dependency->getProperty()};
@@ -153,12 +159,17 @@ final class PatchBuilder
             $updatedValue = $model->{$dependency->getProperty()};
 
             if (!empty($originalValue) || !empty($updatedValue)) {
-                $this->getRelationshipBuilder()->hasMany(
+                $update = $this->getRelationshipBuilder()->hasMany(
                     $model,
                     $original,
                     $dependency
                 );
+                if (!empty($update)) {
+                    $hasChanges = true;
+                }
             }
         }
+
+        return $hasChanges;
     }
 }

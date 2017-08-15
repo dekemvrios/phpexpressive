@@ -2,6 +2,7 @@
 
 namespace Solis\Expressive\Classes\Illuminate\Patch;
 
+use Solis\Breaker\Abstractions\TExceptionAbstract;
 use Solis\Expressive\Abstractions\ExpressiveAbstract;
 use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Expressive\Contracts\ExpressiveContract;
@@ -19,7 +20,7 @@ final class RelationshipBuilder
      * @param ExpressiveContract $original
      * @param PropertyContract   $dependency
      *
-     * @return ExpressiveContract
+     * @return ExpressiveContract|boolean
      *
      * @throws TException
      */
@@ -28,34 +29,59 @@ final class RelationshipBuilder
         $original,
         $dependency
     ) {
+
+        // remove todas as dependencias vinculados ao registro original
+        $hasOriginalChanges = $this->parseOriginalDependencyValues(
+            $original,
+            $dependency
+        );
+
+        // verifica se serão criadas novas depencias para o respectivo model
+        $hasNewChanges = $this->parseNewDependecyValues(
+            $model,
+            $dependency
+        );
+
+        // retorna true apenas se houveram alterações na persistência
+        return !empty($hasOriginalChanges) || !empty($hasNewChanges) ? true : false;
+    }
+
+    /**
+     * @param ExpressiveContract $model
+     * @param PropertyContract   $dependency
+     *
+     * @return boolean
+     *
+     * @throws TExceptionAbstract
+     */
+    private function parseNewDependecyValues(
+        $model,
+        $dependency
+    ) {
         $field = $dependency->getComposition()->getRelationship()->getSource()->getField();
 
         $refers = $dependency->getComposition()->getRelationship()->getSource()->getRefers();
 
-        $originalArray = $original->{$dependency->getProperty()};
-
-        $originalArray = !is_array($originalArray) ? [$originalArray] : $originalArray;
-
-        if (!empty($originalArray)) {
-            foreach ($originalArray as $originalDependency) {
-                if (!is_null($originalDependency) && $originalDependency instanceof ExpressiveAbstract) {
-                    if (!empty($originalDependency->delete())) {
-                        throw new TException(
-                            __CLASS__,
-                            __METHOD__,
-                            'Error removing dependency has many in patch method',
-                            500
-                        );
-                    }
-                };
-            }
-        }
-
         $dependencyArray = $model->{$dependency->getProperty()};
 
+        /**
+         * @var ExpressiveContract[] $dependencyArray
+         */
         $dependencyArray = !is_array($dependencyArray) ? [$dependencyArray] : $dependencyArray;
 
+        $dependencyArray = array_values(array_filter($dependencyArray, function ($item){
+            return $item instanceof ExpressiveAbstract ? true : false;
+        }));
+
+        if (empty($dependencyArray)) {
+            // como não há dependências vinculadas, retorna false visto que não ocorreram alterações
+            return false;
+        }
+
         foreach ($dependencyArray as $dependencyValue) {
+            /**
+             * @var ExpressiveContract $dependencyValue
+             */
             $dependencyValue->$refers = $model->$field;
 
             $sharedFields = $dependency->getComposition()->getRelationship()->getSharedFields();
@@ -68,5 +94,51 @@ final class RelationshipBuilder
 
             $dependencyValue->create();
         }
+
+        // considera que ocorreram alterações devido a remoção das dependências
+        return true;
+    }
+
+    /**
+     * @param ExpressiveContract $original
+     * @param PropertyContract   $dependency
+     *
+     * @return boolean
+     *
+     * @throws TExceptionAbstract
+     */
+    private function parseOriginalDependencyValues(
+        $original,
+        $dependency
+    ) {
+        $originalArray = $original->{$dependency->getProperty()};
+
+        $originalArray = !is_array($originalArray) ? [$originalArray] : $originalArray;
+
+        $originalArray = array_values(array_filter($originalArray, function ($item){
+            return $item instanceof ExpressiveAbstract ? true : false;
+        }));
+
+        if(empty($originalArray)){
+            // como não há dependências vinculadas, retorna false visto que não ocorreram alterações
+            return false;
+        }
+
+        foreach ($originalArray as $originalDependency) {
+            /**
+             * @var ExpressiveContract $originalDependency
+             */
+            if (empty($originalDependency->delete())) {
+                throw new TException(
+                    __CLASS__,
+                    __METHOD__,
+                    'Error removing dependency has many in patch method',
+                    500
+                );
+            }
+        }
+
+        // considera que ocorreram alterações devido a remoção das dependências
+        return true;
     }
 }
