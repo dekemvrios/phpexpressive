@@ -2,6 +2,7 @@
 
 namespace Solis\Expressive\Classes\Illuminate\Patch;
 
+use Solis\Expressive\Abstractions\ExpressiveAbstract;
 use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Solis\Breaker\TException;
@@ -37,13 +38,15 @@ final class RelationshipBuilder
 
         if (!empty($originalArray)) {
             foreach ($originalArray as $originalDependency) {
-                if (empty($originalDependency->delete())) {
-                    throw new TException(
-                        __CLASS__,
-                        __METHOD__,
-                        'Error removing dependency has many in patch method',
-                        500
-                    );
+                if (!is_null($originalDependency) && $originalDependency instanceof ExpressiveAbstract) {
+                    if (!empty($originalDependency->delete())) {
+                        throw new TException(
+                            __CLASS__,
+                            __METHOD__,
+                            'Error removing dependency has many in patch method',
+                            500
+                        );
+                    }
                 };
             }
         }

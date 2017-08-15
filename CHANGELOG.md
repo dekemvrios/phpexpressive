@@ -2,6 +2,11 @@
 
 Todas as modificações relevantes ao  `expressive` serão documentadas nesse arquivo seguindo o especificado em [KEEP CHANGELOG](http://keepachangelog.com/).
 
+## 1.0.2  - 2017-08-15
+
+## Fixed
+- Adicionado validação ao remover array de dependências na manipulação realizada pelo método hasMany implementada em RelationshipBuilder do contexto Patch.
+
 ## 1.0.1  - 2017-08-11
 
 ## Fixed
