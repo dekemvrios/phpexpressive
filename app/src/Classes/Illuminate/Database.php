@@ -18,12 +18,12 @@ final class Database
     /**
      * @var boolean
      */
-    public static $hasActiveTransaction;
+    private static $hasActiveTransaction = false;
 
     /**
      * @var string
      */
-    public static $owner;
+    private static $owner;
 
     /**
      * @param array $params
@@ -88,7 +88,7 @@ final class Database
      */
     public static function beginTransaction($model)
     {
-        if (!isset(self::$hasActiveTransaction)) {
+        if (empty(self::$hasActiveTransaction)) {
             Capsule::connection()->beginTransaction();
 
             self::$hasActiveTransaction = true;
@@ -104,7 +104,7 @@ final class Database
      */
     public static function commitActiveTransaction($model)
     {
-        if (isset(self::$hasActiveTransaction)) {
+        if (!empty(self::$hasActiveTransaction)) {
             if ($model->getUniqid() === self::$owner) {
 
                 Capsule::connection()->commit();
@@ -121,7 +121,7 @@ final class Database
      */
     public static function rollbackActiveTransaction($model)
     {
-        if (isset(self::$hasActiveTransaction)) {
+        if (!empty(self::$hasActiveTransaction)) {
             if ($model->getUniqid() === self::$owner) {
                 Capsule::connection()->rollBack();
 
