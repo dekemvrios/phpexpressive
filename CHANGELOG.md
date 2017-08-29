@@ -2,6 +2,16 @@
 
 Todas as modificações relevantes ao  `expressive` serão documentadas nesse arquivo seguindo o especificado em [KEEP CHANGELOG](http://keepachangelog.com/).
 
+## 1.1.0  - 2017-08-29
+
+## Changed
+- Definido como padrão o retorno do método select como array de registros quando sucesso na consulta.
+
+## 1.0.4  - 2017-07-23
+
+## Fixed
+- Substituido utilização expressão isset por empty no controle na classe controladora de transações.
+
 ## 1.0.3  - 2017-08-15
 
 ## Changed

@@ -51,7 +51,7 @@ final class SelectBuilder
      * @param array              $options
      * @param ExpressiveContract $model
      *
-     * @return ExpressiveContract[]|ExpressiveContract|boolean
+     * @return ExpressiveContract[]|boolean
      *
      * @throws TException
      */
@@ -206,7 +206,7 @@ final class SelectBuilder
             }
         }, $result);
 
-        return count($instances) > 1 ? $instances : $instances[0];
+        return $instances;
     }
 
     /**
@@ -399,11 +399,17 @@ final class SelectBuilder
             }
         }
 
-        return $this->select(
+        $select = $this->select(
             $arguments,
             $options,
             $model
         );
+
+        if (is_array($select) && !empty($select)) {
+            return $select[0];
+        }
+
+        return $select;
     }
 
     /**

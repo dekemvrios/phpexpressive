@@ -18,7 +18,7 @@ interface DatabaseContainerContract
      * @param array              $options
      * @param ExpressiveContract $model
      *
-     * @return ExpressiveContract[]|ExpressiveContract|boolean
+     * @return ExpressiveContract[]boolean
      *
      * @throws TException
      */

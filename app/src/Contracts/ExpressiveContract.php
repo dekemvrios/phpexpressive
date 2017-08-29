@@ -17,7 +17,7 @@ interface ExpressiveContract
      * @param array $arguments
      * @param array $options
      *
-     * @return ExpressiveContract[]|ExpressiveContract|boolean
+     * @return ExpressiveContract[]|boolean
      *
      * @throws TException
      */

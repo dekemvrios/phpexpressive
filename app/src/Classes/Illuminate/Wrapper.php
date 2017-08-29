@@ -172,7 +172,7 @@ class Wrapper implements DatabaseContainerContract
      * @param array              $options
      * @param ExpressiveContract $model
      *
-     * @return object|array|boolean
+     * @return array|boolean
      *
      * @throws TException
      */

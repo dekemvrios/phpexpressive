@@ -139,7 +139,7 @@ final class RelationshipBuilder
             }
         }
         if (!empty($hasMany)) {
-            $model->{$dependency->getProperty()} = count($hasMany) > 1 ? $hasMany : $hasMany[0];
+            $model->{$dependency->getProperty()} = $hasMany;
         }
         return $model;
     }
