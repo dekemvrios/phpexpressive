@@ -1,0 +1,30 @@
+{
+  "database": {
+    "repository": "pessoa",
+    "keys": "ID"
+  },
+  "properties": [
+    {
+      "alias": "proID",
+      "property": "ID",
+      "type": "int",
+      "behavior": {
+        "required": "false",
+        "autoIncrement": "true"
+      }
+    },
+    {
+      "alias": "proNome",
+      "property": "nome",
+      "type": "string"
+    },
+    {
+      "alias": "proCidade",
+      "property": "cidade",
+      "type": "json",
+      "composition": {
+        "class": "Solis\\Expressive\\Sample\\Cidade\\Repository\\Cidade"
+      }
+    }
+  ]
+}

@@ -1,40 +1,91 @@
 #!/bin/sh
 
-# Endereço de ip utilizado na definição da sessão do XDEBUG.
+# |----------------------------------------------------------------------------
+# | Script de inicialização do container docker para executar a aplicação
+# |----------------------------------------------------------------------------
+# |
+# | Valida o tipo de script a ser executado de acordo com o argumento fornecido.
+# | Caso nenhum argumento for fornecido o container será inicializado. Para que
+# | seja desligado é necessário que a literal 'down' seja fornecida como argumento.
+# |
+arg="$1"
 
+type_script="up -d"
+case "$arg" in
+"down") type_script="down";;
+*)
+esac
+
+# |----------------------------------------------------------------------------
+# | Definir valor de enderço de IP da máquina local
+# |----------------------------------------------------------------------------
+# |
+# | Captura valor de enderço de IP da máquina local de modo a ser utilizada na
+# | conexão com o debugger da aplicação.
+# |
 ip_addres=$(eval hostname -I | awk '{print $1}')
 
-# Especifica a instalação do Debugger. Deve permanecer desativado caso necessário validação de performance
-# de execução da biblioteca.
+# |----------------------------------------------------------------------------
+# | Definir valor do diretório no qual o manager está localizado
+# |----------------------------------------------------------------------------
+# |
+# | Captura o caminho para o diretório atual e o atribui como diretório onde o
+# | manager está localizado. Este sera utilizado para definição dos subdiretórios
+# | da aĺicação.
+# |
+current_directory=$(eval pwd)
 
-use_xdebug=false
+# |----------------------------------------------------------------------------
+# | Definir valor do diretório root da aplicação
+# |----------------------------------------------------------------------------
+# |
+# | Utiliza o valor de current_directory de modo a definir o caminho do root da
+# | aplicação, que será mapeado no container docker.
+# |
+nginx_root=$current_directory
 
-# Configurações da conexão com a base de dados utilizada pelo ORM.
+# |----------------------------------------------------------------------------
+# | Definir valor do caminho para o arquivo docker
+# |----------------------------------------------------------------------------
+# |
+# | Com base no valor de current_directory, define o caminho para o arquivo docker
+# | que será utilizado para iniciar a aplicação.
+# |
+docker_compose_file=$current_directory/sample/environment/docker/docker-compose.yml
 
-# database configuration {
-    # Driver utilizado para conexão
-    db_driver=??
+docker_file=$current_directory/sample/environment/docker/Dockerfile
 
-    # Nome da base de dados
-    db_name=??
+# |----------------------------------------------------------------------------
+# | Definir valor do caminho para o arquivo de configuração apache
+# |----------------------------------------------------------------------------
+# |
+# | Com base no valor de current_directory, define o caminho para o arquivo nginx
+# | utilizado para configuração do ambiente servidor.
+# |
+nginx_conf=$current_directory/sample/environment/nginx/site.conf
 
-    # Usuário com privilégios de escrita
-    db_user=??
+# |----------------------------------------------------------------------------
+# | Definir valor do caminho para o diretório que contém as variáveis de ambiente
+# |----------------------------------------------------------------------------
+# |
+# | Com base no valor de current_directory, define o caminho para o diretório que
+# | contém as variáveis de ambiente que serão utilizadas pela aplicação.
+# |
+variables_path=$current_directory/sample/environment/variables
 
-    # Senha do respectivo usuário
-    db_pass=??
-
-    # Host qual contém a base de dados
-    db_host=??
-# }
-
-# Inicialização do container docker de acordo com as definições anteriores.
+# |----------------------------------------------------------------------------
+# | Inicializa a aplicação
+# |----------------------------------------------------------------------------
+# |
+# | Executa o comando docker-compose de modo a inicializar a aplicação com base
+# | nos valores definidos anteriormente.
+# |
 
 IP=$ip_addres \
-INSTALL_XDEBUG=$use_xdebug \
-DB_DRIVER=$db_driver \
-DB_HOST=$db_host \
-DB_NAME=$db_name \
-DB_USER=$db_user \
-DB_PASS=$db_pass \
-docker-compose up -d
+NGINX_ROOT=$nginx_root \
+NGINX_CONF=$nginx_conf \
+VARIABLES_PATH=$variables_path \
+INSTALL_XDEBUG=true \
+DEBUG=1 \
+DOCKER_FILE=$docker_file \
+docker-compose -f $docker_compose_file $type_script

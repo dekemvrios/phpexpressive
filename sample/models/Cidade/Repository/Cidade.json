@@ -1,0 +1,19 @@
+{
+  "properties": [
+    {
+      "alias": "proID",
+      "property": "ID",
+      "type": "int"
+    },
+    {
+      "alias": "proNome",
+      "property": "nome",
+      "type": "string"
+    },
+    {
+      "alias": "proIbgeId",
+      "property": "ibgeId",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+         Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="0.9.0-beta2" last-position="0,0" last-zoom="1"
+	 default-schema="public" default-owner="postgres">
+<database name="db-expressive">
+</database>
+
+<schema name="public" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<table name="pessoa">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="380" y="140"/>
+	<column name="ID" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="nome">
+		<type name="varchar" length="0"/>
+	</column>
+	<column name="cidade">
+		<type name="jsonb" length="0"/>
+	</column>
+	<constraint name="ID" type="pk-constr" table="public.pessoa">
+		<columns names="ID" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+</dbmodel>
