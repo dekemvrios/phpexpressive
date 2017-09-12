@@ -10,13 +10,15 @@ try {
     require_once '../../connection/connection.php';
 
     $Pessoa = Pessoa::make([
-            "proNome"   => 'Fulano - ' . uniqid(rand()),
-            "proCidade" => [
-                    "proID"     => 1,
-                    "proNome"   => "Pouso Redondo",
-                    "proIbgeId" => "1",
-            ],
-    ]);
+       "proCodigo"           => 1,
+       "proNome"             => 'Fulano - ' . uniqid(rand()),
+       "proInscricaoFederal" => '' . rand(11111111111, 99999999999) . '',
+       "proCidade"           => [
+           "proID"     => 1,
+           "proNome"   => "Pouso Redondo",
+           "proIbgeId" => "1",
+       ],
+   ]);
 
     $record = $Pessoa->create();
     if (empty($record)) {

@@ -10,13 +10,37 @@
       "type": "int",
       "behavior": {
         "required": "false",
-        "autoIncrement": "true"
+        "autoIncrement": "true",
+        "whenReplicate": {
+          "action": "last+1"
+        }
       }
     },
     {
       "alias": "proNome",
       "property": "nome",
       "type": "string"
+    },
+    {
+      "alias": "proCodigo",
+      "property": "codigo",
+      "type": "int",
+      "behavior": {
+        "whenReplicate" : {
+          "action" : "last+1"
+        }
+      }
+    },
+    {
+      "alias": "proInscricaoFederal",
+      "property": "inscricaoFederal",
+      "type": "string",
+      "behavior": {
+        "required": "false",
+        "whenReplicate": {
+          "action": "clean"
+        }
+      }
     },
     {
       "alias": "proCidade",

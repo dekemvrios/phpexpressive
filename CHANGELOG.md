@@ -2,6 +2,13 @@
 
 Todas as modificações relevantes ao  `expressive` serão documentadas nesse arquivo seguindo o especificado em [KEEP CHANGELOG](http://keepachangelog.com/).
 
+## 1.2.0 - 2017-09-11
+
+## Added
+- Implementado conjunto whenReplicate no conjunto behavior de propriedades, definindo o comportamento do campo quando
+em rotina de replicação. Ações válidas são 'clean', 'keep', 'last+1' e static, que respectivamente representam remoção 
+do valor, manter valor, assumir valor do último registro somado a 1 e atribuir valor fixo ao campo. 
+
 ## 1.1.0  - 2017-08-29
 
 ## Changed

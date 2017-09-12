@@ -2,6 +2,7 @@
 
 namespace Solis\Expressive\Classes\Illuminate\Replicate;
 
+use Composer\DependencyResolver\Transaction;
 use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Expressive\Classes\Illuminate\Insert\InsertBuilder;
 use Solis\Expressive\Abstractions\ExpressiveAbstract;
@@ -10,6 +11,7 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Solis\Expressive\Classes\Illuminate\Database;
 use Solis\Breaker\TException;
+use Solis\Expressive\Schema\Contracts\SchemaContract;
 
 /**
  * Class PatchBuilder
@@ -94,9 +96,11 @@ final class ReplicateBuilder
             // verify direct dependencies to $model
             $model = $this->hasOneDependency($model);
 
-            Capsule::table($table)->insert(
-                $this->getInsertBuilder()->getInsertFields($model)
-            );
+            $insertFields = $this->getInsertBuilder()->getInsertFields($model);
+
+            $replicateFields = $this->handleFieldsOnReplicateAction($model, $insertFields);
+
+            Capsule::table($table)->insert($replicateFields);
         } catch (\PDOException $exception) {
             Database::rollbackActiveTransaction($model);
             throw new TException(
@@ -119,7 +123,7 @@ final class ReplicateBuilder
 
         Database::commitActiveTransaction($model);
         // return the last inserted entry
-        return $model;
+        return $model->search();
     }
     /**
      * @param ExpressiveContract $model
@@ -262,5 +266,57 @@ final class ReplicateBuilder
                 );
             }
         }
+    }
+
+
+    /**
+     * @param ExpressiveContract $model
+     * @param array              $insertFields
+     *
+     * @return array
+     */
+    private function handleFieldsOnReplicateAction($model, $insertFields)
+    {
+
+        /**
+         * @var SchemaContract $schema
+         */
+        $schema = $model::$schema;
+
+        foreach ($schema->getProperties() as $property) {
+            if (empty($property->getBehavior()->getWhenReplicate())) {
+                continue;
+            }
+
+            if (!in_array($property->getField(), array_keys($insertFields))) {
+                continue;
+            }
+
+            $value = $insertFields[$property->getField()];
+            switch ($property->getBehavior()->getWhenReplicate()->getAction()) {
+                case 'keep':
+                    break;
+                case 'static':
+                    $value = $property->getBehavior()->getWhenReplicate()->getValue();
+                    break;
+                case 'clean':
+                    $value = null;
+                    break;
+                case 'last+1':
+                    $last = $model->last();
+                    if (empty($last)) {
+                        break;
+                    }
+
+                    $lastValue = $last->{$property->getProperty()};
+
+                    $value = !empty($lastValue) ? $lastValue + 1 : 1;
+                    break;
+            }
+
+            $insertFields[$property->getField()] = $value;
+        }
+
+        return $insertFields;
     }
 }
