@@ -26,8 +26,8 @@
       "property": "codigo",
       "type": "int",
       "behavior": {
-        "whenReplicate" : {
-          "action" : "last+1"
+        "whenReplicate": {
+          "action": "last+1"
         }
       }
     },
@@ -48,6 +48,27 @@
       "type": "json",
       "composition": {
         "class": "Solis\\Expressive\\Sample\\Cidade\\Repository\\Cidade"
+      }
+    },
+    {
+      "alias": "proEndereco",
+      "property": "endereco",
+      "type": "composition",
+      "behavior": {
+        "required": "false",
+        "whenReplicate": {
+          "action": "clean"
+        }
+      },
+      "composition": {
+        "class": "Solis\\Expressive\\Sample\\Endereco\\Repository\\Endereco",
+        "relationship": {
+          "type": "hasMany",
+          "source": {
+            "field": "ID",
+            "refers": "pessoaID"
+          }
+        }
       }
     }
   ]

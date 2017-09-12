@@ -1,0 +1,42 @@
+{
+  "database": {
+    "repository": "endereco",
+    "keys": "ID"
+  },
+  "properties": [
+    {
+      "alias": "proID",
+      "property": "ID",
+      "type": "int",
+      "behavior": {
+        "required": "false",
+        "autoIncrement": "true"
+      }
+    },
+    {
+      "alias": "proPessoaID",
+      "property": "pessoaID",
+      "type": "int"
+    },
+    {
+      "alias": "proLogradouro",
+      "property": "logradouro",
+      "type": "string"
+    },
+    {
+      "alias": "proBairro",
+      "property": "bairro",
+      "type": "string"
+    },
+    {
+      "alias": "proCep",
+      "property": "cep",
+      "type": "string"
+    },
+    {
+      "alias": "proCidade",
+      "property": "cidade",
+      "type": "string"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 <?php
 
-namespace Solis\Expressive\Sample\Pessoa\Repository;
+namespace Solis\Expressive\Sample\Endereco\Repository;
 
 use Solis\Expressive\Classes\Illuminate\Expressive;
 use Solis\Expressive\Magic\Concerns\HasMagic;
@@ -8,18 +8,18 @@ use Solis\Expressive\Magic\Concerns\HasMagic;
 /**
  * Class Pessoa
  *
- * @package Solis\Expressive\Sample\Pessoa\Repository
+ * @package Solis\Expressive\Sample\Endereco\Repository
  */
-class Pessoa extends Expressive
+class Endereco extends Expressive
 {
     use HasMagic;
 
     protected $ID;
-    protected $codigo;
-    protected $nome;
+    protected $pessoaID;
+    protected $logradouro;
+    protected $bairro;
+    protected $cep;
     protected $cidade;
-    protected $inscricaoFederal;
-    protected $endereco;
 
     /**
      * Pessoa constructor.
@@ -28,6 +28,6 @@ class Pessoa extends Expressive
     {
         parent::__construct();
 
-        $this->start(dirname(__FILE__) . '/Pessoa.json');
+        $this->start(dirname(__FILE__) . '/Endereco.json');
     }
 }

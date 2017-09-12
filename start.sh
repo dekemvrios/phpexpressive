@@ -88,4 +88,4 @@ VARIABLES_PATH=$variables_path \
 INSTALL_XDEBUG=true \
 DEBUG=1 \
 DOCKER_FILE=$docker_file \
-docker-compose -f $docker_compose_file $type_script
+docker-compose -f $docker_compose_file up --build

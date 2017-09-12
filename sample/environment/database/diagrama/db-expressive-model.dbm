@@ -15,7 +15,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="public"/>
 	<role name="postgres"/>
 	<position x="380" y="140"/>
-	<column name="ID" not-null="true">
+	<column name="&quot;ID&quot;" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
 	<column name="nome">
@@ -24,9 +24,58 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="cidade">
 		<type name="jsonb" length="0"/>
 	</column>
+	<column name="codigo">
+		<type name="integer" length="0"/>
+		<comment><![CDATA[codigo]]></comment>
+	</column>
+	<column name="inscricaoFederal">
+		<type name="varchar" length="0"/>
+		<comment><![CDATA[inscricaoFederal]]></comment>
+	</column>
 	<constraint name="ID" type="pk-constr" table="public.pessoa">
 		<columns names="ID" ref-type="src-columns"/>
 	</constraint>
 </table>
+
+<table name="endereco">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="820" y="200"/>
+	<column name="&quot;ID&quot;" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="pessoaID" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="logradouro" not-null="true">
+		<type name="varchar" length="0"/>
+	</column>
+	<column name="bairro" not-null="true">
+		<type name="varchar" length="0"/>
+		<comment><![CDATA[bairro]]></comment>
+	</column>
+	<column name="cep" not-null="true">
+		<type name="varchar" length="0"/>
+		<comment><![CDATA[cep]]></comment>
+	</column>
+	<column name="cidade" not-null="true">
+		<type name="varchar" length="0"/>
+		<comment><![CDATA[cidade]]></comment>
+	</column>
+	<constraint name="ID_endereco" type="pk-constr" table="public.endereco">
+		<columns names="ID" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<constraint name="pessoaID" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="public.pessoa" table="public.endereco">
+	<columns names="pessoaID" ref-type="src-columns"/>
+	<columns names="ID" ref-type="dst-columns"/>
+</constraint>
+
+<relationship name="rel_endereco_pessoa" type="relfk"
+	 src-table="public.endereco"
+	 dst-table="public.pessoa"
+	 src-required="false" dst-required="false"/>
 
 </dbmodel>

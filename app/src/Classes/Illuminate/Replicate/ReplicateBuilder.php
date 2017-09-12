@@ -243,6 +243,10 @@ final class ReplicateBuilder
             return;
         }
 
+        if ($dependency->getBehavior()->getWhenReplicate()->getAction() === 'clean') {
+            return;
+        }
+
         $field = $dependency->getComposition()->getRelationship()->getSource()->getField();
 
         $refers = $dependency->getComposition()->getRelationship()->getSource()->getRefers();

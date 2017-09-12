@@ -3,7 +3,7 @@
 require_once '../../../../vendor/autoload.php';
 
 use Solis\Expressive\Sample\Pessoa\Repository\Pessoa;
-use Solis\Breaker\TException;
+use Solis\Breaker\Abstractions\TExceptionAbstract;
 
 try {
 
@@ -13,6 +13,6 @@ try {
 
     echo json_encode($last->toArray());
 
-} catch (TException $exception) {
+} catch (TExceptionAbstract $exception) {
     echo $exception->toJson();
 }
