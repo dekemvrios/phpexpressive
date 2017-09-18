@@ -1,6 +1,9 @@
 {
   "name": "solis/expressive",
-  "description": "Expressive is a ORM library structured by schemas",
+  "type": "library",
+  "description": "Object-Relational-Mapper para PHP",
+  "version": "v1.2.2",
+  "homepage": "https://github.com/rafaelbeecker/phpexpressive",
   "license": "MIT",
   "authors": [
     {
