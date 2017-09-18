@@ -179,8 +179,14 @@ final class UpdateBuilder
 
             // a alteração é desconsiderada caso a propriedade não possuir valor
             // e seu comportamento permitir valores em branco.
-            if (is_null($updatedProperty) && empty($property->getBehavior()->isRequired())) {
+            if (is_null($updatedProperty) && !$property->getBehavior()->isRequired()) {
                 continue;
+            }
+
+            // caso campo seja obrigatório e esteja como nulo no model a ser atualizado,
+            // considera-se o valor do model original para operação
+            if (is_null($updatedProperty) && $property->getBehavior()->isRequired()) {
+                $updatedProperty = $originalProperty;
             }
 
             // se o valor atribuido ao registro original for também
