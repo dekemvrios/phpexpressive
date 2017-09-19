@@ -2,7 +2,7 @@
 
 ## Expressive
 
-Expressive é uma biblioteca para mapeamento objeto relacional  construída sobre o illuminate/database [illuminate/database](https://github.com/illuminate/database), com definições de objetos baseada em arquivos de schema.
+Expressive é uma biblioteca para mapeamento objeto relacional  construída sobre o [illuminate/database](https://github.com/illuminate/database), com definições de objetos baseada em arquivos de schema.
 
 ## Install
 
@@ -19,41 +19,41 @@ Defina a estrutura de um objeto de acordo com as especificações do [phpschema]
 ```
 {
   "database": {
-    "repository": "tbproduto",
-    "keys": [
-      "empcodigo",
-      "procodigo"
-    ]
+    "repository": "pessoa",
+    "keys": "ID"
   },
   "properties": [
     {
-      "alias": "iEmpCodigo",
-      "property": "empcodigo",
-      "type": "int"
-    },
-    {
-      "alias": "iCodigo",
-      "property": "procodigo",
+      "alias": "proID",
+      "property": "ID",      
       "type": "int",
-      "behavior": {
-        "autoIncrement": "true",
-        "incrementalBehavior": "application"
+      "behavior": {        
+        "required": "false",
+        "autoIncrement": "true"
       }
     },
     {
-      "alias": "sDescricao",
-      "property": "prodescricao",
+      "alias": "proNome",
+      "property": "nome",      
       "type": "string"
     },
     {
-      "alias": "iGicCodigo",
-      "property": "giccodigo",
+      "alias": "proInscricaoFederal",
+      "property": "inscricaoFederal",      
+      "type": "string"
+    },
+    {
+      "alias": "proTipo",
+      "property": "tipo",      
       "type": "int"
     },
     {
-      "alias": "iGpcCodigo",
-      "property": "gpccodigo",
-      "type": "int"
+      "alias": "proSituacao",
+      "property": "situacao",      
+      "type": "int",
+      "behavior": {
+        "required":"false"
+      }
     }
   ]
 }
@@ -65,32 +65,26 @@ Uma Classe que utiliza a funcionalidade ORM fornecida pela biblioteca deve exten
 use Solis\Expressive\Classes\Illuminate\Expressive;
 use Solis\Expressive\Magic\Concerns\HasMagic;
 
-/**
- * Class Cst
- *
- * @package Sample\Postgres\Cst\Classes
- */
-class Cst extends Expressive
-{    
+class Pessoa extends Expressive
+{
     use HasMagic;
-    
-    protected $empcodigo;
-    protected $procodigo;
-    protected $prodescricao;
-    protected $giccodigo;
-    protected $gpccodigo;
-    protected $cstipicodigo;    
 
+    protected $ID;
+    protected $nome;
+    protected $inscricaoFederal;
+    protected $tipo;
+    protected $situacao;
+    
     /**
-     * Produto constructor.
+     * Pessoa constructor.
      */
     public function __construct()
     {
         parent::__construct();
 
-        $this->start(dirname(__FILE__) . '/Produto.json');
+        $this->start(dirname(__FILE__) . '/Pessoa.json');
     }
-}     
+}   
 ```
 
 O método start é responsável por construir um objeto Schema a partir do caminho fornecido e atribuir a respectiva classe.
@@ -98,15 +92,11 @@ O método start é responsável por construir um objeto Schema a partir do camin
 Uma classe extendo Expressive deve utilizar a trait HasMagic de modo ater acesso a funcionalidade de atribuição dinâmica por meio do método make.
 
 ```
-$Produto = Produto::make(
-    [
-        "procodigo"     => 1,
-        "empcodigo"     => 264,
-        "iGicCodigo"    => 1,
-        "iGpcCodigo"    => 1,
-        "prodescricao"  => 'test [ ' . uniqid(rand()) . ' ]',        
-    ]
-);
+$Pessoa = Pessoa::make([
+      "proNome"             => 'Fulano - ' . uniqid(rand()),
+      "proInscricaoFederal" => '' . rand(11111111111111, 99999999999999) . '',
+      "proTipo"             => 1      
+]);
 ``` 
 
 O método make retorna uma instância de ExpressiveAbstract com acesso as operações de persistência disponibilizadas pela biblioteca.
@@ -120,14 +110,9 @@ Relação de operações de persistência que podem ser utilizadas por uma inst�
 Retorna um valor inteiro representando a contagem de registros na persistência. 
 
 ```
-(new Produto())->count(
-    [
-        [
-            "column" => "empcodigo",
-            "value"  => 264
-        ]
-    ]
-)
+$count = (new Pessoa()) ->count()
+
+//$count = Pessoa::make([])->last($arguments = []);
 ```
 
 #### Create
@@ -135,15 +120,11 @@ Retorna um valor inteiro representando a contagem de registros na persistência.
 Cria um novo registro na persistência de acordo com os valores fornecidos para construção do objeto por meio do make.
 
 ```
-$Produto = Produto::make(
-    [
-        "procodigo"     => 1,
-        "empcodigo"     => 264,
-        "iGicCodigo"    => 1,
-        "iGpcCodigo"    => 1,
-        "prodescricao"  => 'test [ ' . uniqid(rand()) . ' ]'
-    ]
-)->create();
+Pessoa::make([
+      "proNome"             => 'Fulano - ' . uniqid(rand()),
+      "proInscricaoFederal" => '' . rand(11111111111111, 99999999999999) . '',
+      "proTipo"             => 1      
+])->create();
 ```
 
 #### Delete
@@ -151,12 +132,10 @@ $Produto = Produto::make(
 Deleta um registro na persistência de acordo com as informações atribuidas ao active record.
 
 ```
-Produto::make(
-    [
-        'empcodigo' => 264,
-        'procodigo' => 1
-    ]
-)->search()->delete();
+Pessoa::make([
+        'proID' => 1
+])->search()->delete();
+
 ```
 
 #### Last
@@ -164,9 +143,9 @@ Produto::make(
 Retorna o último registro na persistencia de acordo com as informações atribuidas ao active record.
 
 ```
-Produto::make([
-    'empcodigo' => 264
-])->last()
+(new Pessoa())->last()
+
+//Pessoa::make([])->last();
 ```
 
 ### Replicate
@@ -174,8 +153,8 @@ Produto::make([
 Replica um registro existente na persistência de acordo com as informações atribuidas ao active record.
 
 ```
-$instance = Produto::make([
-    'iEmpCodigo' => 263,
+$instance = Pessoa::make([
+    'proID' => 1,
 ])->last();
 
 $instance->replicate();    
@@ -186,9 +165,8 @@ $instance->replicate();
 Retorna um registro existente na persistência de acordo com as informações atribuidas ao active record.
 
 ```
-$instance = Produto::make([
-    'procodigo' => 1,
-    'empcodigo' => 264,
+$instance = Pessoa::make([
+    'proID' => 1
 ])->search();
 ```
 
@@ -197,8 +175,9 @@ $instance = Produto::make([
 Retorna uma relação de registros existentes na persistência de acordo a relação de argumentos e opções fornecidas.
 
 ```
-$result = (new Produto())
-    ->select();
+$result = (new Pessoa())->select();
+
+//$result = Pessoa::make([])->select($arguments = [], $options = []);
 ```
 
 ### Update
@@ -206,15 +185,13 @@ $result = (new Produto())
 Atualiza um registro existente na persistência de acordo com as informações atribuidas ao active record.
 
 ```
-$instance = Produto::make(
+$instance = Pessoa::make(
     [
-        'empcodigo' => 264,
-        'procodigo' => 67,
+        'proID' => 1,        
     ]
 )->search();
 
-$instance->prodescricao = 'EMP 264 UPDATE TEST [ ' . Date('Y-m-d H:m:s') . ']';
-$instance->giccodigo = 2;
+$instance->proNome = 'UPDATE TEST [ ' . Date('Y-m-d H:m:s') . ']';
 
 $instance->update();
 ```
