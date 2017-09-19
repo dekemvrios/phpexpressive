@@ -2,7 +2,6 @@
   "name": "solis/expressive",
   "type": "library",
   "description": "Object-Relational-Mapper para PHP",
-  "version": "v1.2.2",
   "homepage": "https://github.com/rafaelbeecker/phpexpressive",
   "license": "MIT",
   "authors": [
