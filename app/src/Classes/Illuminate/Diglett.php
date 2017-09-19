@@ -15,12 +15,12 @@ class Diglett
     /**
      * @var boolean
      */
-    public static $isActive;
+    private static $isActive = false;
 
     /**
      * @var int
      */
-    public static $levels;
+    private static $levels = 1;
 
     /**
      * @param int $levels
@@ -30,7 +30,35 @@ class Diglett
     public static function enable(
         $levels = 1
     ) {
-        if (isset(self::$isActive)) {
+        self::setActive(true);
+        self::setLevels($levels);
+    }
+
+    /**
+     * @throws TException
+     */
+    public static function disable()
+    {
+        self::setActive(false);
+        self::setLevels(1);
+    }
+
+    public static function toDig(): bool
+    {
+        if (!self::$isActive) {
+            return true;
+        }
+
+        $canDig = self::canDig();
+
+        self::decrementLevels();
+
+        return $canDig;
+    }
+
+    protected static function setActive(bool $active)
+    {
+        if ($active && self::$isActive) {
             throw new TException(
                 __CLASS__,
                 __METHOD__,
@@ -39,56 +67,21 @@ class Diglett
             );
         }
 
-        if ($levels < 1) {
-            throw new TException(
-                __CLASS__,
-                __METHOD__,
-                'level value cannot be less than 1',
-                500
-            );
-        }
+        self::$isActive = $active;
+    }
 
-        self::$isActive = true;
-
+    protected static function setLevels(int $levels)
+    {
         self::$levels = $levels;
     }
 
-    /**
-     * toDig
-     *
-     * @return bool
-     */
-    public static function toDig()
+    protected static function decrementLevels()
     {
-        if (!isset(self::$isActive)) {
-            return true;
-        }
-
         self::$levels -= 1;
-
-        if (self::$levels < 0) {
-            return false;
-        }
-
-        return true;
     }
 
-    /**
-     * @throws TException
-     */
-    public static function disable()
+    protected static function canDig(): bool
     {
-        if (isset(self::$isActive)) {
-            throw new TException(
-                __CLASS__,
-                __METHOD__,
-                'Diglett is not active',
-                500
-            );
-        }
-
-        self::$isActive = false;
-
-        self::$levels = 0;
+        return self::$levels < 1 ? false : true;
     }
 }

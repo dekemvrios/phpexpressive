@@ -1,25 +1,5 @@
 {
-  "database": {
-    "repository": "endereco",
-    "keys": "ID"
-  },
   "properties": [
-    {
-      "alias": "proID",
-      "property": "ID",
-      "description": "ID - campo incremental único identificador do registro",
-      "type": "int",
-      "behavior": {
-        "required": "false",
-        "autoIncrement": "true"
-      }
-    },
-    {
-      "alias": "proPessoaID",
-      "property": "pessoaID",
-      "description": "pessoaID - campo incremental único identificador do registro pessoa qual endereço é vinculado",
-      "type": "int"
-    },
     {
       "alias": "proLogradouro",
       "property": "logradouro",

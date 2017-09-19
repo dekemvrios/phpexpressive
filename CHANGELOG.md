@@ -4,6 +4,12 @@ Todas as modificações relevantes para phpexoressive serão documentadas neste 
 
 O formato é baseado [Keep a CHANGELOG](http://keepachangelog.com/) e esse projeto adere ao [Semantic Versioning 2.0.0](http://semver.org/).  
 
+## 1.2.3 - 2017-09-18 
+
+## Changed
+- Refatorado mecanismo Digglet de modo a favorecer legibilidade de código e adicionado possibilidade de definição de 
+nivel de dependências como 0 no controle de recursividade para os métodos search e select.
+
 ## 1.2.2 - 2017-09-18
 
 ## Fixed

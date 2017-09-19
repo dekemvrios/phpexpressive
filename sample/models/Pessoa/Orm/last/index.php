@@ -1,13 +1,13 @@
 <?php
 
-require_once '../../../../vendor/autoload.php';
+require_once '../../../../../vendor/autoload.php';
 
 use Solis\Expressive\Sample\Pessoa\Repository\Pessoa;
 use Solis\Breaker\Abstractions\TExceptionAbstract;
 
 try {
 
-    require_once '../../connection/connection.php';
+    require_once '../../../connection/connection.php';
 
     $last = (new Pessoa())->last() or die('não há registros cadastrados na base de dados');
 

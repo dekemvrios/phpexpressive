@@ -15,11 +15,12 @@ class Pessoa extends Expressive
     use HasMagic;
 
     protected $ID;
-    protected $codigo;
     protected $nome;
-    protected $cidade;
     protected $inscricaoFederal;
+    protected $tipo;
+    protected $situacao;
     protected $endereco;
+    protected $enderecoJson;
 
     /**
      * Pessoa constructor.

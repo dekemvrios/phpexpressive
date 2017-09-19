@@ -14,23 +14,30 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="pessoa">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="380" y="140"/>
-	<column name="&quot;ID&quot;" not-null="true">
+	<position x="60" y="60"/>
+	<column name="ID" not-null="true">
 		<type name="serial" length="0"/>
+		<comment><![CDATA[ID - campo incremental único identificador do registro]]></comment>
 	</column>
-	<column name="nome">
+	<column name="nome" not-null="true">
 		<type name="varchar" length="0"/>
+		<comment><![CDATA[nome - nome do registro pessoa]]></comment>
 	</column>
-	<column name="cidade">
-		<type name="jsonb" length="0"/>
+	<column name="inscricaoFederal" not-null="true">
+		<type name="varchar" length="0"/>
+		<comment><![CDATA[inscricaoFederal - valor código na receita federal CPF/CNPJ]]></comment>
 	</column>
-	<column name="codigo">
+	<column name="tipo" not-null="true">
 		<type name="integer" length="0"/>
-		<comment><![CDATA[codigo]]></comment>
+		<comment><![CDATA[tipo - valor utilizado para identificar tipo do registro]]></comment>
 	</column>
-	<column name="inscricaoFederal">
-		<type name="varchar" length="0"/>
-		<comment><![CDATA[inscricaoFederal]]></comment>
+	<column name="situacao" not-null="true">
+		<type name="integer" length="0"/>
+		<comment><![CDATA[situacao - valor utilizado para definir a situacao do registro]]></comment>
+	</column>
+	<column name="enderecoJson">
+		<type name="jsonb" length="0"/>
+		<comment><![CDATA[enderecoJson - exemplo de relação de endereços utilizada como campo json string]]></comment>
 	</column>
 	<constraint name="ID" type="pk-constr" table="public.pessoa">
 		<columns names="ID" ref-type="src-columns"/>
@@ -40,34 +47,45 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="endereco">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="820" y="200"/>
-	<column name="&quot;ID&quot;" not-null="true">
+	<position x="520" y="140"/>
+	<column name="ID" not-null="true">
 		<type name="serial" length="0"/>
+		<comment><![CDATA[ID - campo incremental único identificador do registro]]></comment>
 	</column>
 	<column name="pessoaID" not-null="true">
 		<type name="integer" length="0"/>
+		<comment><![CDATA[pessoaID - campo incremental único identificador do registro pessoa qual endereço é vinculado]]></comment>
 	</column>
 	<column name="logradouro" not-null="true">
 		<type name="varchar" length="0"/>
+		<comment><![CDATA[logradouro - campo texto contendo nome do logradouro]]></comment>
 	</column>
-	<column name="bairro" not-null="true">
-		<type name="varchar" length="0"/>
-		<comment><![CDATA[bairro]]></comment>
+	<column name="numero">
+		<type name="integer" length="0"/>
+		<comment><![CDATA[numero - campo inteiro contendo número vinculado ao endereço]]></comment>
 	</column>
-	<column name="cep" not-null="true">
+	<column name="bairro">
 		<type name="varchar" length="0"/>
-		<comment><![CDATA[cep]]></comment>
+		<comment><![CDATA[bairro - campo texto contendo nome do bairro]]></comment>
+	</column>
+	<column name="cep">
+		<type name="varchar" length="0"/>
+		<comment><![CDATA[cep - campo texto contendo cep vinculado ao endereço]]></comment>
 	</column>
 	<column name="cidade" not-null="true">
 		<type name="varchar" length="0"/>
-		<comment><![CDATA[cidade]]></comment>
+		<comment><![CDATA[cidade - campo texto contendo nome da cidade]]></comment>
 	</column>
-	<constraint name="ID_endereco" type="pk-constr" table="public.endereco">
+	<column name="estado" not-null="true">
+		<type name="varchar" length="0"/>
+		<comment><![CDATA[estado - campo texto contendo nome do estado]]></comment>
+	</column>
+	<constraint name="Endereco_pk" type="pk-constr" table="public.endereco">
 		<columns names="ID" ref-type="src-columns"/>
 	</constraint>
 </table>
 
-<constraint name="pessoaID" type="fk-constr" comparison-type="MATCH FULL"
+<constraint name="EnderecoPessoa_fk" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="NO ACTION" del-action="CASCADE" ref-table="public.pessoa" table="public.endereco">
 	<columns names="pessoaID" ref-type="src-columns"/>
 	<columns names="ID" ref-type="dst-columns"/>

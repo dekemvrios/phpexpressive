@@ -69,7 +69,7 @@ final class Database
                 [
                     'charset'   => 'utf8',
                     'collation' => 'utf8_unicode_ci',
-                    'prefix'    => ''
+                    'prefix'    => '',
                 ]
             )
         );
@@ -88,7 +88,7 @@ final class Database
      */
     public static function beginTransaction($model)
     {
-        if (empty(self::$hasActiveTransaction)) {
+        if (!self::$hasActiveTransaction) {
             Capsule::connection()->beginTransaction();
 
             self::$hasActiveTransaction = true;
@@ -104,7 +104,7 @@ final class Database
      */
     public static function commitActiveTransaction($model)
     {
-        if (!empty(self::$hasActiveTransaction)) {
+        if (self::$hasActiveTransaction) {
             if ($model->getUniqid() === self::$owner) {
 
                 Capsule::connection()->commit();
@@ -121,7 +121,7 @@ final class Database
      */
     public static function rollbackActiveTransaction($model)
     {
-        if (!empty(self::$hasActiveTransaction)) {
+        if (self::$hasActiveTransaction) {
             if ($model->getUniqid() === self::$owner) {
                 Capsule::connection()->rollBack();
 

@@ -1,21 +1,18 @@
 <?php
 
-namespace Solis\Expressive\Sample\Endereco\Repository;
+namespace Solis\Expressive\Sample\Endereco\Composition;
 
-use Solis\Expressive\Classes\Illuminate\Expressive;
 use Solis\Expressive\Magic\Concerns\HasMagic;
 
 /**
  * Class Endereco
  *
- * @package Solis\Expressive\Sample\Endereco\Repository
+ * @package Solis\Expressive\Sample\Endereco\Composition
  */
-class Endereco extends Expressive
+class Endereco
 {
     use HasMagic;
 
-    protected $ID;
-    protected $pessoaID;
     protected $logradouro;
     protected $numero;
     protected $bairro;
@@ -28,8 +25,6 @@ class Endereco extends Expressive
      */
     public function __construct()
     {
-        parent::__construct();
-
         $this->start(dirname(__FILE__) . '/Endereco.json');
     }
 }
