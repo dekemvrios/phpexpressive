@@ -189,10 +189,10 @@ final class UpdateBuilder
                 $updatedProperty = $originalProperty;
             }
 
-            // se o valor atribuido ao registro original for também
+            // se o valor atribuido ao registro a ser atualizado for também
             // instância de active record, deve-se captura o seu valor
-            // chave para compar com o registro a ser atualizado
-            if ($originalProperty instanceof ExpressiveAbstract) {
+            // chave comporando com o valor original
+            if ($updatedProperty instanceof ExpressiveAbstract) {
                 $result = $this->getUpdateFieldsExpressiveInstance(
                     $original,
                     $updated,
