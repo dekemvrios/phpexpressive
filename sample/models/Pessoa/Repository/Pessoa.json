@@ -24,7 +24,12 @@
         {
           "function": "uppercase"
         }
-      ]
+      ],
+      "behavior": {
+        "whenPatch": {
+          "action": "keep"
+        }
+      }
     },
     {
       "alias": "proInscricaoFederal",

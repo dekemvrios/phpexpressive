@@ -102,7 +102,7 @@ final class PatchBuilder
                     400
                 );
             }
-            $record = $this->getUpdateBuilder()->update($model);
+            $record = $this->getUpdateBuilder()->update($model, true);
 
             // valida se houveram alterações nas dependencias do registro
             $updateHasMany = $this->hasManyDependencies(
