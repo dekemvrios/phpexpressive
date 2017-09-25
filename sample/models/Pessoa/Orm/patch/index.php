@@ -11,7 +11,7 @@ try {
 
     $last = (new Pessoa())->last() or die('nao há registros cadastrados na base de dados');
 
-    $total = 3;
+    $total = 1;
     for ($i = 0; $i < $total; $i++) {
         $endereco[] = [
 
@@ -22,7 +22,7 @@ try {
         ];
     }
 
-    $last->proNome     = 'UPDATE TEST [' . uniqid(rand()) . ']';
+    $last->proNome     = 'PATCH TEST [' . uniqid(rand()) . ']';
     $last->proEndereco = $endereco;
 
     $last = $last->patch() or die('erro ao processar operação de patch');

@@ -138,7 +138,9 @@ final class UpdateBuilder
             );
         }
 
-        $this->hasManyDependencies($model);
+        if (!$isPatch) {
+            $this->hasManyDependencies($model);
+        }
 
         $model = Actions::doThingWhenDatabaseAction(
             $model,

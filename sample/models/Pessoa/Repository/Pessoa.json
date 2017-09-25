@@ -24,12 +24,7 @@
         {
           "function": "uppercase"
         }
-      ],
-      "behavior": {
-        "whenPatch": {
-          "action": "keep"
-        }
-      }
+      ]
     },
     {
       "alias": "proInscricaoFederal",
@@ -74,6 +69,11 @@
             "field": "ID",
             "refers": "pessoaID"
           }
+        }
+      },
+      "behavior": {
+        "whenPatch": {
+          "action": "keep"
         }
       }
     },

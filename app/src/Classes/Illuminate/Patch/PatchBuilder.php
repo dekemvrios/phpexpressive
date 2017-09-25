@@ -154,8 +154,13 @@ final class PatchBuilder
         $hasChanges = false;
         foreach (array_values($dependencies) as $dependency) {
 
-            $originalValue = $original->{$dependency->getProperty()};
+            // em operação de patch, campo pode ser mantido com valor original,
+            // caso sua ação esteja especificada como 'keep'
+            if ($dependency->getBehavior()->getWhenPatch()->getAction() === 'keep') {
+                continue;
+            }
 
+            $originalValue = $original->{$dependency->getProperty()};
             $updatedValue = $model->{$dependency->getProperty()};
 
             if (!empty($originalValue) || !empty($updatedValue)) {
