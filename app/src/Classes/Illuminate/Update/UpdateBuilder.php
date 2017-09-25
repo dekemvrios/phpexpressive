@@ -49,12 +49,13 @@ final class UpdateBuilder
 
     /**
      * @param ExpressiveContract $model
+     * @param boolean            $isPatch
      *
      * @return ExpressiveContract|boolean
      *
      * @throws TException;
      */
-    public function update(ExpressiveContract $model)
+    public function update(ExpressiveContract $model, $isPatch = false)
     {
         if (empty($model::$schema->getRepository())) {
             throw new TException(
@@ -112,8 +113,9 @@ final class UpdateBuilder
             $model = $this->setPrimaryKeysFromOriginal($original, $model);
 
             $fields = $this->getUpdateFields(
-                $original,
-                $model
+                    $original,
+                    $model,
+                    $isPatch
             );
 
             if (empty($fields)) {
@@ -136,7 +138,9 @@ final class UpdateBuilder
             );
         }
 
-        $this->hasManyDependencies($model);
+        if (!$isPatch) {
+            $this->hasManyDependencies($model);
+        }
 
         $model = Actions::doThingWhenDatabaseAction(
             $model,
@@ -152,14 +156,16 @@ final class UpdateBuilder
     /**
      * @param ExpressiveContract $original
      * @param ExpressiveContract $updated
+     * @param boolean            $isPatch
      *
      * @return array
      *
      * @throws TException
      */
     public function getUpdateFields(
-        ExpressiveContract $original,
-        ExpressiveContract $updated
+            ExpressiveContract $original,
+            ExpressiveContract $updated,
+            $isPatch = false
     ) {
 
         // contém a relação de campos a serem atualizados
@@ -170,6 +176,11 @@ final class UpdateBuilder
             $originalProperty = $original->{$property->getProperty()};
             // valor do registro atualizado
             $updatedProperty = $updated->{$property->getProperty()};
+
+            // valida o comportamento do campo caso em operação de patch
+            if ($isPatch && $property->getBehavior()->getWhenPatch()->getAction() === 'keep') {
+                continue;
+            }
 
             // registro em array é inválido para a atualização de valores
             // inicialmente, somente utilizada para relaciomaento hasMany.
