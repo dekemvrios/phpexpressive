@@ -4,6 +4,13 @@ Todas as modificações relevantes para phpexoressive serão documentadas neste 
 
 O formato é baseado [Keep a CHANGELOG](http://keepachangelog.com/) e esse projeto adere ao [Semantic Versioning 2.0.0](http://semver.org/).  
 
+## 1.3.4 - 2017-09-XX
+
+## Fixed
+- Implementado entrada whenPatch no conjunto behavior de propriedades do schema, definindo o comportamento do campo 
+quando em rotina de atualização de registro. Ações válidas são 'keep' e 'update', que, respectivamente, representam 
+manter valor original ou assumir valor fornecido no campo do registro a ser atualizado.
+
 ## 1.2.4 - 2017-09-22
 
 ## Fixed
