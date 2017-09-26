@@ -71,9 +71,9 @@ class ExpressiveIntegrationTest extends TestCase
         ])->create();
         $Record = Pessoa::make(['ID' => $Pessoa->ID])->search();
         $this->assertEquals(
-                $Pessoa->ID,
-                $Record->ID,
-                'can\'t retrieve last created record in database with search method'
+            $Pessoa->ID,
+            $Record->ID,
+            'can\'t retrieve last created record in database with search method'
         );
     }
 
@@ -88,9 +88,9 @@ class ExpressiveIntegrationTest extends TestCase
                         'value'  => $Record->ID,
                 ]);
         $this->assertInternalType(
-                'array',
-                $select,
-                'can\'t retrieve last created record in database with select method'
+            'array',
+            $select,
+            'can\'t retrieve last created record in database with select method'
         );
     }
 
