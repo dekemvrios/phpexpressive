@@ -28,7 +28,7 @@ final class RelationshipBuilder
      */
     public function hasOne($model, $dependency)
     {
-        $dependencyCode = $value = $model->{$dependency->getProperty()};
+        $dependencyCode = $model->{$dependency->getProperty()};
 
         if (empty($dependencyCode)) {
             return $model;

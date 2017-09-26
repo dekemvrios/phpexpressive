@@ -1,5 +1,7 @@
 # Expressive
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1e6f587035e6423f8829cfe15bcdb473)](https://www.codacy.com/app/rafaelbeecker/phpexpressive?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rafaelbeecker/phpexpressive&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/1e6f587035e6423f8829cfe15bcdb473)](https://www.codacy.com/app/rafaelbeecker/phpexpressive?utm_source=github.com&utm_medium=referral&utm_content=rafaelbeecker/phpexpressive&utm_campaign=Badge_Coverage)
 [![Latest Stable Version](https://poser.pugx.org/solis/expressive/v/stable)](https://packagist.org/packages/solis/expressive)
 [![License](https://poser.pugx.org/solis/expressive/license)](https://packagist.org/packages/solis/expressive)
 [![Build Status](https://travis-ci.org/rafaelbeecker/phpexpressive.svg?branch=v1.x)](https://travis-ci.org/rafaelbeecker/phpexpressive)

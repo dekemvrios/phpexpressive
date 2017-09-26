@@ -3,18 +3,6 @@
 # |----------------------------------------------------------------------------
 # | Script de inicialização do container docker para executar a aplicação
 # |----------------------------------------------------------------------------
-# |
-# | Valida o tipo de script a ser executado de acordo com o argumento fornecido.
-# | Caso nenhum argumento for fornecido o container será inicializado. Para que
-# | seja desligado é necessário que a literal 'down' seja fornecida como argumento.
-# |
-arg="$1"
-
-type_script="up -d"
-case "$arg" in
-"down") type_script="down";;
-*)
-esac
 
 # |----------------------------------------------------------------------------
 # | Definir valor de enderço de IP da máquina local

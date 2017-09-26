@@ -11,7 +11,7 @@ class DatabaseBuilder
     /**
      * Set up the Eloquent Connection to the database
      */
-    public function up()
+    public function build()
     {
         $db = new DB;
         $db->addConnection([

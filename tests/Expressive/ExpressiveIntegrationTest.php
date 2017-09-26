@@ -11,7 +11,7 @@ class ExpressiveIntegrationTest extends TestCase
 
     public function setUp()
     {
-        (new DB())->up();
+        (new DB())->build();
     }
 
     public function tearDown()
