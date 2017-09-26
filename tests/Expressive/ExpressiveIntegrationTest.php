@@ -71,9 +71,9 @@ class ExpressiveIntegrationTest extends TestCase
         ])->create();
         $Record = Pessoa::make(['ID' => $Pessoa->ID])->search();
         $this->assertEquals(
-            $Pessoa->ID,
-            $Record->ID,
-            'can\'t retrieve last created record in database with search method'
+                $Pessoa->ID,
+                $Record->ID,
+                'can\'t retrieve last created record in database with search method'
         );
     }
 
@@ -88,9 +88,9 @@ class ExpressiveIntegrationTest extends TestCase
                         'value'  => $Record->ID,
                 ]);
         $this->assertInternalType(
-            'array',
-            $select,
-            'can\'t retrieve last created record in database with select method'
+                'array',
+                $select,
+                'can\'t retrieve last created record in database with select method'
         );
     }
 
@@ -145,7 +145,7 @@ class ExpressiveIntegrationTest extends TestCase
         $this->assertNotEquals($original, $nomeLast, 'Patched field is even with original value');
     }
 
-    public function testNotSuppliedFieldsShouldBeNullWhenPatchUpdate()
+    public function testPatchShouldCleanNotSuppliedValues()
     {
         $nome      = 'Fulano - ' . uniqid(rand());
         $documento = rand(11111111111, 99999999999);
@@ -164,9 +164,7 @@ class ExpressiveIntegrationTest extends TestCase
 
         $Last          = Pessoa::make()->last();
         $documentoLast = $Last->inscricaoFederal;
-        $nomeLast      = $Last->nome;
 
         $this->assertInternalType('null', $documentoLast, 'a not supplied field must be null in a patched record');
-        $this->assertEquals($nome, $nomeLast, 'a supplied field cannot be null in a patched record');
     }
 }
