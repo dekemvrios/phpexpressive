@@ -22,12 +22,11 @@
   },
   "autoload": {
     "psr-4": {
-      "Solis\\Expressive\\": "app/src"
+      "Solis\\Expressive\\": "src"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Solis\\Expressive\\Sample\\": "sample/models",
       "Solis\\Expressive\\Test\\": "tests"
     }
   },

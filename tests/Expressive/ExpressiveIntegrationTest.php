@@ -3,62 +3,23 @@
 namespace Solis\Expressive\Test\Expressive;
 
 use PHPUnit\Framework\TestCase;
-
-use Illuminate\Database\Eloquent\Model as Eloquent;
-use Illuminate\Database\Capsule\Manager as DB;
-
-use Solis\Breaker\Abstractions\TExceptionAbstract;
-use Solis\Expressive\Test\Fixtures\Pessoa\Repository\Pessoa;
+use Solis\Expressive\Test\Fixtures\IntegrationTest\Pessoa;
+use Solis\Expressive\Test\Fixtures\IntegrationTest\DatabaseBuilder as DB;
 
 class ExpressiveIntegrationTest extends TestCase
 {
 
     public function setUp()
     {
-        $this->setDatabaseEnvironment();
-    }
-
-    protected function setDatabaseEnvironment()
-    {
-        $db = new DB;
-        $db->addConnection([
-                'driver'   => 'sqlite',
-                'database' => ':memory:',
-        ]);
-        $db->bootEloquent();
-
-        $db->setAsGlobal();
-        $this->createSchema();
-    }
-
-    protected function createSchema()
-    {
-        $this->schema()->create('pessoa', function ($table) {
-            $table->increments('ID');
-            $table->string('nome')->nullable();
-            $table->string('inscricaoFederal')->nullable();
-            $table->integer('situacao')->nullable();
-            $table->text('enderecoJson')->default(json_encode([]))->nullable();
-        });
-        $this->schema()->create('endereco', function ($table) {
-            $table->increments('ID');
-            $table->integer('pessoaID');
-            $table->string('logradouro');
-            $table->integer('numero');
-            $table->string('bairro');
-            $table->string('cep');
-            $table->string('cidade');
-            $table->string('estado');
-        });
+        (new DB())->up();
     }
 
     public function tearDown()
     {
-        $this->schema()->drop('pessoa');
-        $this->schema()->drop('endereco');
+        (new DB())->down();
     }
 
-    public function testBasicRecordCreation()
+    public function testCanCreateOneRecord()
     {
         $Pessoa = Pessoa::make([
                 "proNome" => 'Fulano - ' . uniqid(rand()),
@@ -67,13 +28,54 @@ class ExpressiveIntegrationTest extends TestCase
         $this->assertInternalType('int', $Record->ID, 'can\'t create one record in database');
     }
 
-    public function testCanRetrieveLastCreatedRecord()
+    public function testCanRetrieveLastRecord()
     {
         Pessoa::make([
                 "proNome" => 'Fulano - ' . uniqid(rand()),
         ])->create();
         $Last = Pessoa::make()->last();
         $this->assertInternalType('int', $Last->ID, 'can\'t last created record');
+    }
+
+    public function testCanCreateOneRecordWithSingleHasMany()
+    {
+        Pessoa::make([
+                "proNome"     => 'Fulano - ' . uniqid(rand()),
+                "proEndereco" => [
+                        "proLogradouro" => "Rua - " . uniqid(rand()),
+                        "proCidade"     => "Cidade - " . uniqid(rand()),
+                        "proEstado"     => uniqid(rand()),
+                ],
+        ])->create();
+
+        $Last = Pessoa::make()->last();
+
+        $endereco = $Last->endereco;
+        $this->assertNotInternalType('null', $endereco, 'can\'t create dependency associated in hasMany');
+    }
+
+    public function testCanCreateOneRecordWithMultipleHasMany()
+    {
+        $dependencies = rand(1, 5);
+
+        $hasMany = [];
+        for ($i = 0; $i < $dependencies; $i++) {
+            $hasMany[] = [
+                    "proLogradouro" => "Rua - " . uniqid(rand()),
+                    "proCidade"     => "Cidade - " . uniqid(rand()),
+                    "proEstado"     => uniqid(rand()),
+            ];
+        }
+
+        Pessoa::make([
+                "proNome"     => 'Fulano - ' . uniqid(rand()),
+                "proEndereco" => $hasMany,
+        ])->create();
+
+        $Last = Pessoa::make()->last();
+
+        $endereco = $Last->endereco;
+        $this->assertCount($dependencies, $endereco, 'can\'t create multi dependencies associated in hasMany');
     }
 
     public function testCanDeleteLastRecord()
@@ -85,7 +87,7 @@ class ExpressiveIntegrationTest extends TestCase
         $this->assertEquals(true, $Record->delete(), 'can\'t delete last created record');
     }
 
-    public function testCanRetrieveAllRecords()
+    public function testCanRetrieveRecordsOfRepository()
     {
         Pessoa::make([
                 "proNome" => 'Fulano - ' . uniqid(rand()),
@@ -94,7 +96,7 @@ class ExpressiveIntegrationTest extends TestCase
         $this->assertInternalType('array', $Pessoas, 'can\'t retrieve records from database with select method');
     }
 
-    public function testCanCountAllRecords()
+    public function testCanCountRecordsInRepository()
     {
         Pessoa::make([
                 "proNome" => 'Fulano - ' . uniqid(rand()),
@@ -103,16 +105,16 @@ class ExpressiveIntegrationTest extends TestCase
         $this->assertGreaterThan(0, $count, 'can\'t return count of records from database');
     }
 
-    public function testCanRetrieveRecordWithSearchMethod()
+    public function testCanRetrieveWithSearchMethod()
     {
         $Pessoa = Pessoa::make([
                 "proNome" => 'Fulano - ' . uniqid(rand()),
         ])->create();
         $Record = Pessoa::make(['ID' => $Pessoa->ID])->search();
         $this->assertEquals(
-                $Pessoa->ID,
-                $Record->ID,
-                'can\'t retrieve last created record in database with search method'
+            $Pessoa->ID,
+            $Record->ID,
+            'can\'t retrieve last created record in database with search method'
         );
     }
 
@@ -123,16 +125,13 @@ class ExpressiveIntegrationTest extends TestCase
         ])->create();
         $select = (new Pessoa())
                 ->select([
-                                [
-                                        'column' => 'ID',
-                                        'value'  => $Record->ID,
-                                ],
-                        ]
-                );
+                        'column' => 'ID',
+                        'value'  => $Record->ID,
+                ]);
         $this->assertInternalType(
-                'array',
-                $select,
-                'can\'t retrieve last created record in database with select method'
+            'array',
+            $select,
+            'can\'t retrieve last created record in database with select method'
         );
     }
 
@@ -166,52 +165,47 @@ class ExpressiveIntegrationTest extends TestCase
         $this->assertNotEquals($proNomeOriginal, $proNomeLast, 'can\'t update database record');
     }
 
-    public function testNotSuppliedFieldsShouldBeNullWhenPatchUpdate()
+    public function testCanPatchRecord()
+    {
+        $original = 'Fulano - ' . uniqid(rand());
+        Pessoa::make([
+                "proNome" => $original,
+        ])->create();
+
+        $Last = Pessoa::make()->last();
+
+        $updated = 'Fulano - ' . uniqid(rand());
+        Pessoa::make([
+                "proID"   => $Last->ID,
+                "proNome" => $updated,
+        ])->patch();
+
+        $Last     = Pessoa::make()->last();
+        $nomeLast = $Last->nome;
+
+        $this->assertNotEquals($original, $nomeLast, 'Patched field is even with original value');
+    }
+
+    public function testPatchShouldCleanNotSuppliedValues()
     {
         $nome      = 'Fulano - ' . uniqid(rand());
         $documento = rand(11111111111, 99999999999);
 
-        try {
-            Pessoa::make([
-                    "proNome"             => $nome,
-                    "proInscricaoFederal" => "{$documento}",
-            ])->create();
+        Pessoa::make([
+                "proNome"             => $nome,
+                "proInscricaoFederal" => "{$documento}",
+        ])->create();
 
-            $Last = Pessoa::make()->last();
+        $Last = Pessoa::make()->last();
 
-            Pessoa::make([
-                    "proID"   => $Last->ID,
-                    "proNome" => $Last->nome,
-            ])->patch();
-        } catch (TExceptionAbstract $e) {
-            fwrite(STDERR, $e->getError()->getMessage());
-        }
+        Pessoa::make([
+                "proID"   => $Last->ID,
+                "proNome" => $Last->nome,
+        ])->patch();
 
         $Last          = Pessoa::make()->last();
         $documentoLast = $Last->inscricaoFederal;
-        $nomeLast      = $Last->nome;
 
         $this->assertInternalType('null', $documentoLast, 'a not supplied field must be null in a patched record');
-        $this->assertEquals($nome, $nomeLast, 'a supplied field cannot be null in a patched record');
-    }
-
-    /**
-     * Get a database connection instance.
-     *
-     * @return \Illuminate\Database\ConnectionInterface
-     */
-    protected function connection($connection = 'default')
-    {
-        return Eloquent::getConnectionResolver()->connection($connection);
-    }
-
-    /**
-     * Get a schema builder instance.
-     *
-     * @return \Illuminate\Database\Schema\Builder
-     */
-    protected function schema($connection = 'default')
-    {
-        return $this->connection($connection)->getSchemaBuilder();
     }
 }

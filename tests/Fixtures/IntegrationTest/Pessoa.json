@@ -1,0 +1,95 @@
+{
+  "database": {
+    "repository": "pessoa",
+    "keys": "ID"
+  },
+  "properties": [
+    {
+      "alias": "proID",
+      "property": "ID",
+      "description": "ID - campo incremental único identificador do registro",
+      "type": "int",
+      "behavior": {
+        "hidden": "true",
+        "required": "false",
+        "autoIncrement": "true"
+      }
+    },
+    {
+      "alias": "proNome",
+      "property": "nome",
+      "description": "nome - nome do registro pessoa",
+      "type": "string",
+      "behavior": {
+        "required": "false"
+      }
+    },
+    {
+      "alias": "proInscricaoFederal",
+      "property": "inscricaoFederal",
+      "description": "inscricaoFederal - valor código na receita federal CPF/CNPJ",
+      "type": "string",
+      "behavior": {
+        "required": "false"
+      }
+    },
+    {
+      "alias": "proTipo",
+      "property": "tipo",
+      "description": "tipo - valor utilizado para identificar tipo do registro",
+      "type": "int",
+      "allowedValues": [
+        "1",
+        "2"
+      ],
+      "behavior": {
+        "required": "false"
+      }
+    },
+    {
+      "alias": "proSituacao",
+      "property": "situacao",
+      "description": "situacao - valor utilizado para definir a situacao do registro",
+      "type": "int",
+      "behavior": {
+        "required": "false"
+      },
+      "default": "1"
+    },
+    {
+      "alias": "proEndereco",
+      "property": "endereco",
+      "description": "endereco - exemplo de relação de endereços utilizada como relacionamento na base de dados",
+      "type": "composition",
+      "composition": {
+        "class": "Solis\\Expressive\\Test\\Fixtures\\IntegrationTest\\Endereco",
+        "relationship": {
+          "type": "hasMany",
+          "source": {
+            "field": "ID",
+            "refers": "pessoaID"
+          }
+        }
+      },
+      "behavior": {
+        "required": "false",
+        "whenPatch": {
+          "action": "keep"
+        }
+      }
+    },
+    {
+      "alias": "proEnderecoJson",
+      "property": "enderecoJson",
+      "type": "json",
+      "description": "enderecoJson - exemplo de relação de endereços utilizada como campo json string",
+      "composition": {
+        "class": "Solis\\Expressive\\Test\\Fixtures\\IntegrationTest\\JsonEndereco"
+      },
+      "behavior": {
+        "required": "false",
+        "hidden": "true"
+      }
+    }
+  ]
+}
