@@ -19,7 +19,7 @@ class ExpressiveIntegrationTest extends TestCase
         (new DB())->down();
     }
 
-    public function testBasicRecordCreation()
+    public function testCanCreateOneRecord()
     {
         $Pessoa = Pessoa::make([
                 "proNome" => 'Fulano - ' . uniqid(rand()),
@@ -28,7 +28,7 @@ class ExpressiveIntegrationTest extends TestCase
         $this->assertInternalType('int', $Record->ID, 'can\'t create one record in database');
     }
 
-    public function testCanRetrieveLastCreatedRecord()
+    public function testCanRetrieveLastRecord()
     {
         Pessoa::make([
                 "proNome" => 'Fulano - ' . uniqid(rand()),
@@ -46,7 +46,7 @@ class ExpressiveIntegrationTest extends TestCase
         $this->assertEquals(true, $Record->delete(), 'can\'t delete last created record');
     }
 
-    public function testCanRetrieveAllRecords()
+    public function testCanRetrieveRecordsOfRepository()
     {
         Pessoa::make([
                 "proNome" => 'Fulano - ' . uniqid(rand()),
@@ -55,7 +55,7 @@ class ExpressiveIntegrationTest extends TestCase
         $this->assertInternalType('array', $Pessoas, 'can\'t retrieve records from database with select method');
     }
 
-    public function testCanCountAllRecords()
+    public function testCanCountRecordsInRepository()
     {
         Pessoa::make([
                 "proNome" => 'Fulano - ' . uniqid(rand()),
@@ -64,7 +64,7 @@ class ExpressiveIntegrationTest extends TestCase
         $this->assertGreaterThan(0, $count, 'can\'t return count of records from database');
     }
 
-    public function testCanRetrieveRecordWithSearchMethod()
+    public function testCanRetrieveWithSearchMethod()
     {
         $Pessoa = Pessoa::make([
                 "proNome" => 'Fulano - ' . uniqid(rand()),
@@ -122,6 +122,27 @@ class ExpressiveIntegrationTest extends TestCase
         $proNomeLast = $Last->nome;
 
         $this->assertNotEquals($proNomeOriginal, $proNomeLast, 'can\'t update database record');
+    }
+
+    public function testCanPatchRecord()
+    {
+        $original = 'Fulano - ' . uniqid(rand());
+        Pessoa::make([
+                "proNome" => $original,
+        ])->create();
+
+        $Last = Pessoa::make()->last();
+
+        $updated = 'Fulano - ' . uniqid(rand());
+        Pessoa::make([
+                "proID"   => $Last->ID,
+                "proNome" => $updated,
+        ])->patch();
+
+        $Last     = Pessoa::make()->last();
+        $nomeLast = $Last->nome;
+
+        $this->assertNotEquals($original, $nomeLast, 'Patched field is even with original value');
     }
 
     public function testNotSuppliedFieldsShouldBeNullWhenPatchUpdate()
