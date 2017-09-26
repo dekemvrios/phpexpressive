@@ -80,6 +80,7 @@ final class SelectBuilder
 
         $stmt = Capsule::table($table);
         if (!empty($arguments)) {
+            $arguments = count(array_filter(array_keys($arguments), 'is_string')) > 0 ? [$arguments] : $arguments;
             foreach ($arguments as $argument) {
                 $stmt->where(
                     $argument['column'],
@@ -315,6 +316,8 @@ final class SelectBuilder
 
         $stmt = Capsule::table($table);
         if (!empty($arguments) && is_array($arguments)) {
+
+            $arguments = count(array_filter(array_keys($arguments), 'is_string')) > 0 ? [$arguments] : $arguments;
             foreach ($arguments as $argument) {
                 $stmt->where(
                     $argument['column'],

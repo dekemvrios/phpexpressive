@@ -85,11 +85,9 @@ class ExpressiveIntegrationTest extends TestCase
         ])->create();
         $select = (new Pessoa())
                 ->select([
-                                [
-                                        'column' => 'ID',
-                                        'value'  => $Record->ID,
-                                ],
-                        ]);
+                        'column' => 'ID',
+                        'value'  => $Record->ID,
+                ]);
         $this->assertInternalType(
             'array',
             $select,
