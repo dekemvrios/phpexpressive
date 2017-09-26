@@ -4,7 +4,7 @@ namespace Solis\Expressive\Test\Expressive;
 
 use PHPUnit\Framework\TestCase;
 use Solis\Expressive\Test\Fixtures\Pessoa\Repository\Pessoa;
-use Solis\Expressive\Test\Fixtures\DatabaseIntegrationTestBuilder as DB;
+use Solis\Expressive\Test\Fixtures\Database\DatabaseIntegrationTestBuilder as DB;
 
 class ExpressiveIntegrationTest extends TestCase
 {

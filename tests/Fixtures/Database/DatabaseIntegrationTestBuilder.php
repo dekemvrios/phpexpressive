@@ -1,6 +1,6 @@
 <?php
 
-namespace Solis\Expressive\Test\Fixtures;
+namespace Solis\Expressive\Test\Fixtures\Database;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Capsule\Manager as DB;
