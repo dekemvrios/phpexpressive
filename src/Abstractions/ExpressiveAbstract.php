@@ -62,9 +62,9 @@ abstract class ExpressiveAbstract implements ExpressiveContract
             ];
 
             return $this->getDatabaseContainer()->select(
-                [$arguments],
-                [],
                 $this
+                    [$arguments],
+                []
             );
         }
 
@@ -121,9 +121,9 @@ abstract class ExpressiveAbstract implements ExpressiveContract
         array $options = []
     ) {
         return $this->getDatabaseContainer()->select(
+            $this,
             $arguments,
-            $options,
-            $this
+            $options
         );
     }
 
@@ -169,8 +169,8 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     public function count(array $arguments = [])
     {
         return $this->getDatabaseContainer()->count(
-            !empty($arguments) ? $arguments : [],
-            $this
+            $this,
+            !empty($arguments) ? $arguments : []
         );
     }
 

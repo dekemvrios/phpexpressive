@@ -14,18 +14,18 @@ interface DatabaseContainerContract
 {
 
     /**
+     * @param ExpressiveContract $model
      * @param array              $arguments
      * @param array              $options
-     * @param ExpressiveContract $model
      *
      * @return ExpressiveContract[]boolean
      *
      * @throws TException
      */
     public function select(
+        ExpressiveContract $model,
         array $arguments,
-        array $options = [],
-        ExpressiveContract $model
+        array $options = []
     );
 
     /**
@@ -58,16 +58,16 @@ interface DatabaseContainerContract
     public function create(ExpressiveContract $model);
 
     /**
-     * @param array              $arguments
      * @param ExpressiveContract $model
+     * @param array              $arguments
      *
      * @return int
      *
      * @throws TException
      */
     public function count(
-        array $arguments = [],
-        ExpressiveContract $model
+        ExpressiveContract $model,
+        array $arguments = []
     );
 
     /**

@@ -19,7 +19,7 @@ interface ExpressiveContract
      *
      * @return ExpressiveContract[]|boolean
      *
-     * @throws TException
+     * @throws TExceptionA
      */
     public function select(
         array $arguments,

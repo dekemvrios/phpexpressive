@@ -168,23 +168,23 @@ class Wrapper implements DatabaseContainerContract
     }
 
     /**
+     * @param ExpressiveContract $model
      * @param array              $arguments
      * @param array              $options
-     * @param ExpressiveContract $model
      *
      * @return array|boolean
      *
      * @throws TException
      */
     public function select(
+        ExpressiveContract $model,
         array $arguments,
-        array $options = [],
-        ExpressiveContract $model
+        array $options = []
     ) {
         return $this->getSelectBuilder()->select(
+            $model,
             $arguments,
-            $options,
-            $model
+            $options
         );
     }
 
@@ -227,20 +227,20 @@ class Wrapper implements DatabaseContainerContract
     }
 
     /**
-     * @param array              $arguments
      * @param ExpressiveContract $model
+     * @param array              $arguments
      *
      * @return int
      *
      * @throws TException
      */
     public function count(
-        array $arguments = [],
-        ExpressiveContract $model
+        ExpressiveContract $model,
+        array $arguments = []
     ) {
         return $this->getSelectBuilder()->count(
-            $arguments,
-            $model
+            $model,
+            $arguments
         );
     }
 

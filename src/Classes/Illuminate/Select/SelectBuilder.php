@@ -47,18 +47,18 @@ final class SelectBuilder
     }
 
     /**
+     * @param ExpressiveContract $model
      * @param array              $arguments
      * @param array              $options
-     * @param ExpressiveContract $model
      *
      * @return ExpressiveContract[]|boolean
      *
      * @throws TException
      */
     public function select(
+        ExpressiveContract $model,
         array $arguments,
-        array $options = [],
-        ExpressiveContract $model
+        array $options = []
     ) {
         if (empty($model::$schema->getRepository())) {
             throw new TException(
@@ -297,8 +297,8 @@ final class SelectBuilder
      * @throws TException
      */
     public function count(
-        array $arguments = [],
-        ExpressiveContract $model
+        ExpressiveContract $model,
+        array $arguments = []
     ) {
 
         if (empty($model::$schema->getRepository())) {
@@ -399,9 +399,9 @@ final class SelectBuilder
         }
 
         $select = $this->select(
+            $model,
             $arguments,
-            $options,
-            $model
+            $options
         );
 
         if (is_array($select) && !empty($select)) {
