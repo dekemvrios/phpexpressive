@@ -5,7 +5,7 @@ namespace Solis\Expressive\Test\Expressive;
 use PHPUnit\Framework\TestCase;
 
 use Solis\Expressive\Classes\Illuminate\Database;
-use Solis\Expressive\Sample\Pessoa\Repository\Pessoa;
+use Solis\Expressive\Test\Fixtures\Pessoa\Repository\Pessoa;
 
 class ExpressiveIntegrationTest extends TestCase
 {
@@ -28,6 +28,47 @@ class ExpressiveIntegrationTest extends TestCase
         ]);
         $Record = $Pessoa->create();
         $this->assertInternalType('int', $Record->ID, 'can\'t create one record in database');
+    }
+
+    public function testCreateRecordWithOneHasManyDependency()
+    {
+        Pessoa::make([
+                "proNome"     => 'Fulano - ' . uniqid(rand()),
+                "proEndereco" => [
+                        "proLogradouro" => "Rua - " . uniqid(rand()),
+                        "proCidade"     => "Cidade - " . uniqid(rand()),
+                        "proEstado"     => uniqid(rand()),
+                ],
+        ])->create();
+
+        $Last = Pessoa::make()->last();
+
+        $enderecos = $Last->endereco;
+        $this->assertInternalType('array', $enderecos, 'can\'t create record with one hasMany dependency');
+    }
+
+    public function testCreateRecordWithMultiHasManyDependencies()
+    {
+        $numberOfDependencies = rand(1, 4);
+        $dependencies         = [];
+
+        for ($i = 0; $i < $numberOfDependencies; $i++) {
+            $dependencies[] = [
+                    "proLogradouro" => "Rua - " . uniqid(rand()),
+                    "proCidade"     => "Cidade - " . uniqid(rand()),
+                    "proEstado"     => uniqid(rand()),
+            ];
+        }
+
+        Pessoa::make([
+                "proNome"     => 'Fulano - ' . uniqid(rand()),
+                "proEndereco" => $dependencies,
+        ])->create();
+
+        $Last = Pessoa::make()->last();
+
+        $enderecos = $Last->endereco;
+        $this->assertCount($numberOfDependencies, $enderecos, 'can\'t create record with multi hasMany dependency');
     }
 
     public function testCanRetrieveLastCreatedRecord()

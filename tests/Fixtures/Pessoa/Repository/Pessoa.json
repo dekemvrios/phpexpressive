@@ -62,7 +62,7 @@
       "description": "endereco - exemplo de relação de endereços utilizada como relacionamento na base de dados",
       "type": "composition",
       "composition": {
-        "class": "Solis\\Expressive\\Sample\\Endereco\\Repository\\Endereco",
+        "class": "Solis\\Expressive\\Test\\Fixtures\\Endereco\\Repository\\Endereco",
         "relationship": {
           "type": "hasMany",
           "source": {
@@ -84,7 +84,7 @@
       "type": "json",
       "description": "enderecoJson - exemplo de relação de endereços utilizada como campo json string",
       "composition": {
-        "class": "Solis\\Expressive\\Sample\\Endereco\\Composition\\Endereco"
+        "class": "Solis\\Expressive\\Test\\Fixtures\\Endereco\\Composition\\Endereco"
       },
       "behavior": {
         "required": "false",
