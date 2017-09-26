@@ -1,6 +1,6 @@
 <?php
 
-namespace Solis\Expressive\Test\Fixtures\Endereco\Repository;
+namespace Solis\Expressive\Test\Fixtures\IntegrationTest;
 
 use Solis\Expressive\Classes\Illuminate\Expressive;
 use Solis\Expressive\Magic\Concerns\HasMagic;

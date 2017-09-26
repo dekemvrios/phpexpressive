@@ -1,6 +1,6 @@
 <?php
 
-namespace Solis\Expressive\Test\Fixtures\Pessoa\Repository;
+namespace Solis\Expressive\Test\Fixtures\IntegrationTest;
 
 use Solis\Expressive\Classes\Illuminate\Expressive;
 use Solis\Expressive\Magic\Concerns\HasMagic;
@@ -8,7 +8,7 @@ use Solis\Expressive\Magic\Concerns\HasMagic;
 /**
  * Class Pessoa
  *
- * @package Solis\Expressive\Test\Fixtures\Pessoa\Repository
+ * @package Solis\Expressive\Test\Fixtures\IntegrationTest
  */
 class Pessoa extends Expressive
 {

@@ -1,15 +1,15 @@
 <?php
 
-namespace Solis\Expressive\Test\Fixtures\Endereco\Composition;
+namespace Solis\Expressive\Test\Fixtures\IntegrationTest;
 
 use Solis\Expressive\Magic\Concerns\HasMagic;
 
 /**
- * Class Endereco
+ * Class JsonEndereco
  *
- * @package Solis\Expressive\Sample\Endereco\Composition
+ * @package Solis\Expressive\Test\Fixtures\IntegrationTest
  */
-class Endereco
+class JsonEndereco
 {
     use HasMagic;
 
@@ -25,6 +25,6 @@ class Endereco
      */
     public function __construct()
     {
-        $this->start(dirname(__FILE__) . '/Endereco.json');
+        $this->start(dirname(__FILE__) . '/JsonEndereco.json');
     }
 }

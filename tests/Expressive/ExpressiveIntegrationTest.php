@@ -3,8 +3,8 @@
 namespace Solis\Expressive\Test\Expressive;
 
 use PHPUnit\Framework\TestCase;
-use Solis\Expressive\Test\Fixtures\Pessoa\Repository\Pessoa;
-use Solis\Expressive\Test\Fixtures\Database\DatabaseIntegrationTestBuilder as DB;
+use Solis\Expressive\Test\Fixtures\IntegrationTest\Pessoa;
+use Solis\Expressive\Test\Fixtures\IntegrationTest\DatabaseBuilder as DB;
 
 class ExpressiveIntegrationTest extends TestCase
 {

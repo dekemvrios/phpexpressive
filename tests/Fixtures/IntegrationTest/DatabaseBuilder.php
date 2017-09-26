@@ -1,11 +1,11 @@
 <?php
 
-namespace Solis\Expressive\Test\Fixtures\Database;
+namespace Solis\Expressive\Test\Fixtures\IntegrationTest;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Capsule\Manager as DB;
 
-class DatabaseIntegrationTestBuilder
+class DatabaseBuilder
 {
 
     /**
