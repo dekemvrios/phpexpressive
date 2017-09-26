@@ -2,12 +2,9 @@
 
 namespace Solis\Expressive\Test\Expressive;
 
-use PHPUnit\Framework\TestCase;
-
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Capsule\Manager as DB;
-
-use Solis\Breaker\Abstractions\TExceptionAbstract;
+use PHPUnit\Framework\TestCase;
 use Solis\Expressive\Test\Fixtures\Pessoa\Repository\Pessoa;
 
 class ExpressiveIntegrationTest extends TestCase
@@ -15,47 +12,12 @@ class ExpressiveIntegrationTest extends TestCase
 
     public function setUp()
     {
-        $this->setDatabaseEnvironment();
-    }
-
-    protected function setDatabaseEnvironment()
-    {
-        $db = new DB;
-        $db->addConnection([
-                'driver'   => 'sqlite',
-                'database' => ':memory:',
-        ]);
-        $db->bootEloquent();
-
-        $db->setAsGlobal();
-        $this->createSchema();
-    }
-
-    protected function createSchema()
-    {
-        $this->schema()->create('pessoa', function ($table) {
-            $table->increments('ID');
-            $table->string('nome')->nullable();
-            $table->string('inscricaoFederal')->nullable();
-            $table->integer('situacao')->nullable();
-            $table->text('enderecoJson')->default(json_encode([]))->nullable();
-        });
-        $this->schema()->create('endereco', function ($table) {
-            $table->increments('ID');
-            $table->integer('pessoaID');
-            $table->string('logradouro');
-            $table->integer('numero');
-            $table->string('bairro');
-            $table->string('cep');
-            $table->string('cidade');
-            $table->string('estado');
-        });
+        (new DatabaseBuilder())->up();
     }
 
     public function tearDown()
     {
-        $this->schema()->drop('pessoa');
-        $this->schema()->drop('endereco');
+        (new DatabaseBuilder())->down();
     }
 
     public function testBasicRecordCreation()
@@ -170,21 +132,17 @@ class ExpressiveIntegrationTest extends TestCase
         $nome      = 'Fulano - ' . uniqid(rand());
         $documento = rand(11111111111, 99999999999);
 
-        try {
-            Pessoa::make([
-                    "proNome"             => $nome,
-                    "proInscricaoFederal" => "{$documento}",
-            ])->create();
+        Pessoa::make([
+                "proNome"             => $nome,
+                "proInscricaoFederal" => "{$documento}",
+        ])->create();
 
-            $Last = Pessoa::make()->last();
+        $Last = Pessoa::make()->last();
 
-            Pessoa::make([
-                    "proID"   => $Last->ID,
-                    "proNome" => $Last->nome,
-            ])->patch();
-        } catch (TExceptionAbstract $e) {
-            fwrite(STDERR, $e->getError()->getMessage());
-        }
+        Pessoa::make([
+                "proID"   => $Last->ID,
+                "proNome" => $Last->nome,
+        ])->patch();
 
         $Last          = Pessoa::make()->last();
         $documentoLast = $Last->inscricaoFederal;
@@ -192,6 +150,98 @@ class ExpressiveIntegrationTest extends TestCase
 
         $this->assertInternalType('null', $documentoLast, 'a not supplied field must be null in a patched record');
         $this->assertEquals($nome, $nomeLast, 'a supplied field cannot be null in a patched record');
+    }
+}
+
+class DatabaseBuilder {
+
+    /**
+     * Set up the Eloquent Connection to the database
+     */
+    public function up()
+    {
+        $db = new DB;
+        $db->addConnection([
+                'driver'   => 'sqlite',
+                'database' => ':memory:',
+        ]);
+        $db->bootEloquent();
+
+        $db->setAsGlobal();
+        $this->createDatabaseSchemas();
+    }
+
+    /**
+     * Destroy unit test database schemas
+     */
+    public function down()
+    {
+        $this->dropDatabaseSchemas();
+    }
+
+    /**
+     * Create all the schemas used by this test case
+     */
+    protected function createDatabaseSchemas()
+    {
+        $this->createRelationPessoa();
+        $this->createRelationEndereco();
+    }
+
+    /**
+     * Ddrop all schemas used by this test case
+     */
+    protected function dropDatabaseSchemas()
+    {
+        $this->dropRelationEndereco();
+        $this->dropRelationPessoa();
+    }
+
+    /**
+     * Use illuminate schema builder to create the table pessoa
+     */
+    protected function createRelationPessoa()
+    {
+        $this->schema()->create('pessoa', function ($table) {
+            $table->increments('ID');
+            $table->string('nome')->nullable();
+            $table->string('inscricaoFederal')->nullable();
+            $table->integer('situacao')->nullable();
+            $table->text('enderecoJson')->default(json_encode([]))->nullable();
+        });
+    }
+
+    /**
+     * Use illuminate schema builder to drop the table pessoa
+     */
+    protected function dropRelationPessoa()
+    {
+        $this->schema()->drop('pessoa');
+    }
+
+    /**
+     * Use illuminate schema builder to create the table endereco
+     */
+    protected function createRelationEndereco()
+    {
+        $this->schema()->create('endereco', function ($table) {
+            $table->increments('ID');
+            $table->integer('pessoaID');
+            $table->string('logradouro');
+            $table->integer('numero');
+            $table->string('bairro');
+            $table->string('cep');
+            $table->string('cidade');
+            $table->string('estado');
+        });
+    }
+
+    /**
+     * Use illuminate schema builder to drop the table endereco
+     */
+    protected function dropRelationEndereco()
+    {
+        $this->schema()->drop('endereco');
     }
 
     /**
