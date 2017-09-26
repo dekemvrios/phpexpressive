@@ -19,9 +19,9 @@
 CREATE TABLE public.pessoa(
 	"ID" serial NOT NULL,
 	nome varchar NOT NULL,
-	"inscricaoFederal" varchar NOT NULL,
-	tipo integer NOT NULL,
-	situacao integer NOT NULL,
+	"inscricaoFederal" varchar,
+	tipo integer,
+	situacao integer,
 	"enderecoJson" jsonb,
 	CONSTRAINT "ID" PRIMARY KEY ("ID")
 
