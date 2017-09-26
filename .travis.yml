@@ -25,4 +25,5 @@ before_script:
   - travis_retry composer update --no-interaction --prefer-dist
 
 script:
+  - php vendor/bin/phpcs --standard=psr2 src/
   - php vendor/bin/phpunit --testdox
