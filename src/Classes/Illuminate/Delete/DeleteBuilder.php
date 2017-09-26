@@ -6,6 +6,7 @@ use Solis\Expressive\Classes\Illuminate\Util\Actions;
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Classes\Illuminate\Database;
+use Solis\Breaker\Abstractions\TExceptionAbstract;
 use Solis\Breaker\TException;
 
 /**
@@ -50,7 +51,7 @@ class DeleteBuilder
      *
      * @return boolean
      *
-     * @throws TException;
+     * @throws TExceptionAbstract
      */
     public function delete(ExpressiveContract $model)
     {
@@ -124,7 +125,7 @@ class DeleteBuilder
     /**
      * @param ExpressiveContract $model
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function hasManyDependencies($model)
     {

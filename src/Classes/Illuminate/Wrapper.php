@@ -10,7 +10,7 @@ use Solis\Expressive\Classes\Illuminate\Update\UpdateBuilder;
 use Solis\Expressive\Classes\Illuminate\Patch\PatchBuilder;
 use Solis\Expressive\Contracts\DatabaseContainerContract;
 use Solis\Expressive\Contracts\ExpressiveContract;
-use Solis\Breaker\TException;
+use Solis\Breaker\Abstractions\TExceptionAbstract;
 
 /**
  * Class Wrapper
@@ -174,7 +174,7 @@ class Wrapper implements DatabaseContainerContract
      *
      * @return array|boolean
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function select(
         ExpressiveContract $model,
@@ -195,7 +195,7 @@ class Wrapper implements DatabaseContainerContract
      *
      * @return ExpressiveContract|boolean
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function search(ExpressiveContract $model, $dependencies = true)
     {
@@ -207,7 +207,7 @@ class Wrapper implements DatabaseContainerContract
      *
      * @return boolean
      *
-     * @throws TException;
+     * @throws TExceptionAbstract
      */
     public function delete(ExpressiveContract $model)
     {
@@ -219,7 +219,7 @@ class Wrapper implements DatabaseContainerContract
      *
      * @return ExpressiveContract|boolean
      *
-     * @throws TException;
+     * @throws TExceptionAbstract
      */
     public function create(ExpressiveContract $model)
     {
@@ -232,7 +232,7 @@ class Wrapper implements DatabaseContainerContract
      *
      * @return int
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function count(
         ExpressiveContract $model,

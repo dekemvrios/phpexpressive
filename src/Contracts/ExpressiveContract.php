@@ -2,11 +2,10 @@
 
 namespace Solis\Expressive\Contracts;
 
-use Solis\Expressive\Schema\Contracts\SchemaContract;
-use Solis\Breaker\TException;
+use Solis\Breaker\Abstractions\TExceptionAbstract;
 
 /**
- * Classes ExpressiveContract
+ * Interface ExpressiveContract
  *
  * @package Solis\Expressive\Contracts
  */
@@ -19,7 +18,7 @@ interface ExpressiveContract
      *
      * @return ExpressiveContract[]|boolean
      *
-     * @throws TExceptionA
+     * @throws TExceptionAbstract
      */
     public function select(
         array $arguments,
@@ -31,21 +30,21 @@ interface ExpressiveContract
      *
      * @return ExpressiveContract|boolean
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function search($dependencies = true);
 
     /**
      * @return boolean
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function delete();
 
     /**
      * @return ExpressiveContract
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function create();
 
@@ -54,7 +53,7 @@ interface ExpressiveContract
      *
      * @return int
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function count(array $arguments = []);
 
@@ -63,21 +62,21 @@ interface ExpressiveContract
      *
      * @return ExpressiveContract
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function last($dependencies = true);
 
     /**
      * @return boolean
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function update();
 
     /**
      * @return ExpressiveContract
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function patch();
 

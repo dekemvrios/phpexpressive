@@ -3,12 +3,11 @@
 namespace Solis\Expressive\Classes\Illuminate;
 
 use Solis\Expressive\Abstractions\ExpressiveAbstract;
-use Solis\Expressive\Schema\Contracts\SchemaContract;
 
 /**
- * Class ExpressiveSlim
+ * Class Expressive
  *
- * @package Solis\Expressive\Classes
+ * @package Solis\Expressive\Classes\Illuminate
  */
 class Expressive extends ExpressiveAbstract
 {

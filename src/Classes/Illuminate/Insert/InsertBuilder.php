@@ -7,6 +7,7 @@ use Solis\Expressive\Abstractions\ExpressiveAbstract;
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Classes\Illuminate\Database;
+use Solis\Breaker\Abstractions\TExceptionAbstract;
 use Solis\Breaker\TException;
 
 /**
@@ -50,7 +51,7 @@ final class InsertBuilder
      *
      * @return ExpressiveContract|boolean
      *
-     * @throws TException;
+     * @throws TExceptionAbstract
      */
     public function create(ExpressiveContract $model)
     {
@@ -155,7 +156,7 @@ final class InsertBuilder
      *
      * @return ExpressiveContract
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function hasOneDependency($model)
     {
@@ -190,7 +191,7 @@ final class InsertBuilder
     /**
      * @param ExpressiveContract $model
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function hasManyDependencies($model)
     {
@@ -213,7 +214,7 @@ final class InsertBuilder
      *
      * @return array
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function getInsertFields($model)
     {

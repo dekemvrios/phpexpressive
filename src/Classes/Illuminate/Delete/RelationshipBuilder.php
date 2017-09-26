@@ -4,6 +4,7 @@ namespace Solis\Expressive\Classes\Illuminate\Delete;
 
 use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Expressive\Contracts\ExpressiveContract;
+use Solis\Breaker\Abstractions\TExceptionAbstract;
 use Solis\Breaker\TException;
 
 /**
@@ -20,7 +21,7 @@ final class RelationshipBuilder
      *
      * @return ExpressiveContract
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function hasMany(
         $model,

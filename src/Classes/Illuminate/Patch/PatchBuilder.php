@@ -5,6 +5,7 @@ namespace Solis\Expressive\Classes\Illuminate\Patch;
 use Solis\Expressive\Classes\Illuminate\Update\UpdateBuilder;
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Solis\Expressive\Classes\Illuminate\Database;
+use Solis\Breaker\Abstractions\TExceptionAbstract;
 use Solis\Breaker\TException;
 
 /**
@@ -70,7 +71,7 @@ final class PatchBuilder
      *
      * @return ExpressiveContract|boolean
      *
-     * @throws TException;
+     * @throws TExceptionAbstract
      */
     public function patch(ExpressiveContract $model)
     {
@@ -136,7 +137,7 @@ final class PatchBuilder
      * @param ExpressiveContract $model
      * @param ExpressiveContract $original
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      *
      * @return boolean
      */

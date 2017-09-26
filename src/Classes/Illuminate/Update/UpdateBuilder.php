@@ -8,6 +8,7 @@ use Solis\Expressive\Contracts\ExpressiveContract;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Classes\Illuminate\Database;
 use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
+use Solis\Breaker\Abstractions\TExceptionAbstract;
 use Solis\Breaker\TException;
 
 /**
@@ -53,7 +54,7 @@ final class UpdateBuilder
      *
      * @return ExpressiveContract|boolean
      *
-     * @throws TException;
+     * @throws TExceptionAbstract
      */
     public function update(ExpressiveContract $model, $isPatch = false)
     {
@@ -157,7 +158,7 @@ final class UpdateBuilder
      *
      * @return array
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function getUpdateFields(
         ExpressiveContract $original,
@@ -261,7 +262,7 @@ final class UpdateBuilder
     /**
      * @param ExpressiveContract $model
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function hasManyDependencies($model)
     {

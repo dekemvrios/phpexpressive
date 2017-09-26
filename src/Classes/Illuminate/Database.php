@@ -2,10 +2,11 @@
 
 namespace Solis\Expressive\Classes\Illuminate;
 
-use Solis\Expressive\Contracts\ExpressiveContract;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;
+use Solis\Expressive\Contracts\ExpressiveContract;
+use Solis\Breaker\Abstractions\TExceptionAbstract;
 use Solis\Breaker\TException;
 
 /**
@@ -28,7 +29,7 @@ final class Database
     /**
      * @param array $params
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public static function boot($params = [])
     {

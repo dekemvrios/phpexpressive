@@ -7,6 +7,7 @@ use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Classes\Illuminate\Diglett;
 use Solis\Expressive\Classes\Illuminate\Wrapper;
+use Solis\Breaker\Abstractions\TExceptionAbstract;
 use Solis\Breaker\TException;
 
 /**
@@ -23,7 +24,7 @@ final class RelationshipBuilder
      *
      * @return ExpressiveContract
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function hasOne($model, $dependency)
     {
@@ -72,7 +73,7 @@ final class RelationshipBuilder
      *
      * @return ExpressiveContract
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function hasMany($model, $dependency)
     {

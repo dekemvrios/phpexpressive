@@ -2,10 +2,10 @@
 
 namespace Solis\Expressive\Classes\Illuminate\Patch;
 
-use Solis\Breaker\Abstractions\TExceptionAbstract;
 use Solis\Expressive\Abstractions\ExpressiveAbstract;
 use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Expressive\Contracts\ExpressiveContract;
+use Solis\Breaker\Abstractions\TExceptionAbstract;
 use Solis\Breaker\TException;
 
 /**
@@ -22,7 +22,7 @@ final class RelationshipBuilder
      *
      * @return ExpressiveContract|boolean
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function hasMany(
         $model,

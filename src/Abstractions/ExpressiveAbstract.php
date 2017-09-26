@@ -4,12 +4,10 @@ namespace Solis\Expressive\Abstractions;
 
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Solis\Expressive\Contracts\DatabaseContainerContract;
-use Solis\Expressive\Schema\Contracts\SchemaContract;
-use Solis\Expressive\Schema\Schema;
-use Solis\Breaker\TException;
+use Solis\Breaker\Abstractions\TExceptionAbstract;
 
 /**
- * Classes ExpressiveAbstract
+ * Class ExpressiveAbstract
  *
  * @package Solis\Expressive\Abstractions
  */
@@ -32,48 +30,6 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     protected function __construct()
     {
         $this->setUniqid(uniqid(rand()));
-    }
-
-    /**
-     * __call
-     *
-     * @param string $name
-     * @param array  $arguments
-     *
-     * @return mixed
-     * @throws TException
-     */
-    public function __call(
-        $name,
-        $arguments
-    ) {
-        if (preg_match(
-            '/findBy_/',
-            $name
-        )
-        ) {
-            $arguments = [
-                "column" => preg_replace(
-                    '/findBy_/',
-                    '',
-                    $name
-                ),
-                "value" => is_array($arguments) ? $arguments[0] : $arguments
-            ];
-
-            return $this->getDatabaseContainer()->select(
-                $this
-                    [$arguments],
-                []
-            );
-        }
-
-        throw new TException(
-            __CLASS__,
-            __METHOD__,
-            "invalid method call at " . get_class($this),
-            '400'
-        );
     }
 
     /**
@@ -114,7 +70,7 @@ abstract class ExpressiveAbstract implements ExpressiveContract
      *
      * @return ExpressiveContract[]|ExpressiveContract|boolean
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function select(
         array $arguments,
@@ -132,7 +88,7 @@ abstract class ExpressiveAbstract implements ExpressiveContract
      *
      * @return ExpressiveContract|boolean
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function search($dependencies = true)
     {
@@ -142,7 +98,7 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     /**
      * @return boolean
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function delete()
     {
@@ -152,7 +108,7 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     /**
      * @return ExpressiveContract|boolean
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function create()
     {
@@ -164,7 +120,7 @@ abstract class ExpressiveAbstract implements ExpressiveContract
      *
      * @return int
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function count(array $arguments = [])
     {
@@ -179,7 +135,7 @@ abstract class ExpressiveAbstract implements ExpressiveContract
      *
      * @return ExpressiveContract
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function last($dependencies = true)
     {
@@ -189,7 +145,7 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     /**
      * @return boolean
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function update()
     {
@@ -199,7 +155,7 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     /**
      * @return ExpressiveContract
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function patch()
     {

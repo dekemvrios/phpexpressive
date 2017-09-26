@@ -2,11 +2,10 @@
 
 namespace Solis\Expressive\Contracts;
 
-use Solis\Expressive\Schema\Contracts\SchemaContract;
-use Solis\Breaker\TException;
+use Solis\Breaker\Abstractions\TExceptionAbstract;
 
 /**
- * Interface DatabaseCotainerContract
+ * Interface DatabaseContainerContract
  *
  * @package Solis\Expressive\Contracts
  */
@@ -20,7 +19,7 @@ interface DatabaseContainerContract
      *
      * @return ExpressiveContract[]boolean
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function select(
         ExpressiveContract $model,
@@ -35,7 +34,7 @@ interface DatabaseContainerContract
      *
      * @return ExpressiveContract|boolean
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function search(ExpressiveContract $model, $dependencies = true);
 
@@ -44,7 +43,7 @@ interface DatabaseContainerContract
      *
      * @return boolean
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function delete(ExpressiveContract $model);
 
@@ -53,7 +52,7 @@ interface DatabaseContainerContract
      *
      * @return ExpressiveContract|boolean
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function create(ExpressiveContract $model);
 
@@ -63,7 +62,7 @@ interface DatabaseContainerContract
      *
      * @return int
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function count(
         ExpressiveContract $model,
@@ -76,7 +75,7 @@ interface DatabaseContainerContract
      *
      * @return ExpressiveContract
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function last(ExpressiveContract $model, $dependencies = true);
 
@@ -85,7 +84,7 @@ interface DatabaseContainerContract
      *
      * @return boolean
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function update(ExpressiveContract $model);
 
@@ -94,7 +93,7 @@ interface DatabaseContainerContract
      *
      * @return ExpressiveContract
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function patch(ExpressiveContract $model);
 

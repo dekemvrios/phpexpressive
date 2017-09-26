@@ -2,15 +2,16 @@
 
 namespace Solis\Expressive\Classes\Illuminate\Replicate;
 
+use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Expressive\Classes\Illuminate\Insert\InsertBuilder;
 use Solis\Expressive\Abstractions\ExpressiveAbstract;
 use Solis\Expressive\Classes\Illuminate\Util\Actions;
-use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Solis\Expressive\Classes\Illuminate\Database;
-use Solis\Breaker\TException;
 use Solis\Expressive\Schema\Contracts\SchemaContract;
+use Solis\Breaker\Abstractions\TExceptionAbstract;
+use Solis\Breaker\TException;
 
 /**
  * Class PatchBuilder
@@ -49,7 +50,7 @@ final class ReplicateBuilder
      *
      * @return ExpressiveContract|boolean
      *
-     * @throws TException;
+     * @throws TExceptionAbstract
      */
     public function replicate(ExpressiveContract $model)
     {
@@ -77,7 +78,7 @@ final class ReplicateBuilder
      *
      * @return ExpressiveContract|boolean
      *
-     * @throws TException;
+     * @throws TExceptionAbstract
      */
     private function create(
         ExpressiveContract $model
@@ -129,7 +130,7 @@ final class ReplicateBuilder
      *
      * @return ExpressiveContract
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function hasOneDependency($model)
     {
@@ -159,7 +160,7 @@ final class ReplicateBuilder
     /**
      * @param ExpressiveContract $model
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function hasManyDependencies($model)
     {
@@ -185,7 +186,7 @@ final class ReplicateBuilder
      *
      * @return ExpressiveContract
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function hasOne(
         $model,
@@ -228,7 +229,7 @@ final class ReplicateBuilder
      *
      * @return ExpressiveContract
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function hasMany(
         $model,

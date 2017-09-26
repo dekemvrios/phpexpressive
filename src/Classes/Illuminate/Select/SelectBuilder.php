@@ -7,6 +7,7 @@ use Solis\Expressive\Contracts\ExpressiveContract;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Classes\Illuminate\Wrapper;
 use Solis\Expressive\Classes\Illuminate\Diglett;
+use Solis\Breaker\Abstractions\TExceptionAbstract;
 use Solis\Breaker\TException;
 
 /**
@@ -53,7 +54,7 @@ final class SelectBuilder
      *
      * @return ExpressiveContract[]|boolean
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function select(
         ExpressiveContract $model,
@@ -216,7 +217,7 @@ final class SelectBuilder
      *
      * @return ExpressiveContract|boolean
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function search(ExpressiveContract $model, $dependencies = true)
     {
@@ -294,7 +295,7 @@ final class SelectBuilder
      *
      * @return int
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function count(
         ExpressiveContract $model,
@@ -350,7 +351,7 @@ final class SelectBuilder
      *
      * @return ExpressiveContract
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function last(ExpressiveContract $model, $dependencies = true)
     {
@@ -417,7 +418,7 @@ final class SelectBuilder
      *
      * @return ExpressiveContract
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     public function searchForDependencies(
         $model,
@@ -480,7 +481,7 @@ final class SelectBuilder
      *
      * @return array
      *
-     * @throws TException
+     * @throws TExceptionAbstract
      */
     private function columns(
         $model,
