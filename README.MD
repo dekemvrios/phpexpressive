@@ -202,8 +202,6 @@ Acompanhe o [CHANGELOG](CHANGELOG.md) para informações sobre atualizações re
 
 ## Testing
 
-(Em desenvolvimento)
-
 ```
 $ composer test
 ```
