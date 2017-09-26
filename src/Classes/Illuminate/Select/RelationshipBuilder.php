@@ -29,7 +29,7 @@ final class RelationshipBuilder
     {
         $dependencyCode = $value = $model->{$dependency->getProperty()};
 
-        if(empty($dependencyCode)){
+        if (empty($dependencyCode)) {
             return $model;
         }
 

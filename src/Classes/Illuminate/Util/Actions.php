@@ -4,6 +4,7 @@ namespace Solis\Expressive\Classes\Illuminate\Util;
 
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Solis\Breaker\TException;
+
 /**
  * Class Actions
  *
@@ -23,12 +24,12 @@ class Actions
     public static function doThingWhenDatabaseAction($model, $whenAction, $doThing)
     {
         $actions = $model::$schema->getActions();
-        if(empty($actions)){
+        if (empty($actions)) {
             return $model;
         }
 
         $whenActionObj = $actions->{'get' . ucfirst($whenAction)}();
-        if(empty($whenActionObj)){
+        if (empty($whenActionObj)) {
             return $model;
         }
 
@@ -43,7 +44,6 @@ class Actions
                 'this',
                 $param
             )) {
-
                 $param[array_search(
                     'this',
                     $param
@@ -59,7 +59,8 @@ class Actions
                 throw new TException(
                     __CLASS__,
                     __METHOD__,
-                    "error executing {$whenAction} {$doThing} [{$action->getFunction()}] action for class " . get_class($model),
+                    "error executing {$whenAction} {$doThing} [{$action->getFunction()}] action for class "
+                    . get_class($model),
                     500
                 );
             }

@@ -4,7 +4,6 @@ namespace Solis\Expressive\Classes\Illuminate\Insert;
 
 use Solis\Expressive\Classes\Illuminate\Util\Actions;
 use Solis\Expressive\Abstractions\ExpressiveAbstract;
-use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Classes\Illuminate\Database;
@@ -73,7 +72,6 @@ final class InsertBuilder
 
         Database::beginTransaction($model);
         try {
-
             $model = Actions::doThingWhenDatabaseAction(
                 $model,
                 'whenInsert',
@@ -85,7 +83,6 @@ final class InsertBuilder
 
             Capsule::table($table)->insert($this->getInsertFields($model));
         } catch (\PDOException $exception) {
-
             Database::rollbackActiveTransaction($model);
             throw new TException(
                 __CLASS__,
@@ -220,7 +217,7 @@ final class InsertBuilder
      */
     public function getInsertFields($model)
     {
-        $persistentFields = array_filter($model::$schema->getPersistentFields(), function (PropertyContract $item) use ($model) {
+        $persistentFields = array_filter($model::$schema->getPersistentFields(), function ($item) use ($model) {
             $value = $model->{$item->getProperty()};
 
             $required = $item->getBehavior()->isRequired();
@@ -237,7 +234,8 @@ final class InsertBuilder
                 throw new TException(
                     __CLASS__,
                     __METHOD__,
-                    "a persistent field [ {$item->getProperty()} ] cannot be empty when inserting object " . get_class($model),
+                    "a persistent field [ {$item->getProperty()} ] cannot be empty when inserting object "
+                    . get_class($model),
                     400
                 );
             }

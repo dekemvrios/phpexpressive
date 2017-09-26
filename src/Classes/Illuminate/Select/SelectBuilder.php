@@ -100,7 +100,7 @@ final class SelectBuilder
                 'orderBy',
                 $options
             )) {
-                if(count(array_filter(
+                if (count(array_filter(
                     array_keys($options['orderBy']),
                     'is_string'
                 )) > 0) {
@@ -121,7 +121,6 @@ final class SelectBuilder
                 'limit',
                 $options
             )) {
-
                 if (array_key_exists(
                     'number',
                     $options['limit']
@@ -170,7 +169,8 @@ final class SelectBuilder
                 'withProperties',
                 $options
             )) {
-                $withProperties = !is_array($options['withProperties']) ? [$options['withProperties']] : $options['withProperties'];
+                $withProperties = !is_array($options['withProperties']) ?
+                        [$options['withProperties']] : $options['withProperties'];
 
                 $columns = $this->columns($model, $withProperties);
             }
@@ -235,7 +235,6 @@ final class SelectBuilder
         $stmt = Capsule::table($table);
 
         foreach ($primaryKeys as $key) {
-
             $value = $model->{$key->getProperty()};
 
             if (empty($value) && empty($key->getBehavior()->isRequired())) {
@@ -246,7 +245,8 @@ final class SelectBuilder
                 throw new TException(
                     __CLASS__,
                     __METHOD__,
-                    "property '{$key->getProperty()}' used as primary key cannot be empty at " . get_class($model) . " instance",
+                    "property '{$key->getProperty()}' used as primary key cannot be empty at " .
+                    get_class($model) . " instance",
                     400
                 );
             }
@@ -314,7 +314,7 @@ final class SelectBuilder
 
         $stmt = Capsule::table($table);
         if (!empty($arguments) && is_array($arguments)) {
-            foreach ($arguments as $argument){
+            foreach ($arguments as $argument) {
                 $stmt->where(
                     $argument['column'],
                     !(array_key_exists(
@@ -373,7 +373,6 @@ final class SelectBuilder
         ];
 
         foreach ($model::$schema->getKeys() as $key) {
-
             // Se uma chave possuir comportamento auto incremental, então o consumidor não é
             // responsável por sua atribuição, desse modo ela será utilizada como filtro de
             // ordenação para a operação de consulta.
@@ -445,7 +444,7 @@ final class SelectBuilder
         // se array, filtra as dependencias a serem retornadas somente se no conjunto de
         // entradas desejadas para consulta.
         if (is_array($dependenciItems)) {
-            $dependencies = array_filter($dependencies, function (PropertyContract $property) use ($dependenciItems){
+            $dependencies = array_filter($dependencies, function (PropertyContract $property) use ($dependenciItems) {
                 return in_array($property->getProperty(), $dependenciItems);
             });
         }
@@ -500,7 +499,7 @@ final class SelectBuilder
         if (!empty($withProperties)) {
             $columns = $model::$schema->getSearchableFieldsString();
 
-            $searchFor = array_values(array_filter($columns, function ($field) use ($withProperties){
+            $searchFor = array_values(array_filter($columns, function ($field) use ($withProperties) {
                 return in_array($field, $withProperties);
             }));
         }

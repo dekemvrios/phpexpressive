@@ -36,13 +36,13 @@ final class RelationshipBuilder
             $dependency
         );
 
-        // verifica se serão criadas novas depencias para o respectivo model
+        // verifica se serÃ£o criadas novas depencias para o respectivo model
         $hasNewChanges = $this->parseNewDependecyValues(
             $model,
             $dependency
         );
 
-        // retorna true apenas se houveram alterações na persistência
+        // retorna true apenas se houveram alteraÃ§Ãµes na persistÃªncia
         return !empty($hasOriginalChanges) || !empty($hasNewChanges) ? true : false;
     }
 
@@ -69,12 +69,12 @@ final class RelationshipBuilder
          */
         $dependencyArray = !is_array($dependencyArray) ? [$dependencyArray] : $dependencyArray;
 
-        $dependencyArray = array_values(array_filter($dependencyArray, function ($item){
+        $dependencyArray = array_values(array_filter($dependencyArray, function ($item) {
             return $item instanceof ExpressiveAbstract ? true : false;
         }));
 
         if (empty($dependencyArray)) {
-            // como não há dependências vinculadas, retorna false visto que não ocorreram alterações
+            // como nÃ£o hÃ¡ dependÃªncias vinculadas, retorna false visto que nÃ£o ocorreram alteraÃ§Ãµes
             return false;
         }
 
@@ -95,7 +95,7 @@ final class RelationshipBuilder
             $dependencyValue->create();
         }
 
-        // considera que ocorreram alterações devido a remoção das dependências
+        // considera que ocorreram alteraÃ§Ãµes devido a remoÃ§Ã£o das dependÃªncias
         return true;
     }
 
@@ -115,12 +115,12 @@ final class RelationshipBuilder
 
         $originalArray = !is_array($originalArray) ? [$originalArray] : $originalArray;
 
-        $originalArray = array_values(array_filter($originalArray, function ($item){
+        $originalArray = array_values(array_filter($originalArray, function ($item) {
             return $item instanceof ExpressiveAbstract ? true : false;
         }));
 
-        if(empty($originalArray)){
-            // como não há dependências vinculadas, retorna false visto que não ocorreram alterações
+        if (empty($originalArray)) {
+            // como nÃ£o hÃ¡ dependÃªncias vinculadas, retorna false visto que nÃ£o ocorreram alteraÃ§Ãµes
             return false;
         }
 
@@ -138,7 +138,7 @@ final class RelationshipBuilder
             }
         }
 
-        // considera que ocorreram alterações devido a remoção das dependências
+        // considera que ocorreram alteraÃ§Ãµes devido a remoÃ§Ã£o das dependÃªncias
         return true;
     }
 }

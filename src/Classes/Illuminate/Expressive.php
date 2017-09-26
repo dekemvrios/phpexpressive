@@ -16,7 +16,8 @@ class Expressive extends ExpressiveAbstract
     /**
      * Expressive constructor.
      */
-    protected function __construct() {
+    protected function __construct()
+    {
         parent::__construct();
 
         $this->setDatabaseContainer(

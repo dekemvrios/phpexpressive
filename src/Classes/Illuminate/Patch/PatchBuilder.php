@@ -87,7 +87,6 @@ final class PatchBuilder
         $iTid = $model->getUniqid();
 
         try {
-
             Database::beginTransaction($model);
 
             $model->setUniqid(uniqid(rand()));
@@ -116,7 +115,6 @@ final class PatchBuilder
                 return $record;
             }
         } catch (\PDOException $exception) {
-
             Database::rollbackActiveTransaction($model);
 
             throw new TException(
@@ -153,7 +151,6 @@ final class PatchBuilder
 
         $hasChanges = false;
         foreach (array_values($dependencies) as $dependency) {
-
             // em operação de patch, campo pode ser mantido com valor original,
             // caso sua ação esteja especificada como 'keep'
             if ($dependency->getBehavior()->getWhenPatch()->getAction() === 'keep') {

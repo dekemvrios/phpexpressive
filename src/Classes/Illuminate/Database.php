@@ -106,7 +106,6 @@ final class Database
     {
         if (self::$hasActiveTransaction) {
             if ($model->getUniqid() === self::$owner) {
-
                 Capsule::connection()->commit();
 
                 self::$hasActiveTransaction = false;

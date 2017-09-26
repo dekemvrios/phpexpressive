@@ -82,7 +82,6 @@ final class UpdateBuilder
         $stmt = Capsule::table($table);
 
         foreach ($primaryKeys as $key) {
-
             $value = $model->{$key->getProperty()};
             if (empty($value)) {
                 throw new TException(
@@ -103,7 +102,6 @@ final class UpdateBuilder
         Database::beginTransaction($model);
 
         try {
-
             $model = Actions::doThingWhenDatabaseAction(
                 $model,
                 'whenUpdate',
@@ -113,9 +111,9 @@ final class UpdateBuilder
             $model = $this->setPrimaryKeysFromOriginal($original, $model);
 
             $fields = $this->getUpdateFields(
-                    $original,
-                    $model,
-                    $isPatch
+                $original,
+                $model,
+                $isPatch
             );
 
             if (empty($fields)) {
@@ -128,7 +126,6 @@ final class UpdateBuilder
                 $fields
             );
         } catch (\PDOException $exception) {
-
             Database::rollbackActiveTransaction($model);
             throw new TException(
                 __CLASS__,
@@ -163,9 +160,9 @@ final class UpdateBuilder
      * @throws TException
      */
     public function getUpdateFields(
-            ExpressiveContract $original,
-            ExpressiveContract $updated,
-            $isPatch = false
+        ExpressiveContract $original,
+        ExpressiveContract $updated,
+        $isPatch = false
     ) {
 
         // contém a relação de campos a serem atualizados
@@ -223,7 +220,7 @@ final class UpdateBuilder
 
             // somente considera como campo alteração caso valor no model
             // orginal for diferente do presente no model atualizado.
-            if($originalProperty == $updatedProperty){
+            if ($originalProperty == $updatedProperty) {
                 continue;
             }
 

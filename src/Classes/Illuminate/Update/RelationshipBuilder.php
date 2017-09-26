@@ -34,7 +34,6 @@ final class RelationshipBuilder
         $dependencyArray = !is_array($dependencyArray) ? [$dependencyArray] : $dependencyArray;
 
         foreach ($dependencyArray as $dependencyValue) {
-
             $dependencyValue->$refers = $model->$field;
             $sharedFields = $dependency->getComposition()->getRelationship()->getSharedFields();
             if (!empty($sharedFields)) {

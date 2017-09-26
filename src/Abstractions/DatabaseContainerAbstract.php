@@ -3,10 +3,10 @@
 namespace Solis\Expressive\Abstractions;
 
 use Solis\Expressive\Contracts\DatabaseContainerContract;
-use Solis\PhpSchema\Contracts\SchemaContract;
+use Solis\Expressive\Schema\Contracts\SchemaContract;
 
 /**
- * Classes DatabaseContainerAbstract
+ * Class DatabaseContainerAbstract
  *
  * @package Solis\Expressive\Abstractions
  */
@@ -66,5 +66,4 @@ abstract class DatabaseContainerAbstract implements DatabaseContainerContract
     {
         $this->schema = $schema;
     }
-
 }

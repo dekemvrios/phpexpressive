@@ -2,7 +2,6 @@
 
 namespace Solis\Expressive\Classes\Illuminate\Replicate;
 
-use Composer\DependencyResolver\Transaction;
 use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Expressive\Classes\Illuminate\Insert\InsertBuilder;
 use Solis\Expressive\Abstractions\ExpressiveAbstract;
@@ -140,7 +139,7 @@ final class ReplicateBuilder
         }
         foreach (array_values($dependencies) as $dependency) {
             $value = $model->{$dependency->getProperty()};
-            if(!empty($value)){
+            if (!empty($value)) {
                 if (! $value instanceof ExpressiveAbstract) {
                     throw new TException(
                         __CLASS__,
@@ -165,7 +164,7 @@ final class ReplicateBuilder
     public function hasManyDependencies($model)
     {
         $dependencies = $model::$schema->getDependencies('hasMany');
-        if(empty($dependencies)){
+        if (empty($dependencies)) {
             return;
         }
 
@@ -239,7 +238,7 @@ final class ReplicateBuilder
 
         $dependencyValue = !is_array($dependencyValue) ? [$dependencyValue] : $dependencyValue;
 
-        if(empty($dependencyValue)){
+        if (empty($dependencyValue)) {
             return;
         }
 

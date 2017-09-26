@@ -71,7 +71,6 @@ class DeleteBuilder
         $stmt = Capsule::table($table);
 
         foreach ($primaryKeys as $key) {
-
             $value = $model->{$key->getProperty()};
             if (empty($value)) {
                 throw new TException(

@@ -29,8 +29,8 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     /**
      * ExpressiveAbstract constructor.
      */
-    protected function __construct(
-    ) {
+    protected function __construct()
+    {
         $this->setUniqid(uniqid(rand()));
     }
 
@@ -38,11 +38,10 @@ abstract class ExpressiveAbstract implements ExpressiveContract
      * __call
      *
      * @param string $name
-     * @param array $arguments
+     * @param array  $arguments
      *
      * @return mixed
      * @throws TException
-     *
      */
     public function __call(
         $name,
@@ -51,7 +50,8 @@ abstract class ExpressiveAbstract implements ExpressiveContract
         if (preg_match(
             '/findBy_/',
             $name
-        )) {
+        )
+        ) {
             $arguments = [
                 "column" => preg_replace(
                     '/findBy_/',

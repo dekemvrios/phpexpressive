@@ -338,4 +338,3 @@ class Wrapper implements DatabaseContainerContract
         return $instance;
     }
 }
-

@@ -60,7 +60,7 @@ interface ExpressiveContract
 
     /**
      * @param boolean $dependencies
-     * 
+     *
      * @return ExpressiveContract
      *
      * @throws TException
