@@ -32,7 +32,7 @@
     }
   },
   "scripts": {
-    "test": "docker exec -i docker_php_1 php vendor/bin/phpunit --testdox",
+    "test": "php vendor/bin/phpunit --testdox",
     "check-style": "vendor/bin/phpcs --standard=psr2 src tests",
     "fix-style": "vendor/bin/phpcbf --standard=psr2 src tests"
   }
