@@ -23,15 +23,15 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<type name="varchar" length="0"/>
 		<comment><![CDATA[nome - nome do registro pessoa]]></comment>
 	</column>
-	<column name="inscricaoFederal" not-null="true">
+	<column name="inscricaoFederal">
 		<type name="varchar" length="0"/>
 		<comment><![CDATA[inscricaoFederal - valor código na receita federal CPF/CNPJ]]></comment>
 	</column>
-	<column name="tipo" not-null="true">
+	<column name="tipo">
 		<type name="integer" length="0"/>
 		<comment><![CDATA[tipo - valor utilizado para identificar tipo do registro]]></comment>
 	</column>
-	<column name="situacao" not-null="true">
+	<column name="situacao">
 		<type name="integer" length="0"/>
 		<comment><![CDATA[situacao - valor utilizado para definir a situacao do registro]]></comment>
 	</column>

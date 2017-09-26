@@ -20,17 +20,18 @@
       "property": "nome",
       "description": "nome - nome do registro pessoa",
       "type": "string",
-      "format": [
-        {
-          "function": "uppercase"
-        }
-      ]
+      "behavior": {
+        "required": "false"
+      }
     },
     {
       "alias": "proInscricaoFederal",
       "property": "inscricaoFederal",
       "description": "inscricaoFederal - valor código na receita federal CPF/CNPJ",
-      "type": "string"
+      "type": "string",
+      "behavior": {
+        "required": "false"
+      }
     },
     {
       "alias": "proTipo",
@@ -40,7 +41,10 @@
       "allowedValues": [
         "1",
         "2"
-      ]
+      ],
+      "behavior": {
+        "required": "false"
+      }
     },
     {
       "alias": "proSituacao",
@@ -48,11 +52,7 @@
       "description": "situacao - valor utilizado para definir a situacao do registro",
       "type": "int",
       "behavior": {
-        "required": "false",
-        "whenReplicate": {
-          "action": "static",
-          "value": "2"
-        }
+        "required": "false"
       },
       "default": "1"
     },
@@ -72,6 +72,7 @@
         }
       },
       "behavior": {
+        "required": "false",
         "whenPatch": {
           "action": "keep"
         }
@@ -86,6 +87,7 @@
         "class": "Solis\\Expressive\\Sample\\Endereco\\Composition\\Endereco"
       },
       "behavior": {
+        "required": "false",
         "hidden": "true"
       }
     }

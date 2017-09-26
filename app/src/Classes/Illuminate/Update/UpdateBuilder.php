@@ -188,9 +188,10 @@ final class UpdateBuilder
                 continue;
             }
 
-            // a alteração é desconsiderada caso a propriedade não possuir valor
+            // Update - na operação de update a alteração é desconsiderada caso a propriedade não possuir valor
             // e seu comportamento permitir valores em branco.
-            if (is_null($updatedProperty) && !$property->getBehavior()->isRequired()) {
+            // Patch - comportamento do patch preve substituição do campo se não fornecido para operação
+            if (!$isPatch && is_null($updatedProperty) && !$property->getBehavior()->isRequired()) {
                 continue;
             }
 
