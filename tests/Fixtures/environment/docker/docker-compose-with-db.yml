@@ -21,3 +21,16 @@ services:
     environment:
       - XDEBUG_CONFIG=remote_host=${IP}
       - DEBUG=${DEBUG:-0}
+    env_file:
+      - ${VARIABLES_PATH}/db.env
+
+  db-pgsql:
+    image: postgres:9.6
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_USER=postgres
+      - TZ='America/Sao_Paulo'
+    volumes:
+      - /mnt/data/postgres/db-expressive/:/var/lib/postgresql/data/
