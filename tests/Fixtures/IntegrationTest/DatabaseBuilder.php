@@ -81,11 +81,11 @@ class DatabaseBuilder
             $table->increments('ID');
             $table->integer('pessoaID');
             $table->string('logradouro');
-            $table->integer('numero');
-            $table->string('bairro');
-            $table->string('cep');
             $table->string('cidade');
             $table->string('estado');
+            $table->integer('numero')->nullable();
+            $table->string('bairro')->nullable();
+            $table->string('cep')->nullable();
         });
     }
 

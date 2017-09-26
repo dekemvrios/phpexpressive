@@ -3,6 +3,7 @@
 namespace Solis\Expressive\Test\Expressive;
 
 use PHPUnit\Framework\TestCase;
+use Solis\Breaker\Abstractions\TExceptionAbstract;
 use Solis\Expressive\Test\Fixtures\IntegrationTest\Pessoa;
 use Solis\Expressive\Test\Fixtures\IntegrationTest\DatabaseBuilder as DB;
 
@@ -35,6 +36,47 @@ class ExpressiveIntegrationTest extends TestCase
         ])->create();
         $Last = Pessoa::make()->last();
         $this->assertInternalType('int', $Last->ID, 'can\'t last created record');
+    }
+
+    public function testCanCreateOneRecordWithSingleHasMany()
+    {
+        Pessoa::make([
+                "proNome"     => 'Fulano - ' . uniqid(rand()),
+                "proEndereco" => [
+                        "proLogradouro" => "Rua - " . uniqid(rand()),
+                        "proCidade"     => "Cidade - " . uniqid(rand()),
+                        "proEstado"     => uniqid(rand()),
+                ],
+        ])->create();
+
+        $Last = Pessoa::make()->last();
+
+        $endereco = $Last->endereco;
+        $this->assertNotInternalType('null', $endereco, 'can\'t create dependency associated in hasMany');
+    }
+
+    public function testCanCreateOneRecordWithMultipleHasMany()
+    {
+        $dependencies = rand(1, 5);
+
+        $hasMany = [];
+        for ($i = 0; $i < $dependencies; $i++) {
+            $hasMany[] = [
+                    "proLogradouro" => "Rua - " . uniqid(rand()),
+                    "proCidade"     => "Cidade - " . uniqid(rand()),
+                    "proEstado"     => uniqid(rand()),
+            ];
+        }
+
+        Pessoa::make([
+                "proNome"     => 'Fulano - ' . uniqid(rand()),
+                "proEndereco" => $hasMany,
+        ])->create();
+
+        $Last = Pessoa::make()->last();
+
+        $endereco = $Last->endereco;
+        $this->assertCount($dependencies, $endereco, 'can\'t create multi dependencies associated in hasMany');
     }
 
     public function testCanDeleteLastRecord()
