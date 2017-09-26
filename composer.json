@@ -13,7 +13,8 @@
   "require": {
     "solis/phpmagic": "~v1.0",
     "illuminate/database": "^5.4",
-    "illuminate/events": "^5.2"
+    "illuminate/events": "^5.2",
+    "doctrine/dbal": "~2.5"
   },
   "require-dev": {
     "phpunit/phpunit": "~v6.0",

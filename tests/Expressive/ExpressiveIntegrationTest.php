@@ -4,7 +4,10 @@ namespace Solis\Expressive\Test\Expressive;
 
 use PHPUnit\Framework\TestCase;
 
-use Solis\Expressive\Classes\Illuminate\Database;
+use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Capsule\Manager as DB;
+
+use Solis\Breaker\Abstractions\TExceptionAbstract;
 use Solis\Expressive\Test\Fixtures\Pessoa\Repository\Pessoa;
 
 class ExpressiveIntegrationTest extends TestCase
@@ -12,13 +15,47 @@ class ExpressiveIntegrationTest extends TestCase
 
     public function setUp()
     {
-        Database::boot([
-                'driver'   => getenv('DB_DRIVER'),
-                'host'     => getenv('DB_HOST'),
-                'database' => getenv('DB_NAME'),
-                'username' => getenv('DB_USER'),
-                'password' => getenv('DB_PASS'),
+        $this->setDatabaseEnvironment();
+    }
+
+    protected function setDatabaseEnvironment()
+    {
+        $db = new DB;
+        $db->addConnection([
+                'driver'   => 'sqlite',
+                'database' => ':memory:',
         ]);
+        $db->bootEloquent();
+
+        $db->setAsGlobal();
+        $this->createSchema();
+    }
+
+    protected function createSchema()
+    {
+        $this->schema()->create('pessoa', function ($table) {
+            $table->increments('ID');
+            $table->string('nome')->nullable();
+            $table->string('inscricaoFederal')->nullable();
+            $table->integer('situacao')->nullable();
+            $table->text('enderecoJson')->default(json_encode([]))->nullable();
+        });
+        $this->schema()->create('endereco', function ($table) {
+            $table->increments('ID');
+            $table->integer('pessoaID');
+            $table->string('logradouro');
+            $table->integer('numero');
+            $table->string('bairro');
+            $table->string('cep');
+            $table->string('cidade');
+            $table->string('estado');
+        });
+    }
+
+    public function tearDown()
+    {
+        $this->schema()->drop('pessoa');
+        $this->schema()->drop('endereco');
     }
 
     public function testBasicRecordCreation()
@@ -30,51 +67,13 @@ class ExpressiveIntegrationTest extends TestCase
         $this->assertInternalType('int', $Record->ID, 'can\'t create one record in database');
     }
 
-    public function testCreateRecordWithOneHasManyDependency()
-    {
-        Pessoa::make([
-                "proNome"     => 'Fulano - ' . uniqid(rand()),
-                "proEndereco" => [
-                        "proLogradouro" => "Rua - " . uniqid(rand()),
-                        "proCidade"     => "Cidade - " . uniqid(rand()),
-                        "proEstado"     => uniqid(rand()),
-                ],
-        ])->create();
-
-        $Last = Pessoa::make()->last();
-
-        $enderecos = $Last->endereco;
-        $this->assertInternalType('array', $enderecos, 'can\'t create record with one hasMany dependency');
-    }
-
-    public function testCreateRecordWithMultiHasManyDependencies()
-    {
-        $numberOfDependencies = rand(1, 4);
-        $dependencies         = [];
-
-        for ($i = 0; $i < $numberOfDependencies; $i++) {
-            $dependencies[] = [
-                    "proLogradouro" => "Rua - " . uniqid(rand()),
-                    "proCidade"     => "Cidade - " . uniqid(rand()),
-                    "proEstado"     => uniqid(rand()),
-            ];
-        }
-
-        Pessoa::make([
-                "proNome"     => 'Fulano - ' . uniqid(rand()),
-                "proEndereco" => $dependencies,
-        ])->create();
-
-        $Last = Pessoa::make()->last();
-
-        $enderecos = $Last->endereco;
-        $this->assertCount($numberOfDependencies, $enderecos, 'can\'t create record with multi hasMany dependency');
-    }
-
     public function testCanRetrieveLastCreatedRecord()
     {
-        $Pessoa = Pessoa::make()->last();
-        $this->assertInternalType('int', $Pessoa->ID, 'can\'t last created record');
+        Pessoa::make([
+                "proNome" => 'Fulano - ' . uniqid(rand()),
+        ])->create();
+        $Last = Pessoa::make()->last();
+        $this->assertInternalType('int', $Last->ID, 'can\'t last created record');
     }
 
     public function testCanDeleteLastRecord()
@@ -172,24 +171,47 @@ class ExpressiveIntegrationTest extends TestCase
         $nome      = 'Fulano - ' . uniqid(rand());
         $documento = rand(11111111111, 99999999999);
 
-        Pessoa::make([
-                "proNome"             => $nome,
-                "proInscricaoFederal" => "{$documento}",
-        ])->create();
+        try {
+            Pessoa::make([
+                    "proNome"             => $nome,
+                    "proInscricaoFederal" => "{$documento}",
+            ])->create();
 
-        $Last = Pessoa::make()->last();
+            $Last = Pessoa::make()->last();
 
-        Pessoa::make([
-                "proID"   => $Last->ID,
-                "proNome" => $Last->nome,
-        ])->patch();
+            Pessoa::make([
+                    "proID"   => $Last->ID,
+                    "proNome" => $Last->nome,
+            ])->patch();
+        } catch (TExceptionAbstract $e) {
+            fwrite(STDERR, $e->getError()->getMessage());
+        }
 
-        $Last = Pessoa::make()->last();
-
+        $Last          = Pessoa::make()->last();
         $documentoLast = $Last->inscricaoFederal;
         $nomeLast      = $Last->nome;
 
         $this->assertInternalType('null', $documentoLast, 'a not supplied field must be null in a patched record');
         $this->assertEquals($nome, $nomeLast, 'a supplied field cannot be null in a patched record');
+    }
+
+    /**
+     * Get a database connection instance.
+     *
+     * @return \Illuminate\Database\ConnectionInterface
+     */
+    protected function connection($connection = 'default')
+    {
+        return Eloquent::getConnectionResolver()->connection($connection);
+    }
+
+    /**
+     * Get a schema builder instance.
+     *
+     * @return \Illuminate\Database\Schema\Builder
+     */
+    protected function schema($connection = 'default')
+    {
+        return $this->connection($connection)->getSchemaBuilder();
     }
 }
