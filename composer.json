@@ -22,7 +22,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Solis\\Expressive\\": "app/src"
+      "Solis\\Expressive\\": "src"
     }
   },
   "autoload-dev": {
