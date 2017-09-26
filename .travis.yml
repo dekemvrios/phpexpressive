@@ -27,3 +27,6 @@ before_script:
 script:
   - php vendor/bin/phpcs --standard=psr2 src/ tests/
   - php vendor/bin/phpunit --testdox
+
+after_script:
+  - php vendor/bin/codacycoverage clover build/logs/clover.xml
