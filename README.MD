@@ -1,6 +1,8 @@
-# README
+# Expressive
 
-## Expressive
+[![Latest Stable Version](https://poser.pugx.org/solis/expressive/v/stable)](https://packagist.org/packages/solis/expressive)
+[![License](https://poser.pugx.org/solis/expressive/license)](https://packagist.org/packages/solis/expressive)
+[![Build Status](https://travis-ci.org/rafaelbeecker/phpexpressive.svg?branch=v1.x)](https://travis-ci.org/rafaelbeecker/phpexpressive)
 
 Expressive é uma biblioteca para mapeamento objeto relacional  construída sobre o [illuminate/database](https://github.com/illuminate/database), com definições de objetos baseada em arquivos de schema.
 
