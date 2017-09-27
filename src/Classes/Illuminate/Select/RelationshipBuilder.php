@@ -131,7 +131,7 @@ final class RelationshipBuilder
             );
             if (!empty($hasManyItem)) {
                 if (!empty(Diglett::toDig())) {
-                    $hasManyItem = (new SelectBuilder())->searchForDependencies(
+                    $hasManyItem = (new SelectBuilder())->dependencies(
                         $hasManyItem,
                         true
                     );
