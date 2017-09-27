@@ -4,7 +4,6 @@ namespace Solis\Expressive\Classes\Illuminate\Select;
 
 use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Expressive\Contracts\ExpressiveContract;
-use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Classes\Illuminate\Wrapper;
 use Solis\Expressive\Classes\Illuminate\Diglett;
 use Solis\Breaker\Abstractions\TExceptionAbstract;
@@ -63,15 +62,9 @@ final class SelectBuilder
     ) {
         $table = $model::$schema->getRepository();
 
-        $stmt = Capsule::table($table);
+        $Builder = new StmtBuilder($table, $arguments, $options);
 
-        $stmt = $this->getWhereByArguments($arguments, $stmt);
-
-        $stmt = $this->getOrderByStmt($options, $stmt);
-
-        $stmt = $this->getLimitStmt($options, $stmt);
-
-        $dependencies = $this->getFilterDependencies($options);
+        $stmt = $Builder->where()->orderBy()->limit()->getStmt();
 
         $columns = $this->columns($model, $options);
 
@@ -81,7 +74,7 @@ final class SelectBuilder
             throw new Exception($exception->getMessage(), 500);
         }
 
-        return empty($result) ? $result : $this->fetchDependencies($model, $result, $dependencies);
+        return empty($result) ? $result : $this->fetchDependencies($model, $result, $Builder->dependencies());
     }
 
     /**
@@ -125,26 +118,6 @@ final class SelectBuilder
     }
 
     /**
-     * @param array $options
-     *
-     * @return array|bool|mixed
-     */
-    protected function getFilterDependencies(array $options)
-    {
-        $dependencies = $options['withDependencies'] ?? false;
-
-        if ($dependencies == 'true') {
-            return true;
-        }
-
-        if ($dependencies == 'false') {
-            return false;
-        }
-
-        return is_array($dependencies) ? $dependencies : false;
-    }
-
-    /**
      * @param ExpressiveContract $model
      * @param array              $rows
      * @param mixed              $dependencies
@@ -164,58 +137,6 @@ final class SelectBuilder
     }
 
     /**
-     * @param array                              $options
-     * @param \Illuminate\Database\Query\Builder $stmt
-     *
-     * @return \Illuminate\Database\Query\Builder
-     */
-    public function getLimitStmt(array $options, $stmt)
-    {
-        $limit = $options['limit'] ?? null;
-        if (empty($limit)) {
-            return $stmt;
-        }
-
-        $number = $limit['number'] ?? null;
-        if ($number) {
-            $stmt->limit(intval($number));
-        }
-
-        $offset = $limit['offset'] ?? null;
-        if ($offset) {
-            $stmt->offset(intval($offset));
-        }
-
-        return $stmt;
-    }
-
-    /**
-     * @param array $options
-     * @param \Illuminate\Database\Query\Builder $stmt
-     *
-     * @return \Illuminate\Database\Query\Builder
-     */
-    public function getOrderByStmt(array $options, $stmt)
-    {
-        $orderBy = $options['orderBy'] ?? null;
-
-        if (empty($orderBy)) {
-            return $stmt;
-        }
-
-        $orderBy = count(array_filter(array_keys($orderBy), 'is_string')) > 0 ? [$orderBy] : $orderBy;
-
-        foreach ($orderBy as $option) {
-            $stmt->orderBy(
-                $option['column'],
-                $option['direction'] ?? 'asc'
-            );
-        }
-
-        return $stmt;
-    }
-
-    /**
      * @param ExpressiveContract $model
      *
      * @param boolean            $dependencies
@@ -228,9 +149,9 @@ final class SelectBuilder
     {
         $table = $model::$schema->getRepository();
 
-        $stmt = Capsule::table($table);
+        $Builder = new StmtBuilder($table);
 
-        $stmt = $this->getWhereByKeys($model, $stmt);
+        $stmt = $Builder->whereKey($model)->getStmt();
 
         try {
             $result = $stmt->get()->toArray();
@@ -261,9 +182,9 @@ final class SelectBuilder
     ) {
         $table = $model::$schema->getRepository();
 
-        $stmt = Capsule::table($table);
+        $Builder = new StmtBuilder($table, $arguments);
 
-        $stmt = $this->getWhereByArguments($arguments, $stmt);
+        $stmt = $Builder->where()->getStmt();
 
         try {
             $result = $stmt->count();
@@ -272,56 +193,6 @@ final class SelectBuilder
         }
 
         return $result;
-    }
-
-    /**
-     * @param ExpressiveContract                 $model
-     * @param \Illuminate\Database\Query\Builder $stmt
-     *
-     * @return \Illuminate\Database\Query\Builder|bool
-     * @throws Exception
-     */
-    public function getWhereByKeys(ExpressiveContract $model, $stmt)
-    {
-        $primaryKeys = $model::$schema->getKeys();
-
-        foreach ($primaryKeys as $key) {
-            $value = $model->{$key->getProperty()};
-
-            if (is_null($value) && empty($key->getBehavior()->isRequired())) {
-                continue;
-            }
-
-            if (is_null($value)) {
-                throw new Exception("property '{$key->getProperty()}' used as primary key cannot be null", 400);
-            }
-
-            $stmt->where($key->getProperty(), '=', $value);
-        }
-
-        return $stmt;
-    }
-
-    /**
-     * @param array                              $arguments
-     * @param \Illuminate\Database\Query\Builder $stmt
-     *
-     * @return \Illuminate\Database\Query\Builder
-     */
-    public function getWhereByArguments(array $arguments, $stmt)
-    {
-        $arguments = count(array_filter(array_keys($arguments), 'is_string')) > 0 ? [$arguments] : $arguments;
-
-        foreach ($arguments as $argument) {
-            $stmt->where(
-                $argument['column'],
-                $argument['operator'] ?? '=',
-                $argument['value'],
-                $argument['chainType'] ?? 'and'
-            );
-        }
-
-        return $stmt;
     }
 
     /**
