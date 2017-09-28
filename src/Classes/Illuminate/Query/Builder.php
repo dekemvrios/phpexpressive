@@ -1,6 +1,6 @@
 <?php
 
-namespace Solis\Expressive\Classes\Illuminate\Select;
+namespace Solis\Expressive\Classes\Illuminate\Query;
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Contracts\ExpressiveContract;
@@ -11,7 +11,7 @@ use Solis\Expressive\Exception;
  *
  * @package Solis\Expressive\Classes\Illuminate\Select
  */
-class StmtBuilder
+class Builder
 {
     /**
      * @var string
@@ -44,7 +44,7 @@ class StmtBuilder
     {
         $this->table = $table;
 
-        $this->arguments = count(array_filter(array_keys($arguments), 'is_string')) > 0 ? [$arguments] : $arguments;
+        $this->arguments = $this->toMultiArray($arguments);
 
         $this->options = $options;
 
@@ -54,7 +54,7 @@ class StmtBuilder
     /**
      * @return $this
      */
-    public function where()
+    public function whereArguments()
     {
         foreach ($this->arguments as $argument) {
             $this->stmt->where(
@@ -73,7 +73,7 @@ class StmtBuilder
      * @return $this
      * @throws Exception
      */
-    public function whereKey(ExpressiveContract $model)
+    public function whereKeys(ExpressiveContract $model)
     {
         $primaryKeys = $model::$schema->getKeys();
 
@@ -105,7 +105,7 @@ class StmtBuilder
             return $this;
         }
 
-        $orderBy = count(array_filter(array_keys($orderBy), 'is_string')) > 0 ? [$orderBy] : $orderBy;
+        $orderBy = $this->toMultiArray($orderBy);
 
         foreach ($orderBy as $option) {
             $this->stmt->orderBy(
@@ -164,5 +164,15 @@ class StmtBuilder
     public function getStmt()
     {
         return $this->stmt;
+    }
+
+    /**
+     * @param $array
+     *
+     * @return array
+     */
+    public function toMultiArray(array $array): array
+    {
+        return count(array_filter(array_keys($array), 'is_string')) > 0 ? [$array] : $array;
     }
 }

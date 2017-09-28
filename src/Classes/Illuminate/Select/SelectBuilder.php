@@ -7,6 +7,7 @@ use Solis\Expressive\Contracts\ExpressiveContract;
 use Solis\Expressive\Classes\Illuminate\Wrapper;
 use Solis\Expressive\Classes\Illuminate\Diglett;
 use Solis\Breaker\Abstractions\TExceptionAbstract;
+use Solis\Expressive\Classes\Illuminate\Query\Builder;
 use Solis\Expressive\Exception;
 
 /**
@@ -14,13 +15,13 @@ use Solis\Expressive\Exception;
  *
  * @package Solis\Expressive\Classes\Illuminate\Select
  */
-final class SelectBuilder
+class SelectBuilder
 {
 
     /**
      * @var RelationshipBuilder
      */
-    protected $relationshipBuilder;
+    private $relationshipBuilder;
 
     /**
      * SelectBuilder constructor.
@@ -62,22 +63,29 @@ final class SelectBuilder
     ) {
         $table = $model::$schema->getRepository();
 
-        $Builder = new StmtBuilder($table, $arguments, $options);
+        $Builder = new Builder($table, $arguments, $options);
 
-        $stmt = $Builder->where()->orderBy()->limit()->getStmt();
-
-        $columns = $this->columns($model, $options);
+        $stmt = $Builder->whereArguments()->orderBy()->limit()->getStmt();
 
         try {
-            $result = $stmt->get($columns)->toArray();
+            $result = $stmt->get($this->columns($model, $options))->toArray();
         } catch (\PDOException $exception) {
             throw new Exception($exception->getMessage(), 500);
         }
 
-        return empty($result) ? $result : $this->fetchDependencies($model, $result, $Builder->dependencies());
+        return $this->parseSelectResult($model, $result, $Builder);
     }
 
     /**
+     * Caso fornecido o array withProperties, essa deverá conter a relação de propriedades
+     * do registro que serão retornados pela consulta. Em caso de relacionamento, considera
+     * apenas relacionamento do tipo hasOne. Caso vazio, retorna todas as propriedades.
+     *
+     * Vale notar que, caso utilizado em conjunto com withDependencies, onde uma propriedade
+     * representar um relacionamento hasOne, se essa não estiver relacionada no conjunto de
+     * propriedades, essa não será exibida. E, em caso de relacionamento hasMany, essa também
+     * não será retornada caso os campos que compoe o relacionamento não forem também listados
+     *
      * @param ExpressiveContract $model
      * @param array              $options
      *
@@ -89,32 +97,9 @@ final class SelectBuilder
         $model,
         $options
     ) {
-        $searchAll = ['*'];
+        $withProperties = $this->sanitizeArrayInput($options['withProperties'] ?? []);
 
-        $withProperties = $options['withProperties'] ?? null;
-
-        if (empty($withProperties)) {
-            return $searchAll;
-        }
-
-        $withProperties = !is_array($withProperties) ? [$withProperties] : $withProperties;
-
-        // caso fornecido o array withProperties, essa deverá conter a relação de propriedades
-        // do registro que serão retornados pela consulta. Em caso de relacionamento, considera
-        // apenas relacionamento do tipo hasOne. Caso vazio, retorna todas as propriedades.
-        //
-        // Vale notar que, caso utilizado em conjunto com withDependencies, onde uma propriedade
-        // representar um relacionamento hasOne, se essa não estiver relacionada no conjunto de
-        // propriedades, essa não será exibida. E, em caso de relacionamento hasMany, essa também
-        // não será retornada caso os campos que compoe o relacionamento não forem também listados
-
-        $columns = $model::$schema->getSearchableFieldsString();
-
-        $searchFor = array_values(array_filter($columns, function ($field) use ($withProperties) {
-            return in_array($field, $withProperties);
-        }));
-
-        return !empty($searchFor) ? $searchFor : $searchAll;
+        return $this->getSelectableFields($model, $withProperties);
     }
 
     /**
@@ -124,13 +109,13 @@ final class SelectBuilder
      *
      * @return array
      */
-    protected function fetchDependencies(ExpressiveContract $model, array $rows, $dependencies)
+    protected function fetchRelationships(ExpressiveContract $model, array $rows, $dependencies)
     {
         $class = get_class($model);
         $instances = array_map(function ($item) use ($class, $dependencies) {
             $instance = Wrapper::fetchStdClassToExpressiveNewModel($item, $class);
 
-            return !Diglett::toDig() ? $instance : $this->dependencies($instance, $dependencies);
+            return !Diglett::toDig() ? $instance : $this->getModelRelationships($instance, $dependencies);
         }, $rows);
 
         return $instances;
@@ -149,9 +134,9 @@ final class SelectBuilder
     {
         $table = $model::$schema->getRepository();
 
-        $Builder = new StmtBuilder($table);
+        $Builder = new Builder($table);
 
-        $stmt = $Builder->whereKey($model)->getStmt();
+        $stmt = $Builder->whereKeys($model)->getStmt();
 
         try {
             $result = $stmt->get()->toArray();
@@ -159,13 +144,13 @@ final class SelectBuilder
             throw new Exception($exception->getMessage(), 500);
         }
 
-        if (empty($result) || count($result) > 1) {
+        if (!$this->isValidSearchResult($result)) {
             return false;
         }
 
         $instance = Wrapper::fetchStdClassToExpressiveModel($result[0], $model);
 
-        return !Diglett::toDig() || !$dependencies ? $instance : $this->dependencies($instance, true);
+        return $this->parseSearchResult($dependencies, $instance);
     }
 
     /**
@@ -182,9 +167,9 @@ final class SelectBuilder
     ) {
         $table = $model::$schema->getRepository();
 
-        $Builder = new StmtBuilder($table, $arguments);
+        $Builder = new Builder($table, $arguments);
 
-        $stmt = $Builder->where()->getStmt();
+        $stmt = $Builder->whereArguments()->getStmt();
 
         try {
             $result = $stmt->count();
@@ -196,6 +181,14 @@ final class SelectBuilder
     }
 
     /**
+     * Se uma chave possuir comportamento auto incremental, então o consumidor não é
+     * responsável por sua atribuição, desse modo ela será utilizada como filtro de
+     * ordenação para a operação de consulta.
+     *
+     * Caso houver valor atribuido ao model em uma propriedade definida como chave
+     * essa será atribuida como filtro de consulta, permitindo situacoes em que o
+     * registro possui chave composta.
+     *
      * @param ExpressiveContract $model
      * @param boolean $dependencies
      *
@@ -206,19 +199,11 @@ final class SelectBuilder
     public function last(ExpressiveContract $model, $dependencies = true)
     {
 
-        $options = [
-            'limit'            => [
-                'number' => 1,
-            ],
-            'orderBy'          => [],
-            'withDependencies' => $dependencies,
-        ];
+        $options = $this->getOptionsForLastStmt($dependencies);
 
         $arguments = [];
         foreach ($model::$schema->getKeys() as $key) {
-            // Se uma chave possuir comportamento auto incremental, então o consumidor não é
-            // responsável por sua atribuição, desse modo ela será utilizada como filtro de
-            // ordenação para a operação de consulta.
+
             if ($key->getBehavior()->isAutoIncrement()) {
                 $options['orderBy'][] = [
                     'column'    => $key->getField(),
@@ -229,11 +214,7 @@ final class SelectBuilder
             }
 
             $value = $model->{$key->getProperty()};
-
-            // Caso houver valor atribuido ao model em uma propriedade definida como chave
-            // essa será atribuida como filtro de consulta, permitindo situacoes em que o
-            // registro possui chave composta.
-            if (!empty($value)) {
+            if ($value) {
                 $arguments[] = [
                     'column' => $key->getField(),
                     'value'  => $value,
@@ -247,58 +228,156 @@ final class SelectBuilder
     }
 
     /**
+     *
+     * Considerando o parâmetro $dependenciItems, Caso boolean e TRUE, todas as dependências serão retornadas, caso
+     * boolean e FALSE, nenhuma dependência será retornada pela consulta.
+     *
+     * Caso array, esse deverá conter o nome das dependencias vinculadas ao registro que serão retornadas pela consulta.
+     * Se array vazio, nenhuma dependência será retornada pela operação.
+     *
      * @param ExpressiveContract $model
-     * @param array|boolean      $dependenciItems
+     * @param array|boolean      $dependencyItems
      *
      * @return ExpressiveContract
      *
      * @throws TExceptionAbstract
      */
-    public function dependencies(
+    public function getModelRelationships(
         $model,
-        $dependenciItems
+        $dependencyItems
     ) {
-        // O valor atribuido a propriedade $dependenciItems poderá assumir valor valor
-        // boolean ou array.
-        //
-        // Caso boolean e TRUE, todas as dependências serão retornadas, caso boolean e
-        // FALSE, nenhuma dependéncia será retornada pela consulta.
-        //
-        // Caso array, esse deverá conter o nome das dependencias vinculadas ao registro
-        // que serão retornadas pela consulta. Se array vazio, nenhuma dependência será
-        // retornada pela operação.
-        if (empty($dependenciItems)) {
+        if (!$dependencyItems) {
             return $model;
         }
 
         $dependencies = $model::$schema->getDependencies();
-        if (empty($dependencies)) {
+        if (!$dependencies) {
             return $model;
         }
 
-        // se array, filtra as dependencias a serem retornadas somente se no conjunto de
-        // entradas desejadas para consulta.
-        if (is_array($dependenciItems)) {
-            $dependencies = array_filter($dependencies, function (PropertyContract $property) use ($dependenciItems) {
-                return in_array($property->getProperty(), $dependenciItems);
-            });
-        }
+        if (is_array($dependencyItems)) {
+            $dependencies = $this->getSearchableDependencies($dependencyItems, $dependencies);
 
-        if (empty($dependencies)) {
-            return $model;
+            if (!$dependencies) {
+                return $model;
+            }
         }
 
         foreach ($dependencies as $dependency) {
             if (empty($dependency->getComposition()->getRelationship())) {
-                throw new Exception('a dependency must have a relationship assigned to it in the schema', 400);
+                throw new Exception('a dependency must have a relationship schema entry for database operations', 400);
             }
 
-            // chama o método de consulta de acordo com os tipos de relacionamento
-            // válidos atribuidos a entrada no schema vinculado ao registro.
-            $relationship = $dependency->getComposition()->getRelationship()->getType();
-
-            $model = $this->getRelationshipBuilder()->{$relationship}($model, $dependency);
+            $model = $this->getRelationshipByType($model, $dependency);
         }
+
+        return $model;
+    }
+
+    /**
+     * @param $model
+     * @param $withProperties
+     *
+     * @return array
+     */
+    private function getSelectableFields($model, $withProperties): array
+    {
+        $columns = $model::$schema->getSearchableFieldsString();
+
+        $searchFor = array_values(array_filter($columns, function ($field) use ($withProperties) {
+            return in_array($field, $withProperties);
+        }));
+
+        return $searchFor ?: ['*'];
+    }
+
+    /**
+     * @param $input
+     *
+     * @return array
+     */
+    private function sanitizeArrayInput($input): array
+    {
+        return !is_array($input) ? [$input] : $input;
+    }
+
+    /**
+     * @param ExpressiveContract $model
+     * @param array              $result
+     * @param Builder            $Builder
+     *
+     * @return array
+     */
+    private function parseSelectResult(ExpressiveContract $model, $result, $Builder): array
+    {
+        return empty($result) ? $result : $this->fetchRelationships($model, $result, $Builder->dependencies());
+    }
+
+    /**
+     * @param boolean            $dependencies
+     * @param ExpressiveContract $instance
+     *
+     * @return ExpressiveContract
+     */
+    private function parseSearchResult($dependencies, $instance): ExpressiveContract
+    {
+        return !Diglett::toDig() || !$dependencies ? $instance : $this->getModelRelationships($instance, true);
+    }
+
+    /**
+     * @param $result
+     *
+     * @return bool
+     */
+    private function isValidSearchResult($result): bool
+    {
+        return $result && count($result) === 1;
+    }
+
+    /**
+     * @param boolean $dependencies
+     *
+     * @return array
+     */
+    private function getOptionsForLastStmt($dependencies): array
+    {
+        $options = [
+            'limit'            => [
+                'number' => 1,
+            ],
+            'orderBy'          => [],
+            'withDependencies' => $dependencies,
+        ];
+
+        return $options;
+    }
+
+    /**
+     * @param array              $dependencyItems
+     * @param PropertyContract[] $dependencies
+     *
+     * @return array
+     */
+    private function getSearchableDependencies($dependencyItems, $dependencies): array
+    {
+        $dependencies = array_filter($dependencies, function (PropertyContract $property) use ($dependencyItems) {
+            return in_array($property->getProperty(), $dependencyItems);
+        });
+
+        return $dependencies;
+    }
+
+    /**
+     * @param ExpressiveContract $model
+     * @param PropertyContract   $dependency
+     *
+     * @return ExpressiveContract
+     */
+    private function getRelationshipByType(ExpressiveContract $model, PropertyContract $dependency)
+    {
+        $relationship = $dependency->getComposition()->getRelationship()->getType();
+
+        $model = $this->getRelationshipBuilder()->{$relationship}($model, $dependency);
 
         return $model;
     }
