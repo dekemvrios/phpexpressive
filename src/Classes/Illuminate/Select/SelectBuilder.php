@@ -111,9 +111,9 @@ class SelectBuilder
      */
     protected function fetchRelationships(ExpressiveContract $model, array $rows, $dependencies)
     {
-        $class = get_class($model);
-        $instances = array_map(function ($item) use ($class, $dependencies) {
-            $instance = Wrapper::fetchStdClassToExpressiveNewModel($item, $class);
+        $instances = array_map(function ($item) use ($model, $dependencies) {
+
+            $instance = $this->makeNewExpressiveModel($item, $model);
 
             return !Diglett::toDig() ? $instance : $this->getModelRelationships($instance, $dependencies);
         }, $rows);
@@ -148,7 +148,7 @@ class SelectBuilder
             return false;
         }
 
-        $instance = Wrapper::fetchStdClassToExpressiveModel($result[0], $model);
+        $instance = $this->makeNewExpressiveModel($result[0], $model);
 
         return $this->parseSearchResult($dependencies, $instance);
     }
@@ -380,5 +380,18 @@ class SelectBuilder
         $model = $this->getRelationshipBuilder()->{$relationship}($model, $dependency);
 
         return $model;
+    }
+
+    /**
+     * @param \stdClass $stdClass
+     * @param           $class
+     *
+     * @return mixed
+     */
+    private function makeNewExpressiveModel(\stdClass $stdClass, $class)
+    {
+        $class = is_object($class) ? get_class($class) : $class;
+
+        return call_user_func_array([$class, 'make'], [(array)$stdClass]);
     }
 }
