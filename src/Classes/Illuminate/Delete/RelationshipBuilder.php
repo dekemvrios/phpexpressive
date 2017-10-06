@@ -58,7 +58,6 @@ class RelationshipBuilder
     private function deleteHasMany($model, $dependency, $dependencyValue): void
     {
         foreach ($dependencyValue as $item) {
-
             if ($this->hasSharedFields($dependency)) {
                 $item = $this->shareFieldsBetweenInstances($model, $dependency, $item);
             }
@@ -67,7 +66,8 @@ class RelationshipBuilder
 
             if (!$child) {
                 throw new Exception(
-                        "error deleting dependency " . get_class($item) . " for " . get_class($model), 500
+                    "error deleting dependency " . get_class($item) . " for " . get_class($model),
+                    500
                 );
             }
 

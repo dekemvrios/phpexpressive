@@ -63,7 +63,6 @@ class DeleteBuilder
         $stmt = $this->buildDeleteStmt($model, $table);
 
         try {
-
             $model = Actions::doThingWhenDatabaseAction($model, 'whenDelete', 'before');
 
             $this->deleteHasMany($model);
@@ -117,8 +116,8 @@ class DeleteBuilder
 
         if (!$value) {
             throw new Exception(
-                    "property '{$property->getProperty()}' used as primary can't be null.",
-                    400
+                "property '{$property->getProperty()}' used as primary can't be null.",
+                400
             );
         }
 
