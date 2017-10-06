@@ -2,25 +2,24 @@
 
 namespace Solis\Expressive\Classes\Illuminate\Select;
 
+use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
-use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Classes\Illuminate\Diglett;
-use Solis\Expressive\Classes\Illuminate\Wrapper;
 use Solis\Breaker\Abstractions\TExceptionAbstract;
-use Solis\Breaker\TException;
+use Solis\Expressive\Exception;
 
 /**
- * Class SelectBuilder
+ * Class RelationshipBuilder
  *
  * @package Solis\Expressive\Classes\Illuminate\Select
  */
-final class RelationshipBuilder
+class RelationshipBuilder
 {
 
     /**
-     * @param ExpressiveContract    $model
-     * @param PropertyContract $dependency
+     * @param ExpressiveContract $model
+     * @param PropertyContract   $dependency
      *
      * @return ExpressiveContract
      *
@@ -28,36 +27,17 @@ final class RelationshipBuilder
      */
     public function hasOne($model, $dependency)
     {
-        $dependencyCode = $model->{$dependency->getProperty()};
+        $key = $model->{$dependency->getProperty()};
 
-        if (empty($dependencyCode)) {
+        if (!$key) {
             return $model;
         }
 
-        // get dependency class
-        $dependencyClass = $dependency->getComposition()->getClass();
+        $instance = $this->searchHasOne($model, $dependency);
 
-        // instantiate it
-        $instance = new $dependencyClass();
-
-        // static search for test
-        $refers = $dependency->getComposition()->getRelationship()->getSource()->getRefers();
-
-        // defines the main pr property value
-        $instance->{$refers} = $dependencyCode;
-
-        if (!empty($dependency->getComposition()->getRelationship()->getSharedFields())) {
-            foreach ($dependency->getComposition()->getRelationship()->getSharedFields() as $field) {
-                $instance->{$field} = $model->{$field};
-            }
-        }
-
-        $instance = $instance->search();
-        if (empty($instance)) {
-            throw new TException(
-                __CLASS__,
-                __METHOD__,
-                "dependency {$dependencyClass} not found for class " . get_class($model),
+        if (!$instance) {
+            throw new Exception(
+                "dependency {$dependency->getProperty()} not found for class " . get_class($model),
                 400
             );
         }
@@ -71,77 +51,210 @@ final class RelationshipBuilder
      * @param ExpressiveContract $model
      * @param PropertyContract   $dependency
      *
+     * @return bool|ExpressiveContract
+     */
+    private function searchHasOne($model, PropertyContract $dependency)
+    {
+        $instance = $this->getDependencyInstance($dependency);
+
+        $refers = $this->getCompositionRefers($dependency);
+
+        $instance->{$refers} = $model->{$dependency->getProperty()};
+
+        if ($this->hasSharedFields($dependency)) {
+            $instance = $this->shareFieldsBetweenInstances($model, $dependency, $instance);
+        }
+
+        $instance = $instance->search();
+
+        return $instance;
+    }
+
+    /**
+     * @param PropertyContract $dependency
+     *
+     * @return ExpressiveContract
+     */
+    private function getDependencyInstance(PropertyContract $dependency)
+    {
+        $class = $this->getDependencyClass($dependency);
+
+        return new $class();
+    }
+
+    /**
+     * @param PropertyContract $dependency
+     *
+     * @return string
+     */
+    private function getDependencyClass(PropertyContract $dependency)
+    {
+        return $dependency->getComposition()->getClass();
+    }
+
+    /**
+     * @param PropertyContract $dependency
+     *
+     * @return mixed
+     */
+    private function getCompositionRefers(PropertyContract $dependency)
+    {
+        $refers = $dependency->getComposition()->getRelationship()->getSource()->getRefers();
+
+        return $refers;
+    }
+
+    /**
+     * @param PropertyContract $dependency
+     *
+     * @return bool
+     */
+    private function hasSharedFields(PropertyContract $dependency): bool
+    {
+        return !empty($dependency->getComposition()->getRelationship()->getSharedFields());
+    }
+
+    /**
+     * @param ExpressiveContract $model
+     * @param PropertyContract   $dependency
+     * @param ExpressiveContract $instance
+     *
+     * @return ExpressiveContract
+     */
+    private function shareFieldsBetweenInstances($model, $dependency, $instance)
+    {
+        foreach ($this->getCompositionSharedFields($dependency) as $field) {
+            $instance->{$field} = $model->{$field};
+        }
+
+        return $instance;
+    }
+
+    /**
+     * @param PropertyContract $dependency
+     *
+     * @return mixed
+     */
+    private function getCompositionSharedFields(PropertyContract $dependency)
+    {
+        $sharedFields = $dependency->getComposition()->getRelationship()->getSharedFields();
+
+        return $sharedFields;
+    }
+
+    /**
+     * @param ExpressiveContract $model
+     * @param PropertyContract   $dependency
+     *
      * @return ExpressiveContract
      *
      * @throws TExceptionAbstract
      */
     public function hasMany($model, $dependency)
     {
-        // get dependency class
-        $dependencyClass = $dependency->getComposition()->getClass();
+        $stmt = $this->buildHasManyStmt($model, $dependency);
 
-        $instance = new $dependencyClass();
+        try {
+            $rows = $stmt->get()->toArray();
+        } catch (\PDOException $exception) {
+            throw new Exception($exception->getMessage(), 400);
+        }
 
-        $field = $dependency->getComposition()->getRelationship()->getSource()->getField();
+        if (!$rows) {
+            return $model;
+        }
+
+        $hasMany = $this->fetchRowsAsModelArray($dependency, $rows);
+
+        $model->{$dependency->getProperty()} = $hasMany;
+
+        return $model;
+    }
+
+    /**
+     * @param $model
+     * @param $dependency
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    private function buildHasManyStmt($model, $dependency): \Illuminate\Database\Query\Builder
+    {
+        $instance = $this->getDependencyInstance($dependency);
+
+        $field = $this->getCompositionField($dependency);
 
         // static search for test
-        $refers = $dependency->getComposition()->getRelationship()->getSource()->getRefers();
+        $refers = $this->getCompositionRefers($dependency);
 
         // get dependency schema table name
         $table = $instance::$schema->getRepository();
 
         $stmt = Capsule::table($table);
-        $stmt->where(
-            $refers,
-            '=',
-            $model->{$field}
-        );
 
-        $sharedFields = $dependency->getComposition()->getRelationship()->getSharedFields();
-        if (!empty($sharedFields)) {
-            foreach ($sharedFields as $sharedField) {
-                $stmt->where(
-                    $sharedField,
-                    '=',
-                    $model->{$sharedField}
-                );
-            }
+        $stmt->where($refers, '=', $model->{$field});
+
+        if ($this->hasSharedFields($dependency)) {
+            $stmt = $this->setWhereForSharedFields($model, $dependency, $stmt);
         }
 
-        try {
-            $result = $stmt->get()->toArray();
-        } catch (\PDOException $exception) {
-            throw new TException(
-                __CLASS__,
-                __METHOD__,
-                $exception->getMessage(),
-                400
-            );
+        return $stmt;
+    }
+
+    /**
+     * @param PropertyContract $dependency
+     *
+     * @return mixed
+     */
+    private function getCompositionField(PropertyContract $dependency)
+    {
+        $field = $dependency->getComposition()->getRelationship()->getSource()->getField();
+
+        return $field;
+    }
+
+    /**
+     * @param ExpressiveContract                 $model
+     * @param PropertyContract                   $dependency
+     * @param \Illuminate\Database\Query\Builder $stmt
+     *
+     * @return \Illuminate\Database\Query\Builder;
+     */
+    private function setWhereForSharedFields($model, $dependency, $stmt)
+    {
+        $sharedFields = $this->getCompositionSharedFields($dependency);
+
+        foreach ($sharedFields as $sharedField) {
+            $stmt->where($sharedField, '=', $model->{$sharedField});
         }
 
-        if (empty($result)) {
-            return $model;
-        }
+        return $stmt;
+    }
+
+    /**
+     * @param $dependency
+     * @param $rows
+     *
+     * @return array
+     */
+    private function fetchRowsAsModelArray($dependency, $rows): array
+    {
+        $selectBuilder = new SelectBuilder();
 
         $hasMany = [];
-        foreach ($result as $item) {
-            $hasManyItem = Wrapper::fetchStdClassToExpressiveModel(
-                $item,
-                new $dependencyClass()
-            );
-            if (!empty($hasManyItem)) {
-                if (!empty(Diglett::toDig())) {
-                    $hasManyItem = (new SelectBuilder())->getModelRelationships(
-                        $hasManyItem,
-                        true
-                    );
-                }
-                $hasMany[] = $hasManyItem;
+        foreach ($rows as $item) {
+            $model = $selectBuilder->makeNewExpressiveModel($item, $this->getDependencyClass($dependency));
+
+            if (!$model) {
+                continue;
             }
+
+            if (Diglett::toDig()) {
+                $model = $selectBuilder->getModelRelationships($model, true);
+            }
+
+            $hasMany[] = $model;
         }
-        if (!empty($hasMany)) {
-            $model->{$dependency->getProperty()} = $hasMany;
-        }
-        return $model;
+
+        return $hasMany;
     }
 }

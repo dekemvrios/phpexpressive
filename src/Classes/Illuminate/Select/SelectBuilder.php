@@ -203,7 +203,6 @@ class SelectBuilder
 
         $arguments = [];
         foreach ($model::$schema->getKeys() as $key) {
-
             if ($key->getBehavior()->isAutoIncrement()) {
                 $options['orderBy'][] = [
                     'column'    => $key->getField(),
@@ -388,7 +387,7 @@ class SelectBuilder
      *
      * @return mixed
      */
-    private function makeNewExpressiveModel(\stdClass $stdClass, $class)
+    public function makeNewExpressiveModel(\stdClass $stdClass, $class)
     {
         $class = is_object($class) ? get_class($class) : $class;
 
