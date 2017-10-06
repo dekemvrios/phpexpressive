@@ -2,6 +2,7 @@
 
 namespace Solis\Expressive\Classes\Illuminate\Insert;
 
+use Solis\Expressive\Abstractions\ExpressiveAbstract;
 use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Solis\Breaker\Abstractions\TExceptionAbstract;
@@ -27,35 +28,24 @@ class RelationshipBuilder
         $model,
         $dependency
     ) {
-        $value = $model->{$dependency->getProperty()};
-        $instance = is_array($dependency) ? call_user_func_array(
-            [$dependency->getComposition()->getClass(), 'make'],
-            [$model->{$dependency->getProperty()}]
-        ) : $value;
+        $instance = $this->getDependencyInstance($model, $dependency);
 
-        $sharedFields = $dependency->getComposition()->getRelationship()->getSharedFields();
-        if (!empty($sharedFields)) {
-            foreach ($sharedFields as $sharedField) {
-                $instance->{$sharedField} = $model->{$sharedField};
-            }
+        if ($this->hasSharedFields($dependency)) {
+            $instance = $this->shareFieldsBetweenInstances($model, $dependency, $instance);
         }
-        if (empty($instance->search(false))) {
+
+        if (!$instance->search(false)) {
             $instance = $instance->create();
-            if (empty($instance)) {
+
+            if (!$instance) {
                 throw new Exception(
-                    "error creating dependency " . get_class($instance) . " for class " . get_class($model),
-                    500
+                        "error creating dependency " . get_class($instance) . " for class " . get_class($model),
+                        500
                 );
             }
         }
 
-        $refers = $this->getCompositionRefers($dependency);
-
-        $field = $this->getCompositionField($dependency);
-
-        $model->{$field} = $instance->{$refers};
-
-        return $model;
+        return $this->setDependencyKeyToModel($model, $dependency, $instance);
     }
 
     /**
@@ -70,9 +60,7 @@ class RelationshipBuilder
         $model,
         $dependency
     ) {
-        $dependencyValue = $model->{$dependency->getProperty()};
-
-        $dependencyValue = !is_array($dependencyValue) ? [$dependencyValue] : $dependencyValue;
+        $dependencyValue = $this->getDependencyValue($model, $dependency);
 
         $field = $this->getCompositionField($dependency);
 
@@ -150,5 +138,62 @@ class RelationshipBuilder
     private function getCompositionRefers(PropertyContract $dependency)
     {
         return $dependency->getComposition()->getRelationship()->getSource()->getRefers();
+    }
+
+    /**
+     * @param $model
+     * @param $dependency
+     *
+     * @return array
+     */
+    private function getDependencyValue($model, PropertyContract $dependency): array
+    {
+        $dependencyValue = $model->{$dependency->getProperty()};
+
+        $dependencyValue = !is_array($dependencyValue) ? [$dependencyValue] : $dependencyValue;
+
+        return $dependencyValue;
+    }
+
+    /**
+     * @param ExpressiveContract $model
+     * @param PropertyContract   $dependency
+     * @param ExpressiveContract $instance
+     *
+     * @return ExpressiveContract
+     */
+    private function setDependencyKeyToModel($model, $dependency, $instance)
+    {
+        $refers = $this->getCompositionRefers($dependency);
+
+        $field = $this->getCompositionField($dependency);
+
+        $model->{$field} = $instance->{$refers};
+
+        return $model;
+    }
+
+    /**
+     * @param $model
+     * @param $dependency
+     *
+     * @return mixed
+     *
+     * @throws Exception
+     */
+    private function getDependencyInstance($model, $dependency): mixed
+    {
+        $value = $model->{$dependency->getProperty()};
+        $class = $dependency->getComposition()->getClass();
+
+        if (is_array($value)) {
+            return call_user_func_array([$class, 'make'], [$value]);
+        }
+
+        if (!($value instanceof ExpressiveAbstract)) {
+            throw new Exception('Invalid dependency value for insert builder', 400);
+        }
+
+        return $value;
     }
 }
