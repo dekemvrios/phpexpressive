@@ -2,12 +2,11 @@
 
 namespace Solis\Expressive\Classes\Illuminate\Insert;
 
-use Solis\Expressive\Classes\Illuminate\Util\Actions;
-use Solis\Expressive\Abstractions\ExpressiveAbstract;
-use Solis\Expressive\Contracts\ExpressiveContract;
 use Illuminate\Database\Capsule\Manager as Capsule;
-use Solis\Expressive\Classes\Illuminate\Database;
 use Solis\Breaker\Abstractions\TExceptionAbstract;
+use Solis\Expressive\Contracts\ExpressiveContract;
+use Solis\Expressive\Classes\Illuminate\Util\Actions;
+use Solis\Expressive\Classes\Illuminate\Database;
 use Solis\Expressive\Exception;
 use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 
