@@ -34,7 +34,9 @@ class RelationshipBuilder
             $instance = $this->shareFieldsBetweenInstances($model, $dependency, $instance);
         }
 
-        if (!$instance->search(false)) {
+        $instance = $instance->search(false);
+
+        if (!$instance) {
             $instance = $instance->create();
 
             if (!$instance) {
@@ -181,7 +183,7 @@ class RelationshipBuilder
      *
      * @throws Exception
      */
-    private function getDependencyInstance($model, $dependency): mixed
+    private function getDependencyInstance($model, $dependency)
     {
         $value = $model->{$dependency->getProperty()};
         $class = $dependency->getComposition()->getClass();

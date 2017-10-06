@@ -4,7 +4,6 @@ namespace Solis\Expressive\Classes\Illuminate\Select;
 
 use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Expressive\Contracts\ExpressiveContract;
-use Solis\Expressive\Classes\Illuminate\Wrapper;
 use Solis\Expressive\Classes\Illuminate\Diglett;
 use Solis\Breaker\Abstractions\TExceptionAbstract;
 use Solis\Expressive\Classes\Illuminate\Query\Builder;
