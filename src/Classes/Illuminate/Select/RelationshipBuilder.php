@@ -36,10 +36,7 @@ class RelationshipBuilder
         $instance = $this->searchHasOne($model, $dependency);
 
         if (!$instance) {
-            throw new Exception(
-                "dependency {$dependency->getProperty()} not found for class " . get_class($model),
-                400
-            );
+            throw new Exception("dependency {$dependency->getProperty()} not found for" . get_class($model), 400);
         }
 
         $model->{$dependency->getProperty()} = $instance;

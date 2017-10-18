@@ -55,12 +55,9 @@ class SelectBuilder
      *
      * @throws TExceptionAbstract
      */
-    public function select(
-        ExpressiveContract $model,
-        array $arguments,
-        array $options = []
-    ) {
-        $table = $model::$schema->getRepository();
+    public function select(ExpressiveContract $model, array $arguments, array $options = [])
+    {
+        $table = $model->getSchema()->getRepository();
 
         $Builder = new Builder($table, $arguments, $options);
 
@@ -92,10 +89,8 @@ class SelectBuilder
      *
      * @throws TExceptionAbstract
      */
-    private function columns(
-        $model,
-        $options
-    ) {
+    private function columns($model, $options)
+    {
         $withProperties = $this->sanitizeArrayInput($options['withProperties'] ?? []);
 
         return $this->getSelectableFields($model, $withProperties);
@@ -131,7 +126,7 @@ class SelectBuilder
      */
     public function search(ExpressiveContract $model, $dependencies = true)
     {
-        $table = $model::$schema->getRepository();
+        $table = $model->getSchema()->getRepository();
 
         $Builder = new Builder($table);
 
@@ -160,11 +155,9 @@ class SelectBuilder
      *
      * @throws TExceptionAbstract
      */
-    public function count(
-        ExpressiveContract $model,
-        array $arguments = []
-    ) {
-        $table = $model::$schema->getRepository();
+    public function count(ExpressiveContract $model, array $arguments = [])
+    {
+        $table = $model->getSchema()->getRepository();
 
         $Builder = new Builder($table, $arguments);
 
@@ -189,7 +182,7 @@ class SelectBuilder
      * registro possui chave composta.
      *
      * @param ExpressiveContract $model
-     * @param boolean $dependencies
+     * @param boolean            $dependencies
      *
      * @return ExpressiveContract|bool
      *
@@ -197,15 +190,14 @@ class SelectBuilder
      */
     public function last(ExpressiveContract $model, $dependencies = true)
     {
-
         $options = $this->getOptionsForLastStmt($dependencies);
 
         $arguments = [];
-        foreach ($model::$schema->getKeys() as $key) {
+        foreach ($model->getSchema()->getKeys() as $key) {
             if ($key->getBehavior()->isAutoIncrement()) {
                 $options['orderBy'][] = [
-                    'column'    => $key->getField(),
-                    'direction' => 'desc',
+                        'column'    => $key->getField(),
+                        'direction' => 'desc',
                 ];
 
                 continue;
@@ -214,8 +206,8 @@ class SelectBuilder
             $value = $model->{$key->getProperty()};
             if ($value) {
                 $arguments[] = [
-                    'column' => $key->getField(),
-                    'value'  => $value,
+                        'column' => $key->getField(),
+                        'value'  => $value,
                 ];
             }
         }
@@ -226,7 +218,6 @@ class SelectBuilder
     }
 
     /**
-     *
      * Considerando o parâmetro $dependenciItems, Caso boolean e TRUE, todas as dependências serão retornadas, caso
      * boolean e FALSE, nenhuma dependência será retornada pela consulta.
      *
@@ -240,15 +231,13 @@ class SelectBuilder
      *
      * @throws TExceptionAbstract
      */
-    public function getModelRelationships(
-        $model,
-        $dependencyItems
-    ) {
+    public function getModelRelationships($model, $dependencyItems)
+    {
         if (!$dependencyItems) {
             return $model;
         }
 
-        $dependencies = $model::$schema->getDependencies();
+        $dependencies = $model->getSchema()->getDependencies();
         if (!$dependencies) {
             return $model;
         }
@@ -340,11 +329,11 @@ class SelectBuilder
     private function getOptionsForLastStmt($dependencies): array
     {
         $options = [
-            'limit'            => [
-                'number' => 1,
-            ],
-            'orderBy'          => [],
-            'withDependencies' => $dependencies,
+                'limit'            => [
+                        'number' => 1,
+                ],
+                'orderBy'          => [],
+                'withDependencies' => $dependencies,
         ];
 
         return $options;

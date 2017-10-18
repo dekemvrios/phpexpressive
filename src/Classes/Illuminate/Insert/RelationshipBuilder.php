@@ -24,26 +24,21 @@ class RelationshipBuilder
      *
      * @throws TExceptionAbstract
      */
-    public function hasOne(
-        $model,
-        $dependency
-    ) {
+    public function hasOne($model, $dependency)
+    {
         $instance = $this->getDependencyInstance($model, $dependency);
 
         if ($this->hasSharedFields($dependency)) {
             $instance = $this->shareFieldsBetweenInstances($model, $dependency, $instance);
         }
 
-        $instance = $instance->search(false);
+        $search = $instance->search(false);
 
-        if (!$instance) {
+        if (!$search) {
             $instance = $instance->create();
 
             if (!$instance) {
-                throw new Exception(
-                        "error creating dependency " . get_class($instance) . " for class " . get_class($model),
-                        500
-                );
+                throw new Exception("Error crating hasOne dependency for " . get_class($model), 500);
             }
         }
 
@@ -58,10 +53,8 @@ class RelationshipBuilder
      *
      * @throws TExceptionAbstract
      */
-    public function hasMany(
-        $model,
-        $dependency
-    ) {
+    public function hasMany($model, $dependency)
+    {
         $dependencyValue = $this->getDependencyValue($model, $dependency);
 
         $field = $this->getCompositionField($dependency);
@@ -76,10 +69,7 @@ class RelationshipBuilder
             }
 
             if (!$item->create()) {
-                throw new Exception(
-                    "error creating dependency " . get_class($item) . " for " . get_class($model),
-                    500
-                );
+                throw new Exception("Error crating hasMany dependency for " . get_class($model), 500);
             }
         }
     }
@@ -176,10 +166,10 @@ class RelationshipBuilder
     }
 
     /**
-     * @param $model
-     * @param $dependency
+     * @param ExpressiveContract $model
+     * @param PropertyContract   $dependency
      *
-     * @return mixed
+     * @return ExpressiveContract
      *
      * @throws Exception
      */

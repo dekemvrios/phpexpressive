@@ -3,6 +3,7 @@
 namespace Solis\Expressive\Contracts;
 
 use Solis\Breaker\Abstractions\TExceptionAbstract;
+use Solis\Expressive\Schema\Contracts\SchemaContract;
 
 /**
  * Interface ExpressiveContract

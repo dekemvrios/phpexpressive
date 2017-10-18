@@ -26,7 +26,7 @@ try {
                "proEstado"     => uniqid(rand())
            ],
            "proEmprego" => [
-               "proCargo" => "Contador",
+               "proCargo" => "Desenvolvedor de Sistemas Aquáticos",
            ],
     ]);
 
