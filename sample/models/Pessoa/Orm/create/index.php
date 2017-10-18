@@ -10,24 +10,25 @@ try {
     require_once '../../../connection/connection.php';
 
     $Pessoa = Pessoa::make([
-           "proNome"             => 'Fulano - ' . uniqid(rand()),
-           "proInscricaoFederal" => '' . rand(11111111111111, 99999999999999) . '',
-           "proTipo"             => 1,
-           // dependencia declarada como relacionamento na base de dados
-           "proEndereco" => [
-               "proLogradouro" => "Rua - " . uniqid(rand()),
-               "proCidade"     => "Cidade - " . uniqid(rand()),
-               "proEstado"     => uniqid(rand())
-           ],
-           // dependencia declarada como campo json binary no registro pessoa
-           "proEnderecoJson" => [
-               "proLogradouro" => "Rua - " . uniqid(rand()),
-               "proCidade"     => "Cidade - " . uniqid(rand()),
-               "proEstado"     => uniqid(rand())
-           ],
-           "proEmprego" => [
-               "proCargo" => "Desenvolvedor de Sistemas Aquáticos",
-           ],
+            "proNome"             => 'Fulano - ' . uniqid(rand()),
+            "proInscricaoFederal" => '' . rand(11111111111111, 99999999999999) . '',
+            "proTipo"             => 1,
+        // dependencia declarada como relacionamento na base de dados
+            "proEndereco"         => [
+                    "proLogradouro" => "Rua - " . uniqid(rand()),
+                    "proCidade"     => "Cidade - " . uniqid(rand()),
+                    "proEstado"     => uniqid(rand()),
+            ],
+        // dependencia declarada como campo json binary no registro pessoa
+            "proEnderecoJson"     => [
+                    "proLogradouro" => "Rua - " . uniqid(rand()),
+                    "proCidade"     => "Cidade - " . uniqid(rand()),
+                    "proEstado"     => uniqid(rand()),
+            ],
+            "proEmprego"          => [
+                    "proID"    => 44,
+                    "proCargo" => "Desenvolvedor de Sistemas Aquaticos",
+            ],
     ]);
 
     $record = $Pessoa->create();

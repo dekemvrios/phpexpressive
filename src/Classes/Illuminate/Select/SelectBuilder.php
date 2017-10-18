@@ -2,12 +2,13 @@
 
 namespace Solis\Expressive\Classes\Illuminate\Select;
 
-use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
-use Solis\Expressive\Contracts\ExpressiveContract;
-use Solis\Expressive\Classes\Illuminate\Diglett;
-use Solis\Breaker\Abstractions\TExceptionAbstract;
-use Solis\Expressive\Classes\Illuminate\Query\Builder;
 use Solis\Expressive\Exception;
+use Solis\Expressive\Classes\Illuminate\Diglett;
+use Solis\Expressive\Classes\Illuminate\Query\Builder;
+use Solis\Expressive\Classes\Illuminate\Query\SearchStmt;
+use Solis\Expressive\Contracts\ExpressiveContract;
+use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
+use Solis\Breaker\Abstractions\TExceptionAbstract;
 
 /**
  * Class SelectBuilder
@@ -126,23 +127,19 @@ class SelectBuilder
      */
     public function search(ExpressiveContract $model, $dependencies = true)
     {
-        $table = $model->getSchema()->getRepository();
-
-        $Builder = new Builder($table);
-
-        $stmt = $Builder->whereKeys($model)->getStmt();
+        $Builder = new SearchStmt($model);
 
         try {
-            $result = $stmt->get()->toArray();
-        } catch (\PDOException $exception) {
-            throw new Exception($exception->getMessage(), 500);
+            $result = $Builder->search();
+        } catch (\PDOException $ex) {
+            throw new Exception($ex->getMessage(), 500);
         }
 
-        if (!$this->isValidSearchResult($result)) {
+        if (!$result) {
             return false;
         }
 
-        $instance = $this->makeNewExpressiveModel($result[0], $model);
+        $instance = $this->makeNewExpressiveModel($result, $model);
 
         return $this->parseSearchResult($dependencies, $instance);
     }
@@ -309,16 +306,6 @@ class SelectBuilder
     private function parseSearchResult($dependencies, $instance): ExpressiveContract
     {
         return !Diglett::toDig() || !$dependencies ? $instance : $this->getModelRelationships($instance, true);
-    }
-
-    /**
-     * @param $result
-     *
-     * @return bool
-     */
-    private function isValidSearchResult($result): bool
-    {
-        return $result && count($result) === 1;
     }
 
     /**
