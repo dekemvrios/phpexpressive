@@ -4,6 +4,16 @@ Todas as modificações relevantes para phpexoressive serão documentadas neste 
 
 O formato é baseado [Keep a CHANGELOG](http://keepachangelog.com/) e esse projeto adere ao [Semantic Versioning 2.0.0](http://semver.org/).  
 
+## 1.3.2 - 2017-10-18
+
+## Changed
+- Refatorada classes envolvidas no contexto de construção de query nas operações de select e serach.
+
+## 1.3.1 - 2017-09-27
+
+## Changed
+- Adicionado no README badges do Codacy e aprimorado testes.
+
 ## 1.3.0 - 2017-09-26
 
 ## Added
