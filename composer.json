@@ -28,7 +28,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Solis\\Expressive\\Test\\": "tests"
+      "Solis\\Expressive\\Test\\": "tests",
+      "Solis\\Expressive\\Sample\\": "sample/models"
     }
   },
   "scripts": {

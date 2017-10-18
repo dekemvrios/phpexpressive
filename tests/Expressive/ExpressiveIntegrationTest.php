@@ -34,7 +34,7 @@ class ExpressiveIntegrationTest extends TestCase
                 "proNome" => 'Fulano - ' . uniqid(rand()),
         ])->create();
         $Last = Pessoa::make()->last();
-        $this->assertInternalType('int', $Last->ID, 'can\'t last created record');
+        $this->assertNotInternalType('null', $Last->ID, 'can\'t retrieve last created record');
     }
 
     public function testCanCreateOneRecordWithSingleHasMany()

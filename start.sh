@@ -3,6 +3,18 @@
 # |----------------------------------------------------------------------------
 # | Script de inicialização do container docker para executar a aplicação
 # |----------------------------------------------------------------------------
+# |
+# | Valida o tipo de script a ser executado de acordo com o argumento fornecido.
+# | Caso nenhum argumento for fornecido o container será inicializado. Para que
+# | seja desligado é necessário que a literal 'down' seja fornecida como argumento.
+# |
+arg="$1"
+
+type_script="up -d"
+case "$arg" in
+"down") type_script="down";;
+*)
+esac
 
 # |----------------------------------------------------------------------------
 # | Definir valor de enderço de IP da máquina local
@@ -39,9 +51,9 @@ nginx_root=$current_directory
 # | Com base no valor de current_directory, define o caminho para o arquivo docker
 # | que será utilizado para iniciar a aplicação.
 # |
-docker_compose_file=$current_directory/tests/Fixtures/environment/docker/docker-compose.yml
+docker_compose_file=$current_directory/sample/environment/docker/docker-compose.yml
 
-docker_file=$current_directory/tests/Fixtures/environment/docker/Dockerfile
+docker_file=$current_directory/sample/environment/docker/Dockerfile
 
 # |----------------------------------------------------------------------------
 # | Definir valor do caminho para o arquivo de configuração apache
@@ -50,7 +62,7 @@ docker_file=$current_directory/tests/Fixtures/environment/docker/Dockerfile
 # | Com base no valor de current_directory, define o caminho para o arquivo nginx
 # | utilizado para configuração do ambiente servidor.
 # |
-nginx_conf=$current_directory/tests/Fixtures/environment/nginx/site.conf
+nginx_conf=$current_directory/sample/environment/nginx/site.conf
 
 # |----------------------------------------------------------------------------
 # | Definir valor do caminho para o diretório que contém as variáveis de ambiente
@@ -59,7 +71,7 @@ nginx_conf=$current_directory/tests/Fixtures/environment/nginx/site.conf
 # | Com base no valor de current_directory, define o caminho para o diretório que
 # | contém as variáveis de ambiente que serão utilizadas pela aplicação.
 # |
-variables_path=$current_directory/tests/Fixtures/environment/variables
+variables_path=$current_directory/sample/environment/variables
 
 # |----------------------------------------------------------------------------
 # | Inicializa a aplicação
