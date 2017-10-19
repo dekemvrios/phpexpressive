@@ -4,6 +4,11 @@ Todas as modificações relevantes para phpexoressive serão documentadas neste 
 
 O formato é baseado [Keep a CHANGELOG](http://keepachangelog.com/) e esse projeto adere ao [Semantic Versioning 2.0.0](http://semver.org/).  
 
+## 1.4.0 - 2017-10-19
+
+## Added
+- Adicionado suporte a nested queries no contexto de utilização do método select.
+
 ## 1.3.2 - 2017-10-18
 
 ## Changed
