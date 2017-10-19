@@ -15,7 +15,7 @@ cache:
 
 branches:
   only:
-  - v1.x
+  - master
 
 matrix:
   include:

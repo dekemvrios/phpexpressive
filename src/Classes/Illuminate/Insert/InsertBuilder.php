@@ -2,20 +2,20 @@
 
 namespace Solis\Expressive\Classes\Illuminate\Insert;
 
-use Solis\Expressive\Classes\Illuminate\Util\Actions;
-use Solis\Expressive\Abstractions\ExpressiveAbstract;
-use Solis\Expressive\Contracts\ExpressiveContract;
 use Illuminate\Database\Capsule\Manager as Capsule;
-use Solis\Expressive\Classes\Illuminate\Database;
 use Solis\Breaker\Abstractions\TExceptionAbstract;
-use Solis\Breaker\TException;
+use Solis\Expressive\Contracts\ExpressiveContract;
+use Solis\Expressive\Classes\Illuminate\Util\Actions;
+use Solis\Expressive\Classes\Illuminate\Database;
+use Solis\Expressive\Exception;
+use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 
 /**
  * Class InsertBuilder
  *
  * @package Solis\Expressive\Classes\Illuminate\Insert
  */
-final class InsertBuilder
+class InsertBuilder
 {
     /**
      * @var RelationshipBuilder
@@ -55,17 +55,8 @@ final class InsertBuilder
      */
     public function create(ExpressiveContract $model)
     {
-        if (empty($model::$schema->getRepository())) {
-            throw new TException(
-                __CLASS__,
-                __METHOD__,
-                'database schema entry has not been defined for ' . get_class($model),
-                400
-            );
-        }
-
         $record = $this->beforeInsertVerifyDuplicity($model);
-        if (!empty($record) && $record instanceof ExpressiveAbstract) {
+        if ($record) {
             return $record;
         }
 
@@ -73,24 +64,15 @@ final class InsertBuilder
 
         Database::beginTransaction($model);
         try {
-            $model = Actions::doThingWhenDatabaseAction(
-                $model,
-                'whenInsert',
-                'Before'
-            );
+            $model = Actions::doThingWhenDatabaseAction($model, 'whenInsert', 'Before');
 
-            // verify direct dependencies to $model
             $model = $this->hasOneDependency($model);
 
             Capsule::table($table)->insert($this->getInsertFields($model));
         } catch (\PDOException $exception) {
             Database::rollbackActiveTransaction($model);
-            throw new TException(
-                __CLASS__,
-                __METHOD__,
-                $exception->getMessage(),
-                400
-            );
+
+            throw new Exception($exception->getMessage(), 400);
         }
 
         $model = $this->setPrimaryKeysFromLast($model);
@@ -98,15 +80,10 @@ final class InsertBuilder
         // verify dependencies related to model
         $this->hasManyDependencies($model);
 
-        Actions::doThingWhenDatabaseAction(
-            $model,
-            'whenInsert',
-            'after'
-        );
+        Actions::doThingWhenDatabaseAction($model, 'whenInsert', 'after');
 
         Database::commitActiveTransaction($model);
 
-        // return the last inserted entry
         return $model;
     }
 
@@ -126,7 +103,7 @@ final class InsertBuilder
         // e atribui a instancia do model os valor atribuidos a instancia
         // do ultimo registro persistido para a respectivo classe
         $incrementalFields = $model::$schema->getIncrementalFieldsMeta();
-        if (!empty($incrementalFields)) {
+        if ($incrementalFields) {
             foreach ($incrementalFields as $field) {
                 $model->{$field->getProperty()} = $last->{$field->getProperty()};
             }
@@ -168,21 +145,11 @@ final class InsertBuilder
         foreach (array_values($dependencies) as $dependency) {
             $value = $model->{$dependency->getProperty()};
 
-            if (!empty($value)) {
-                if (!$value instanceof ExpressiveAbstract) {
-                    throw new TException(
-                        __CLASS__,
-                        __METHOD__,
-                        "dependency must be instance of ExpressiveAbstract in class " . get_class($model),
-                        500
-                    );
-                }
-
-                $model = $this->getRelationshipBuilder()->hasOne(
-                    $model,
-                    $dependency
-                );
+            if (!$value || is_array($value)) {
+                continue;
             }
+
+            $model = $this->getRelationshipBuilder()->hasOne($model, $dependency);
         }
 
         return $model;
@@ -196,16 +163,18 @@ final class InsertBuilder
     public function hasManyDependencies($model)
     {
         $dependencies = $model::$schema->getDependencies('hasMany');
-        if (!empty($dependencies)) {
-            foreach (array_values($dependencies) as $dependency) {
-                $value = $model->{$dependency->getProperty()};
-                if (!empty($value)) {
-                    $this->getRelationshipBuilder()->hasMany(
-                        $model,
-                        $dependency
-                    );
-                }
+        if (!$dependencies) {
+            return;
+        }
+
+        foreach (array_values($dependencies) as $dependency) {
+            $value = $model->{$dependency->getProperty()};
+
+            if (!$value) {
+                continue;
             }
+
+            $this->getRelationshipBuilder()->hasMany($model, $dependency);
         }
     }
 
@@ -218,6 +187,36 @@ final class InsertBuilder
      */
     public function getInsertFields($model)
     {
+        $persistentFields = $this->filterModelPersistentFields($model);
+
+        // por alguma situação invalida no schema, pode ocorrer de o
+        // registro não possuir campos a serem persistidos
+        if (!$persistentFields) {
+            throw new Exception(
+                "class " . get_class($model) . " has not persistent fields",
+                500
+            );
+        }
+
+        $fields = $this->getPersistententValuesFromModel($model, $persistentFields);
+
+        // caso houverem campos incrementais pela aplicação, consulta o ultimo registro de acordo
+        // com os filtros do active record atribuido e atribui os valores  necessários.
+        $incrementalFields = $model::$schema->getApplicationIncrementalFieldsMeta();
+        if ($incrementalFields) {
+            $fields = $this->setIncrementalFieldsFromLast($model, $incrementalFields, $fields);
+        }
+
+        return $fields;
+    }
+
+    /**
+     * @param $model
+     *
+     * @return array
+     */
+    private function filterModelPersistentFields($model): array
+    {
         $persistentFields = array_filter($model::$schema->getPersistentFields(), function ($item) use ($model) {
             $value = $model->{$item->getProperty()};
 
@@ -225,35 +224,34 @@ final class InsertBuilder
             // se o valor atruibo a propriede for null e seu comportamento
             // estiver classificado como não obrigatório, ela será excluida
             // da relação de campos para inserção
-            if (is_null($value) && empty($required)) {
+            if (is_null($value) && !$required) {
                 return false;
             }
 
             // uma propriedade obrigatório não pose estar atribuida como valor
             // nulo no registro a ser persistido
-            if (is_null($model->{$item->getProperty()}) && !empty($required)) {
-                throw new TException(
-                    __CLASS__,
-                    __METHOD__,
+            if (is_null($model->{$item->getProperty()}) && $required) {
+                throw new Exception(
                     "a persistent field [ {$item->getProperty()} ] cannot be empty when inserting object "
-                    . get_class($model),
+                        . get_class($model),
                     400
                 );
             }
+
             return true;
         });
 
-        // por alguma situação invalida no schema, pode ocorrer de o
-        // registro não possuir campos a serem persistidos
-        if (empty($persistentFields)) {
-            throw new TException(
-                __CLASS__,
-                __METHOD__,
-                "class " . get_class($model) . " has not persistent fields",
-                500
-            );
-        }
+        return $persistentFields;
+    }
 
+    /**
+     * @param $model
+     * @param $persistentFields
+     *
+     * @return array
+     */
+    private function getPersistententValuesFromModel($model, $persistentFields): array
+    {
         $fields = [];
         foreach ($persistentFields as $persistentField) {
             // considerando que a entrada field corresponda ao campo na persistencia
@@ -261,16 +259,23 @@ final class InsertBuilder
             $fields[$persistentField->getField()] = $model->{$persistentField->getProperty()};
         }
 
-        // caso houverem campos incrementais pela aplicação, consulta o ultimo registro de acordo
-        // com os filtros do active record atribuido e atribui os valores  necessários.
-        $applicationIncrementalFieldsMeta = $model::$schema->getApplicationIncrementalFieldsMeta();
-        if (!empty($applicationIncrementalFieldsMeta)) {
-            $last = $model->last(false);
-            foreach ($applicationIncrementalFieldsMeta as $incrementalField) {
-                $value = $last->{$incrementalField->getProperty()} + 1;
+        return $fields;
+    }
 
-                $fields[$incrementalField->getField()] = !empty($value) ? $value : 1;
-            }
+    /**
+     * @param ExpressiveContract $model
+     * @param PropertyContract[] $incrementalFields
+     * @param array              $fields
+     *
+     * @return array
+     */
+    private function setIncrementalFieldsFromLast($model, $incrementalFields, $fields)
+    {
+        $last = $model->last(false);
+        foreach ($incrementalFields as $incrementalField) {
+            $value = $last->{$incrementalField->getProperty()} + 1;
+
+            $fields[$incrementalField->getField()] = !empty($value) ? $value : 1;
         }
 
         return $fields;

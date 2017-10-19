@@ -7,7 +7,8 @@ use Solis\Expressive\Contracts\ExpressiveContract;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Classes\Illuminate\Database;
 use Solis\Breaker\Abstractions\TExceptionAbstract;
-use Solis\Breaker\TException;
+use Solis\Expressive\Exception;
+use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 
 /**
  * Class DeleteBuilder
@@ -55,67 +56,25 @@ class DeleteBuilder
      */
     public function delete(ExpressiveContract $model)
     {
-
-        if (empty($model::$schema->getRepository())) {
-            throw new TException(
-                __CLASS__,
-                __METHOD__,
-                'database schema entry has not been defined for ' . get_class($model),
-                400
-            );
-        }
-
         $table = $model::$schema->getRepository();
 
-        $primaryKeys = $model::$schema->getKeys();
-
-        $stmt = Capsule::table($table);
-
-        foreach ($primaryKeys as $key) {
-            $value = $model->{$key->getProperty()};
-            if (empty($value)) {
-                throw new TException(
-                    __CLASS__,
-                    __METHOD__,
-                    "property '{$key}' used as primary key cannot be empty at " . get_class($model) . " instance",
-                    400
-                );
-            }
-            $stmt->where(
-                $key->getField(),
-                '=',
-                $value
-            );
-        }
         Database::beginTransaction($model);
 
-        try {
-            $model = Actions::doThingWhenDatabaseAction(
-                $model,
-                'whenDelete',
-                'before'
-            );
+        $stmt = $this->buildDeleteStmt($model, $table);
 
-            // remove has many dependencies of the model
-            $this->hasManyDependencies($model);
+        try {
+            $model = Actions::doThingWhenDatabaseAction($model, 'whenDelete', 'before');
+
+            $this->deleteHasMany($model);
 
             $result = $stmt->delete();
         } catch (\PDOException $exception) {
             Database::rollbackActiveTransaction($model);
 
-            throw new TException(
-                __CLASS__,
-                __METHOD__,
-                $exception->getMessage(),
-                500
-            );
+            throw new Exception($exception->getMessage(), 500);
         }
 
-        $model = Actions::doThingWhenDatabaseAction(
-            $model,
-            'whenDelete',
-            'after'
-        );
+        $model = Actions::doThingWhenDatabaseAction($model, 'whenDelete', 'after');
 
         Database::commitActiveTransaction($model);
 
@@ -124,22 +83,70 @@ class DeleteBuilder
 
     /**
      * @param ExpressiveContract $model
+     * @param                    $table
+     *
+     * @return \Illuminate\Database\Query\Builder
+     * @throws Exception
+     */
+    private function buildDeleteStmt(ExpressiveContract $model, $table)
+    {
+        $primaryKeys = $model::$schema->getKeys();
+
+        $stmt = Capsule::table($table);
+
+        foreach ($primaryKeys as $key) {
+            $stmt = $this->setPropertyInWhereStmt($model, $key, $stmt);
+        }
+
+        return $stmt;
+    }
+
+    /**
+     * @param ExpressiveContract                 $model
+     * @param PropertyContract                   $property
+     * @param \Illuminate\Database\Query\Builder $stmt
+     *
+     * @throws Exception
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    private function setPropertyInWhereStmt(ExpressiveContract $model, $property, $stmt)
+    {
+        $value = $model->{$property->getProperty()};
+
+        if (!$value) {
+            throw new Exception(
+                "property '{$property->getProperty()}' used as primary can't be null.",
+                400
+            );
+        }
+
+        $stmt->where($property->getField(), '=', $value);
+
+        return $stmt;
+    }
+
+    /**
+     * @param ExpressiveContract $model
      *
      * @throws TExceptionAbstract
      */
-    public function hasManyDependencies($model)
+    private function deleteHasMany($model)
     {
         $dependencies = $model::$schema->getDependencies('hasMany');
-        if (!empty($dependencies)) {
-            foreach (array_values($dependencies) as $dependency) {
-                $value = $model->{$dependency->getProperty()};
-                if (!empty($value)) {
-                    $this->getRelationshipBuilder()->hasMany(
-                        $model,
-                        $dependency
-                    );
-                }
+
+        if (!$dependencies) {
+            return;
+        }
+
+        foreach (array_values($dependencies) as $dependency) {
+            $value = $model->{$dependency->getProperty()};
+
+            if (!$value) {
+                continue;
             }
+
+            $this->getRelationshipBuilder()->hasMany($model, $dependency);
         }
     }
 }
