@@ -232,9 +232,9 @@ class InsertBuilder
             // nulo no registro a ser persistido
             if (is_null($model->{$item->getProperty()}) && $required) {
                 throw new Exception(
-                        "a persistent field [ {$item->getProperty()} ] cannot be empty when inserting object "
+                    "a persistent field [ {$item->getProperty()} ] cannot be empty when inserting object "
                         . get_class($model),
-                        400
+                    400
                 );
             }
 
