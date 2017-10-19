@@ -62,7 +62,7 @@ class SelectBuilder
 
         $Builder = new Builder($table, $arguments, $options);
 
-        $stmt = $Builder->whereArguments()->orderBy()->limit()->getStmt();
+        $stmt = $Builder->where()->orderBy()->limit()->getStmt();
 
         try {
             $result = $stmt->get($this->columns($model, $options))->toArray();
@@ -158,7 +158,7 @@ class SelectBuilder
 
         $Builder = new Builder($table, $arguments);
 
-        $stmt = $Builder->whereArguments()->getStmt();
+        $stmt = $Builder->where()->getStmt();
 
         try {
             $result = $stmt->count();
