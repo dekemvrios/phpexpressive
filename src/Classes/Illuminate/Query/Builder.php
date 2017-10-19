@@ -54,17 +54,104 @@ class Builder
     /**
      * @return $this
      */
-    public function whereArguments()
+    public function where()
     {
-        foreach ($this->arguments as $argument) {
-            $this->stmt->where(
-                $argument['column'],
-                $argument['operator'] ?? '=',
-                $argument['value'],
-                $argument['chainType'] ?? 'and'
-            );
-        }
+        $this->stmt = $this->whereArguments($this->stmt, $this->arguments);
+
         return $this;
+    }
+
+    /**
+     * @param \Illuminate\Database\Query\Builder $stmt
+     * @param array                              $arguments
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    private function whereArguments($stmt, array $arguments)
+    {
+        foreach ($arguments as $argument) {
+            $stmt = $this->addWhere($stmt, $argument);
+        }
+
+        return $stmt;
+    }
+
+    /**
+     * @param \Illuminate\Database\Query\Builder $stmt
+     * @param array                              $argument
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    private function addWhere($stmt, $argument)
+    {
+        $type = $argument['type'] ?? 'basic';
+
+        return $type === 'nested' ? $this->addNestedWhere($stmt, $argument) : $this->addBasicWhere($stmt, $argument);
+    }
+
+    /**
+     * @param \Illuminate\Database\Query\Builder $stmt
+     * @param array                              $argument
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    private function addBasicWhere($stmt, $argument)
+    {
+        $stmt->where(
+            $argument['column'],
+            $argument['operator'] ?? '=',
+            $argument['value'],
+            $argument['chainType'] ?? 'and'
+        );
+
+        return $stmt;
+    }
+
+    /**
+     * @param \Illuminate\Database\Query\Builder $stmt
+     * @param array                              $argument
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    private function addNestedWhere($stmt, $argument)
+    {
+        $chainType = $argument['chainType'] ?? 'or';
+
+        return $chainType === 'and' ? $this->addAndWhere($stmt, $argument) : $this->addOrWhere($stmt, $argument);
+    }
+
+    /**
+     * @param \Illuminate\Database\Query\Builder $stmt
+     * @param array                              $argument
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    private function addOrWhere($stmt, $argument)
+    {
+        $stmt->orWhere(function ($query) use ($argument) {
+            foreach ($argument['column'] as $column) {
+                $query = $this->addWhere($query, $column);
+            }
+        });
+
+        return $stmt;
+    }
+
+    /**
+     * @param \Illuminate\Database\Query\Builder $stmt
+     * @param array                              $argument
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    private function addAndWhere($stmt, $argument)
+    {
+        $stmt->where(function ($query) use ($argument) {
+            foreach ($argument['column'] as $column) {
+                $query = $this->addWhere($query, $column);
+            }
+        });
+
+        return $stmt;
     }
 
     /**
