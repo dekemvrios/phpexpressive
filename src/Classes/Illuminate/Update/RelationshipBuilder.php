@@ -35,12 +35,21 @@ final class RelationshipBuilder
 
         foreach ($dependencyArray as $dependencyValue) {
             $dependencyValue->$refers = $model->$field;
+
             $sharedFields = $dependency->getComposition()->getRelationship()->getSharedFields();
-            if (!empty($sharedFields)) {
+            if ($sharedFields) {
                 foreach ($sharedFields as $sharedField) {
                     $dependencyValue->$sharedField = $model->$sharedField;
                 }
             }
+
+            $commonFields = $dependency->getComposition()->getRelationship()->getCommonFields();
+            if ($commonFields) {
+                foreach ($commonFields as $commonField) {
+                    $dependencyValue->$commonField = $model->$commonField;
+                }
+            }
+
             $dependencyInstance = $dependencyValue->search(false);
             if (empty($dependencyInstance)) {
                 $dependencyValue->create();

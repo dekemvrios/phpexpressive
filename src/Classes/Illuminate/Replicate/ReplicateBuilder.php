@@ -206,6 +206,13 @@ final class ReplicateBuilder
             }
         }
 
+        $commonFields = $dependency->getComposition()->getRelationship()->getCommonFields();
+        if (!empty($commonFields)) {
+            foreach ($commonFields as $commonField) {
+                $instance->{$commonField} = $model->{$commonField};
+            }
+        }
+
         if (empty($instance->search())) {
             throw new TException(
                 __CLASS__,
@@ -252,12 +259,20 @@ final class ReplicateBuilder
         $refers = $dependency->getComposition()->getRelationship()->getSource()->getRefers();
 
         $sharedFields = $dependency->getComposition()->getRelationship()->getSharedFields();
+
+        $commonFields = $dependency->getComposition()->getRelationship()->getCommonFields();
         foreach ($dependencyValue as $item) {
             $item->$refers = $model->$field;
 
             if (!empty($sharedFields)) {
                 foreach ($sharedFields as $sharedField) {
                     $item->{$sharedField} = $model->{$sharedField};
+                }
+            }
+
+            if (!empty($commonFields)) {
+                foreach ($commonFields as $commonField) {
+                    $item->{$commonField} = $model->{$commonField};
                 }
             }
 

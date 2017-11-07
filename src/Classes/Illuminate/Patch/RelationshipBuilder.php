@@ -92,6 +92,13 @@ final class RelationshipBuilder
                 }
             }
 
+            $commonFields = $dependency->getComposition()->getRelationship()->getCommonFields();
+            if ($commonFields) {
+                foreach ($commonFields as $commonField) {
+                    $dependencyValue->$commonField = $model->$commonField;
+                }
+            }
+
             $dependencyValue->create();
         }
 
