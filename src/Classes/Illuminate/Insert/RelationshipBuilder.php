@@ -32,6 +32,10 @@ class RelationshipBuilder
             $instance = $this->shareFieldsBetweenInstances($model, $dependency, $instance);
         }
 
+        if ($this->hasCommonFields($dependency)) {
+            $instance = $this->shareCommonFieldsBetweenInstances($model, $dependency, $instance);
+        }
+
         $search = $instance->search(false);
 
         if (!$search) {
