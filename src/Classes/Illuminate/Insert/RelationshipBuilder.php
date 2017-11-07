@@ -68,6 +68,10 @@ class RelationshipBuilder
                 $item = $this->shareFieldsBetweenInstances($model, $dependency, $item);
             }
 
+            if ($this->hasCommonFields($dependency)) {
+                $item = $this->shareCommonFieldsBetweenInstances($model, $dependency, $item);
+            }
+
             if (!$item->create()) {
                 throw new Exception("Error crating hasMany dependency for " . get_class($model), 500);
             }
@@ -110,6 +114,44 @@ class RelationshipBuilder
         $sharedFields = $dependency->getComposition()->getRelationship()->getSharedFields();
 
         return $sharedFields;
+    }
+
+    /**
+     * @param PropertyContract $dependency
+     *
+     * @return bool
+     */
+    private function hasCommonFields(PropertyContract $dependency): bool
+    {
+        return boolval($dependency->getComposition()->getRelationship()->getCommonFields());
+    }
+
+    /**
+     * @param ExpressiveContract $model
+     * @param PropertyContract   $dependency
+     * @param ExpressiveContract $instance
+     *
+     * @return ExpressiveContract
+     */
+    private function shareCommonFieldsBetweenInstances($model, $dependency, $instance)
+    {
+        foreach ($this->getCompositionCommonFields($dependency) as $field) {
+            $instance->{$field} = $model->{$field};
+        }
+
+        return $instance;
+    }
+
+    /**
+     * @param PropertyContract $dependency
+     *
+     * @return array|string
+     */
+    private function getCompositionCommonFields(PropertyContract $dependency)
+    {
+        $commonFields = $dependency->getComposition()->getRelationship()->getCommonFields();
+
+        return $commonFields;
     }
 
     /**
