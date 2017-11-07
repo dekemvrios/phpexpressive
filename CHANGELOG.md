@@ -4,6 +4,12 @@ Todas as modificações relevantes para phpexoressive serão documentadas neste 
 
 O formato é baseado [Keep a CHANGELOG](http://keepachangelog.com/) e esse projeto adere ao [Semantic Versioning 2.0.0](http://semver.org/).  
 
+## 1.5.0 - 2017-11-07
+
+## Added
+- Implementado campo commonFields na relação schema de composição, permitindo compartilhar valores entre registro e
+suas respectivas dependências.
+
 ## 1.4.0 - 2017-10-19
 
 ## Added
