@@ -50,6 +50,15 @@ interface DatabaseContainerContract
     /**
      * @param ExpressiveContract $model
      *
+     * @return boolean
+     *
+     * @throws TExceptionAbstract
+     */
+    public function disable(ExpressiveContract $model);
+
+    /**
+     * @param ExpressiveContract $model
+     *
      * @return ExpressiveContract|boolean
      *
      * @throws TExceptionAbstract

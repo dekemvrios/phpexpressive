@@ -217,6 +217,16 @@ class Wrapper implements DatabaseContainerContract
     /**
      * @param ExpressiveContract $model
      *
+     * @return bool
+     */
+    public function disable(ExpressiveContract $model)
+    {
+        return boolval($this->getDeleteBuilder()->disable($model));
+    }
+
+    /**
+     * @param ExpressiveContract $model
+     *
      * @return ExpressiveContract|boolean
      *
      * @throws TExceptionAbstract

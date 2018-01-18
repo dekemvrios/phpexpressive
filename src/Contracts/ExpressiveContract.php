@@ -43,6 +43,13 @@ interface ExpressiveContract
     public function delete();
 
     /**
+     * @return boolean
+     *
+     * @throws TExceptionAbstract
+     */
+    public function disable();
+
+    /**
      * @return ExpressiveContract
      *
      * @throws TExceptionAbstract

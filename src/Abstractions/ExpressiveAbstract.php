@@ -106,6 +106,16 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     }
 
     /**
+     * @return boolean
+     *
+     * @throws TExceptionAbstract
+     */
+    public function disable()
+    {
+        return $this->getDatabaseContainer()->disable($this);
+    }
+
+    /**
      * @return ExpressiveContract|boolean
      *
      * @throws TExceptionAbstract

@@ -149,4 +149,33 @@ class DeleteBuilder
             $this->getRelationshipBuilder()->hasMany($model, $dependency);
         }
     }
+
+    /**
+     * @param ExpressiveContract $model
+     *
+     * @return boolean
+     *
+     * @throws TExceptionAbstract
+     */
+    public function disable(ExpressiveContract $model)
+    {
+        $record = $model->search();
+        if (!$record || !$this->useSoftDelete($record)) {
+            return false;
+        }
+
+        $record->active = false;
+
+        return $record->update();
+    }
+
+    /**
+     * @param $record
+     *
+     * @return bool
+     */
+    private function useSoftDelete($record): bool
+    {
+        return property_exists($record, 'active') && $record->active;
+    }
 }

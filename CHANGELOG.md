@@ -4,6 +4,12 @@ Todas as modificações relevantes para phpexoressive serão documentadas neste 
 
 O formato é baseado [Keep a CHANGELOG](http://keepachangelog.com/) e esse projeto adere ao [Semantic Versioning 2.0.0](http://semver.org/).  
 
+## 1.5.1 - 2018-01-18
+
+## Added
+- Implementado método de delação virtual de registro. Se o model possuir uma propredade com nome de 'active', é possível 
+atribuir false a seu valor por meio do método 'disable' no contexto do model.
+
 ## 1.5.0 - 2017-11-07
 
 ## Added
