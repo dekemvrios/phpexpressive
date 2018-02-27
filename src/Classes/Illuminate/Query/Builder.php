@@ -135,7 +135,7 @@ class Builder
      */
     private function checkOperatorAndType(string $operator, string $type)
     {
-        $allTypes = ['int', 'string', 'float', 'json'];
+        $allTypes = ['int', 'string', 'float', 'json', 'date'];
 
         $operators = [
             'like' => ['string'],
