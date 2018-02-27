@@ -4,6 +4,7 @@ namespace Solis\Expressive\Classes\Illuminate\Query;
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Contracts\ExpressiveContract;
+use Solis\Expressive\Schema\Contracts\SchemaContract;
 use Solis\Expressive\Exception;
 
 /**
@@ -13,6 +14,8 @@ use Solis\Expressive\Exception;
  */
 class Builder
 {
+
+    const PROPERTY_NOT_FOUND = 'PROPRIEDADE %s NÃO ENCONTRADA NA DEFINIÇÃO DO SCHEMA';
     /**
      * @var string
      */
@@ -34,21 +37,28 @@ class Builder
     private $stmt;
 
     /**
+     * @var SchemaContract
+     */
+    private $schema;
+
+    /**
      * StmtBuilder constructor.
      *
-     * @param string $table
-     * @param array $arguments
-     * @param array $options
+     * @param SchemaContract $schema
+     * @param array          $arguments
+     * @param array          $options
      */
-    public function __construct(string $table, array $arguments = [], array $options = [])
+    public function __construct(SchemaContract $schema, array $arguments = [], array $options = [])
     {
-        $this->table = $table;
+        $this->table = $schema->getRepository();
+
+        $this->schema = $schema;
 
         $this->arguments = $this->toMultiArray($arguments);
 
         $this->options = $options;
 
-        $this->stmt = Capsule::table($table);
+        $this->stmt = Capsule::table($this->table);
     }
 
     /**
@@ -94,17 +104,49 @@ class Builder
      * @param array                              $argument
      *
      * @return \Illuminate\Database\Query\Builder
+     *
+     * @throws Exception
      */
     private function addBasicWhere($stmt, $argument)
     {
-        $stmt->where(
+        $column = $argument['column'];
+        if (!$entry = $this->schema->getPropertyEntryByIdentifier($column)) {
+            throw new Exception(sprintf(self::PROPERTY_NOT_FOUND, $column), 400);
+        };
+
+        $operator = strtolower($argument['operator'] ?? '=');
+        if (!$this->checkOperatorAndType($operator, $entry->getType())) {
+            return $stmt;
+        }
+
+        return $stmt->where(
             $argument['column'],
-            $argument['operator'] ?? '=',
+            $operator,
             $argument['value'],
             $argument['chainType'] ?? 'and'
         );
+    }
 
-        return $stmt;
+    /**
+     * @param string $operator
+     * @param string $type
+     *
+     * @return bool
+     */
+    private function checkOperatorAndType(string $operator, string $type)
+    {
+        $allTypes = ['int', 'string', 'float', 'json'];
+
+        $operators = [
+            'like' => ['string'],
+            '='    => $allTypes,
+            '<='   => $allTypes,
+            '<'    => $allTypes,
+            '>='   => $allTypes,
+            '>'    => $allTypes
+        ];
+
+        return in_array($type, $operators[$operator] ?? []);
     }
 
     /**

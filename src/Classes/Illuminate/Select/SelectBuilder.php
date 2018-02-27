@@ -58,9 +58,7 @@ class SelectBuilder
      */
     public function select(ExpressiveContract $model, array $arguments, array $options = [])
     {
-        $table = $model->getSchema()->getRepository();
-
-        $Builder = new Builder($table, $arguments, $options);
+        $Builder = new Builder($model->getSchema(), $arguments, $options);
 
         $stmt = $Builder->where()->orderBy()->limit()->getStmt();
 
@@ -154,9 +152,7 @@ class SelectBuilder
      */
     public function count(ExpressiveContract $model, array $arguments = [])
     {
-        $table = $model->getSchema()->getRepository();
-
-        $Builder = new Builder($table, $arguments);
+        $Builder = new Builder($model->getSchema(), $arguments);
 
         $stmt = $Builder->where()->getStmt();
 

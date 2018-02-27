@@ -4,6 +4,13 @@ Todas as modificações relevantes para phpexoressive serão documentadas neste 
 
 O formato é baseado [Keep a CHANGELOG](http://keepachangelog.com/) e esse projeto adere ao [Semantic Versioning 2.0.0](http://semver.org/).  
 
+## 1.6.1 - 2018-02-27
+
+## Changed
+- Aprimorado construção de query de métodos select e count de modo a desconsiderar coluna especificada no conjunto de 
+argumentos quando essa não estiver presente no schema do registro a ser consultado, ou, quando o operador solicitado é 
+incompatível com o tipo do respectivo campo.
+
 ## 1.6.0 - 2018-01-18
 
 ## Added
