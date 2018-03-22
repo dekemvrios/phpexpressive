@@ -55,7 +55,7 @@ final class ReplicateBuilder
      *
      * @throws Exception
      */
-    public function replicate(ExpressiveContract $model, $times)
+    public function replicate(ExpressiveContract $model, $times = 1)
     {
         if (!$original = $model->search()) {
             throw new Exception('Registro original ' . get_class($model) . ' não encontrado na base de dados', 400);
