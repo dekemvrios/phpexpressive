@@ -108,8 +108,9 @@ interface DatabaseContainerContract
 
     /**
      * @param ExpressiveContract $model
+     * @param int                $times
      *
      * @return ExpressiveContract|boolean
      */
-    public function replicate(ExpressiveContract $model);
+    public function replicate(ExpressiveContract $model, $times = 1);
 }

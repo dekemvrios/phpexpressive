@@ -4,6 +4,16 @@ Todas as modificações relevantes para phpexoressive serão documentadas neste 
 
 O formato é baseado [Keep a CHANGELOG](http://keepachangelog.com/) e esse projeto adere ao [Semantic Versioning 2.0.0](http://semver.org/).  
 
+## 1.6.2 - 2018-03-22
+
+## Added
+- Adicionado parâmetro times ao método de replicação, possibilitando retorno de array contendo registros replicados a 
+partir de model consultado.
+
+## Changed
+- Atribuido mensagem explicativa de erro a item mensagem de Exception lançada por operações de persistência, sobrescrevendo
+comportamento de classe abstrata TExceptionAbstract.
+
 ## 1.6.1 - 2018-02-27
 
 ## Changed

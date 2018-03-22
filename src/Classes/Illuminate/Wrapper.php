@@ -287,12 +287,13 @@ class Wrapper implements DatabaseContainerContract
 
     /**
      * @param ExpressiveContract $model
+     * @param int                $times
      *
      * @return ExpressiveContract|boolean
      */
-    public function replicate(ExpressiveContract $model)
+    public function replicate(ExpressiveContract $model, $times = 1)
     {
-        return $this->getReplicateBuilder()->replicate($model);
+        return $this->getReplicateBuilder()->replicate($model, $times);
     }
 
     /**

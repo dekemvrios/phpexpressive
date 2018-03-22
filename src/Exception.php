@@ -35,6 +35,8 @@ class Exception extends TExceptionAbstract
         ]);
 
         parent::__construct($error, $debug);
+
+        $this->message = $reason;
     }
 
     protected function getClassName()

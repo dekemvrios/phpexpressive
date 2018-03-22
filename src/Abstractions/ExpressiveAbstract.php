@@ -173,10 +173,12 @@ abstract class ExpressiveAbstract implements ExpressiveContract
     }
 
     /**
+     * @param int $times
+     *
      * @return ExpressiveContract|boolean
      */
-    public function replicate()
+    public function replicate($times = 1)
     {
-        return $this->getDatabaseContainer()->replicate($this);
+        return $this->getDatabaseContainer()->replicate($this, $times);
     }
 }

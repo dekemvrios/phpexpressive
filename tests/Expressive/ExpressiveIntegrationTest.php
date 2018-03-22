@@ -145,6 +145,37 @@ class ExpressiveIntegrationTest extends TestCase
         $this->assertGreaterThan($Last->ID, $Replicated->ID, 'can\'t replicate last database record');
     }
 
+    public function testCanReplicateAnyNumberOfRecords()
+    {
+        $number = rand(2, 10);
+        Pessoa::make([
+            "proNome" => 'Fulano - ' . uniqid(rand()),
+        ])->create();
+        $Last = Pessoa::make()->last();
+
+        $records = $Last->replicate($number);
+        $this->assertCount($number, $records);
+    }
+
+    public function testReplicatedRecordsMustHaveGreaterIdsThanLast()
+    {
+        $number = rand(1, 10);
+        Pessoa::make([
+            "proNome" => 'Fulano - ' . uniqid(rand()),
+        ])->create();
+        $Last = Pessoa::make()->last();
+
+        $records = $Last->replicate($number);
+        $records = !is_array($records) ? [$records] : $records;
+
+        $base = $Last;
+        foreach ($records as $record) {
+            $this->assertGreaterThan($base->ID, $record->ID);
+
+            $base = $record;
+        }
+    }
+
     public function testCanUpdateRecord()
     {
         $proNomeOriginal = 'Fulano - ' . uniqid(rand());

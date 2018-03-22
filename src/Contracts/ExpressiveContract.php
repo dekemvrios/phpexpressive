@@ -89,9 +89,11 @@ interface ExpressiveContract
     public function patch();
 
     /**
+     * @param int $times
+     *
      * @return ExpressiveContract|boolean
      */
-    public function replicate();
+    public function replicate($times = 1);
 
     /**
      * @return string

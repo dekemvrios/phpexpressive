@@ -3,6 +3,7 @@
 namespace Solis\Expressive\Classes\Illuminate\Replicate;
 
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Solis\Expressive\Exception;
 use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 use Solis\Expressive\Classes\Illuminate\Insert\InsertBuilder;
 use Solis\Expressive\Abstractions\ExpressiveAbstract;
@@ -45,33 +46,31 @@ final class ReplicateBuilder
     {
         $this->insertBuilder = $insertBuilder;
     }
+
     /**
      * @param ExpressiveContract $model
+     * @param int                $times
      *
-     * @return ExpressiveContract|boolean
+     * @return ExpressiveContract|boolean|ExpressiveAbstract[]
      *
-     * @throws TExceptionAbstract
+     * @throws Exception
      */
-    public function replicate(ExpressiveContract $model)
+    public function replicate(ExpressiveContract $model, $times)
     {
-        if (empty($model::$schema->getRepository())) {
-            throw new TException(
-                __CLASS__,
-                __METHOD__,
-                'database schema entry has not been defined for ' . get_class($model),
-                400
-            );
+        if (!$original = $model->search()) {
+            throw new Exception('Registro original ' . get_class($model) . ' não encontrado na base de dados', 400);
         }
-        $original = $model->search();
-        if (empty($original)) {
-            throw new TException(
-                __CLASS__,
-                __METHOD__,
-                'object for ' . get_class($model) . ' has not been found in the database',
-                400
-            );
+
+        $records = [];
+        for ($i = 0; $i < $times; $i++) {
+            if (!$record = $this->create($original)) {
+                throw new Exception('Erro ao criar réplica de registro', 500);
+            }
+
+            $records[] = $record;
         }
-        return $this->create($original);
+
+        return count($records) === 1 ? $records[0] : $records;
     }
     /**
      * @param ExpressiveContract $model
