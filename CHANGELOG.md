@@ -4,6 +4,14 @@ Todas as modificações relevantes para phpexoressive serão documentadas neste 
 
 O formato é baseado [Keep a CHANGELOG](http://keepachangelog.com/) e esse projeto adere ao [Semantic Versioning 2.0.0](http://semver.org/).  
 
+## 1.6.3 - 2018-03-23
+
+## Added
+- Adicionado suporte a tipo schema bool e boolean para operadores relacionados ao construir query de consulta der registro.
+
+## Fixed
+- Removidos campos json de operadores não suportados ao construir query de consulta de registro.
+
 ## 1.6.2 - 2018-03-22
 
 ## Added

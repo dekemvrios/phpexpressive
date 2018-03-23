@@ -135,15 +135,13 @@ class Builder
      */
     private function checkOperatorAndType(string $operator, string $type)
     {
-        $allTypes = ['int', 'string', 'float', 'json', 'date'];
-
         $operators = [
             'like' => ['string'],
-            '='    => array_merge($allTypes, ['bool', 'boolean']),
-            '<='   => $allTypes,
-            '<'    => $allTypes,
-            '>='   => $allTypes,
-            '>'    => $allTypes
+            '='    => ['int', 'string', 'float', 'json', 'date', 'bool', 'boolean'],
+            '<='   => ['int', 'string', 'float', 'date'],
+            '<'    => ['int', 'string', 'float', 'date'],
+            '>='   => ['int', 'string', 'float', 'date'],
+            '>'    => ['int', 'string', 'float', 'date'],
         ];
 
         return in_array($type, $operators[$operator] ?? []);
