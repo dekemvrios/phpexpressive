@@ -139,7 +139,7 @@ class Builder
 
         $operators = [
             'like' => ['string'],
-            '='    => $allTypes,
+            '='    => array_merge($allTypes, ['bool', 'boolean']),
             '<='   => $allTypes,
             '<'    => $allTypes,
             '>='   => $allTypes,
