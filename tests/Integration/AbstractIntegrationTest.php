@@ -1,5 +1,7 @@
 <?php
 
+namespace Solis\Expressive\Test\Integration;
+
 use PHPUnit\Framework\TestCase;
 use Solis\Expressive\Test\Fixtures\IntegrationTest\DatabaseBuilder as DB;
 use Solis\Expressive\Test\Fixtures\IntegrationTest\Pessoa;

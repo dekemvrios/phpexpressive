@@ -1,5 +1,7 @@
 <?php
 
+namespace Solis\Expressive\Test\Integration;
+
 use Solis\Expressive\Test\Fixtures\IntegrationTest\Pessoa;
 
 class PatchIntegrationTest extends AbstractIntegrationTest

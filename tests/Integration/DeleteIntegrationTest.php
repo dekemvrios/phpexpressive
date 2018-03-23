@@ -1,7 +1,8 @@
 <?php
 
+namespace Solis\Expressive\Test\Integration;
+
 use Solis\Expressive\Test\Fixtures\IntegrationTest\Pessoa;
-use Solis\Expressive\Exception;
 
 class DeleteIntegrationTest extends AbstractIntegrationTest
 {
