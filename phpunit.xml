@@ -10,8 +10,8 @@
          processIsolation="false"
          stopOnFailure="false">
     <testsuites>
-        <testsuite name="Expressive Suite Test">
-            <directory>tests/Expressive/</directory>
+        <testsuite name="Integration Test">
+            <directory>tests/Integration/</directory>
         </testsuite>
     </testsuites>
     <filter>

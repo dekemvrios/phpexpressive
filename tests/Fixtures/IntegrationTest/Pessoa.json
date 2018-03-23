@@ -21,7 +21,7 @@
       "description": "nome - nome do registro pessoa",
       "type": "string",
       "behavior": {
-        "required": "false"
+        "required": true
       }
     },
     {
