@@ -6,6 +6,7 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 use Solis\Expressive\Contracts\ExpressiveContract;
 use Solis\Expressive\Schema\Contracts\SchemaContract;
 use Solis\Expressive\Exception;
+use Solis\Expressive\Schema\Contracts\Entries\Property\PropertyContract;
 
 /**
  * Class StmtBuilder
@@ -110,9 +111,16 @@ class Builder
     private function addBasicWhere($stmt, $argument)
     {
         $column = $argument['column'];
+        /**
+         * @var PropertyContract $entry
+         */
         if (!$entry = $this->schema->getPropertyEntryByIdentifier($column)) {
             throw new Exception(sprintf(self::PROPERTY_NOT_FOUND, $column), 400);
         };
+
+        if (!$entry->getBehavior()->isPersistent()) {
+            return $stmt;
+        }
 
         $operator = strtolower($argument['operator'] ?? '=');
         if (!$this->checkOperatorAndType($operator, $entry->getType())) {
@@ -235,6 +243,18 @@ class Builder
         $orderBy = $this->toMultiArray($orderBy);
 
         foreach ($orderBy as $option) {
+
+            /**
+             * @var PropertyContract $entry
+             */
+            if (!$entry = $this->schema->getPropertyEntryByIdentifier($option['column'])) {
+                continue;
+            };
+
+            if (!$entry->getBehavior()->isPersistent()) {
+                continue;
+            }
+
             $this->stmt->orderBy(
                 $option['column'],
                 $option['direction'] ?? 'asc'
