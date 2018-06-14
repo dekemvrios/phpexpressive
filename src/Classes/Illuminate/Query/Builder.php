@@ -294,11 +294,11 @@ class Builder
     {
         $dependencies = $this->options['withDependencies'] ?? false;
 
-        if ($dependencies == 'true') {
+        if ($dependencies == 'true' || $dependencies == 1) {
             return true;
         }
 
-        if ($dependencies == 'false') {
+        if ($dependencies == 'false' || $dependencies == 0) {
             return false;
         }
 
