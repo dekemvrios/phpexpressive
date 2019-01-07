@@ -150,6 +150,7 @@ class Builder
             '<'    => ['int', 'string', 'float', 'date', 'object', 'composition'],
             '>='   => ['int', 'string', 'float', 'date', 'object', 'composition'],
             '>'    => ['int', 'string', 'float', 'date', 'object', 'composition'],
+            '!='   => ['int', 'string', 'float', 'date', 'bool', 'boolean'],
         ];
 
         return in_array($type, $operators[$operator] ?? []);
