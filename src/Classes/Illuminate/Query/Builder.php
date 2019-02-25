@@ -256,6 +256,10 @@ class Builder
                 continue;
             }
 
+            if (!in_array(trim(strtolower($option['direction'])), ['asc', 'desc'])) {
+                continue;
+            }
+
             $this->stmt->orderBy(
                 $option['column'],
                 $option['direction'] ?? 'asc'
